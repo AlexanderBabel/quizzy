@@ -1,6 +1,14 @@
-# API Definition
+# Lobby API
 
 ## /v1/lobby/
+
+| Route    | Method | Roles        | Description  | Request             | Response                              |
+| -------- | ------ | ------------ | ------------ | ------------------- | ------------------------------------- |
+| /join    | POST   | PLAYER       | Join lobby   | lobbyCode, userName | success                               |
+| /create  | POST   | HOST         | Create lobby | quizId              | success, lobbyCode                    |
+| /start   | GET    | HOST         | Start game   | -                   | success                               |
+| /kick    | POST   | HOST         | Kick player  | playerId            | -                                     |
+| /players | GET    | PLAYER, HOST | Get players  | -                   | - players<ul><li>id</li><li>name</li> |
 
 ### POST join [PLAYER]
 
@@ -25,7 +33,18 @@ Response:
 
 - playerId
 
+# Game API
+
 ## /v1/game/
+
+| Route     | Method | Roles        | Description                | Request  | Response                                                                                |
+| --------- | ------ | ------------ | -------------------------- | -------- | --------------------------------------------------------------------------------------- |
+| /ready    | GET    | PLAYER, HOST | Get game state             | -        | state (string)                                                                          |
+| /question | GET    | PLAYER, HOST | Get current question       | -        | - question (string)<br>- answers<ul><li>id</li><li>text</li></ul><br>- endTime (Date)   |
+| /answer   | POST   | PLAYER       | Answer question            | answerId | -                                                                                       |
+| /summary  | GET    | PLAYER, HOST | Get answer summary         | -        | - answers<ul><li>id</li><li>count (int)</li><li>correct (bool)</li></ul>                |
+| /score    | GET    | PLAYER, HOST | Get score after a question | -        | - players<ul><li>id</li><li>name</li><li>score (int)</li><li>deltaScore (int)</li></ul> |
+| /report   | POST   | PLAYER, HOST | Report a quiz              | reason   | -                                                                                       |
 
 ### POST answer [PLAYER]
 
@@ -64,7 +83,7 @@ Response:
   - id
   - name
   - score (int)
-  - delteScore (int)
+  - deltaScore (int)
 
 ### POST report [PLAYER, HOST]
 
@@ -72,13 +91,27 @@ Response:
 
 ### GET nextRound [HOST]
 
-## /v1/auth/callback/google [PLAYER, HOST, ADMIN]
+# Auth API
+
+## /v1/auth/
+
+| Route            | Method | Roles  | Description           | Request | Response    |
+| ---------------- | ------ | ------ | --------------------- | ------- | ----------- |
+| /callback/google | GET    | PUBLIC | Google OAuth callback | code    | accessToken |
+
+## callback/google [PLAYER, HOST, ADMIN]
 
 Response:
 
 - accessToken
 
+# Quiz Search API
+
 ## /v1/quiz/
+
+| Route   | Method | Roles  | Description | Request | Response |
+| ------- | ------ | ------ | ----------- | ------- | -------- |
+| /search | GET    | PUBLIC | Search quiz | query   | quizzes  |
 
 ### GET search?query="TEXT" [PUBLIC]
 
@@ -89,6 +122,13 @@ Response:
 # Creator API:
 
 ## /v1/creator-quiz/
+
+| Route           | Method | Roles   | Description     | Request | Response |
+| --------------- | ------ | ------- | --------------- | ------- | -------- |
+| /add            | POST   | CREATOR | Add a quiz      | quiz    | success  |
+| /:quizId/edit   | PUT    | CREATOR | Edit a quiz     | quiz    | success  |
+| /:quizId/delete | DELETE | CREATOR | Delete a quiz   | -       | success  |
+| /list           | GET    | CREATOR | Get all quizzes | -       | quizzes  |
 
 ### /add
 
