@@ -16,8 +16,8 @@ export class LobbyController {
   }
 
   @Get('players')
-  getPlayers() {
-    return this.lobbyService.getPlayers();
+  getPlayers(@Body() getPlayers: { lobbyCode: string }) {
+    return this.lobbyService.getPlayers(getPlayers);
   }
 
   @Get('start')
@@ -26,7 +26,7 @@ export class LobbyController {
   }
 
   @Post('kick')
-  kickPlayer(@Body() kickPlayer: { playerId: string }) {
+  kickPlayer(@Body() kickPlayer: { lobbyCode: string, playerId: string }) {
     return this.lobbyService.kickPlayer(kickPlayer);
   }
 }
