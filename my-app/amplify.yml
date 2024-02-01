@@ -1,17 +1,16 @@
 version: 1
-applications:
-  - frontend:
-      phases:
-        preBuild:
-          commands:
-            - npm install
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: /
-        files:
-          - '**/*'
-      cache:
-        paths:
-          - node_modules/**/*
+frontend:
+  phases:
+    # IMPORTANT - Please verify your build commands
+    build:
+      commands:
+        - npm ci
+        - npm run build
+  artifacts:
+    # IMPORTANT - Please verify your build output directory
+    baseDirectory: build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
