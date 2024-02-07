@@ -4,11 +4,9 @@ import background from '../../images/blob-scene-haikei-2.svg'
 
 function CreateQuizPage() {
 
-    const quiz = {
-        title: '',
-        
-        
-    }
+    // const quiz = {
+    //     title: '',
+    // }
 
     const svgStyle = {
         backgroundImage: `url(${background})`,
@@ -19,17 +17,12 @@ function CreateQuizPage() {
         margin: 0,
         padding: 0,
         overflow: 'hidden',
-      };
-  
-  return (
+    };
+
+    return (
         <div className='createQuizPage' style={svgStyle}>
-
-
-          
-
-
         </div>
-  );
+    );
 }
 
 export default CreateQuizPage;

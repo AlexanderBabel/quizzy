@@ -8,20 +8,16 @@ import Startpage from "./pages/Startpage/Startpage";
 import CreateQuizPage from "./pages/CreateQuiz/CreateQuiz";
 
 function App() {
-  const isLoggedIn= true
-  
-
+  // const isLoggedIn = true
 
   return (
-           <Router>
-            <Routes>
-                <Route exact path="/" element={<Startpage />} />
-                <Route path="/CreateQuiz" element={<CreateQuizPage />} />
-              
+    <Router>
+      <Routes>
+        <Route exact path="/" element={<Startpage />} />
+        <Route path="/CreateQuiz" element={<CreateQuizPage />} />
+      </Routes>
+    </Router>
 
-          </Routes>
-        </Router>
-   
   );
 }
 
