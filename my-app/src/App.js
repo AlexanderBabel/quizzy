@@ -5,10 +5,10 @@ import {
   Route,
 } from "react-router-dom";
 import Startpage from "./pages/Startpage/Startpage";
-import CreateQuizPage from "./pages/CreateQuiz/CreateQuiz";
+import CreateQuizPage from "./pages/CreateQuiz/CreateQuizPage";
 
 function App() {
-  const isLoggedIn= true
+  // const isLoggedIn= true
   
 
 
