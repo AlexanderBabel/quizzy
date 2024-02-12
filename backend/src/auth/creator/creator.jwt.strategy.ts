@@ -5,7 +5,10 @@ import { CreatorService } from 'src/model/creator.service';
 import { Creator } from '@prisma/client';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class CreatorJwtStrategy extends PassportStrategy(
+  Strategy,
+  'creator-jwt',
+) {
   constructor(private creatorService: CreatorService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
