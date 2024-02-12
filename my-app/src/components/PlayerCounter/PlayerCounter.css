@@ -1,0 +1,18 @@
+.PlayerCounter {
+    border-radius: 50%;
+    background-color: #6A6DD2;
+    height: 3.5rem;
+    width: 3.5rem;
+    font-weight: bolder;
+    position: absolute;
+    right: 200px;
+    display: flex; /* Ensure it's a flex container */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+#playerCountText {
+    text-align: center;
+    font-size: 1.5rem;
+    color: aliceblue;
+}

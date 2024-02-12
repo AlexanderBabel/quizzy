@@ -5,6 +5,7 @@ import './App.css'
 import LoginBtn from './components/Buttons/LoginBtn';
 import CreateQuizBtn from './components/Buttons/CreateQuizBtn';
 import MyQuizzes from './components/MyQuizzes/MyQuizzes';
+import LobbyPage from './pages/GameLobby/LobbyPage';
 
 function App() {
   const isLoggedIn= true
@@ -32,7 +33,7 @@ function App() {
   ] 
 
 
-  return (
+  return  <LobbyPage> </LobbyPage>/* (
         <div className='startpage' style={svgStyle}>
           
           <div className='startpageTop'>
@@ -40,18 +41,16 @@ function App() {
           {isLoggedIn ? <CreateQuizBtn/> : <LoginBtn/>}
           </div>
           
-          
           <div className='cardContainer'>
           <CardStartpage text={'Join a quiz!'} inputBool={true}/>
           <CardStartpage text={'Discover quizzes'}/>
           </div>
           <div className='myQuizzes'>
             <MyQuizzes quizzes={quizzes}/>
-
           </div>
           
-        </div>
-  );
+        </div> 
+  ); */
 }
 
 export default App;
