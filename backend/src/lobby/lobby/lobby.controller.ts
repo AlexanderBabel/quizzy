@@ -6,7 +6,7 @@ export class LobbyController {
   constructor(private readonly lobbyService: LobbyService) {}
 
   @Post('join')
-  joinLobby(@Body() joinLobby: { lobbyCode: string; userName: string }) {
+  joinLobby(@Body() joinLobby: { lobbyCode: string; name: string }) {
     return this.lobbyService.joinLobby(joinLobby);
   }
 
