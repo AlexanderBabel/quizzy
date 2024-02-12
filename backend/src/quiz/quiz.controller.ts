@@ -24,7 +24,7 @@ import {
 import { CreatorAuthGuard } from 'src/auth/creator/creator.jwt.guard';
 
 @Controller('v1/quiz')
-export class AuthController {
+export class QuizController {
   constructor(private readonly quizService: QuizService) {}
 
   private validateQuestions(questions: CreateQuizQuestionDto[]): void {
