@@ -9,19 +9,14 @@ import CreateQuizPage from "./pages/CreateQuiz/CreateQuizPage";
 
 function App() {
   // const isLoggedIn= true
-  
-
 
   return (
-           <Router>
-            <Routes>
-                <Route exact path="/" element={<Startpage />} />
-                <Route path="/CreateQuiz" element={<CreateQuizPage />} />
-              
-
-          </Routes>
-        </Router>
-   
+    <Router>
+      <Routes>
+        <Route exact path="/" element={<Startpage />} />
+        <Route path="/CreateQuiz" element={<CreateQuizPage />} />
+      </Routes>
+    </Router>
   );
 }
 

@@ -2,13 +2,16 @@
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:20-alpine As build
+FROM node:20-alpine AS build
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY --chown=node:node package*.json ./
+COPY --chown=node:node prisma ./prisma/
 
-RUN npm ci
+# Install app dependencies
+RUN npm install
 
 COPY --chown=node:node . .
 
@@ -27,11 +30,15 @@ USER node
 # PRODUCTION
 ###################
 
-FROM node:20-alpine As production
+FROM node:20-alpine AS production
 
 # Copy the bundled code from the build stage to the production image
-COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build /app/node_modules ./node_modules
+COPY --chown=node:node --from=build /app/package*.json ./
+COPY --chown=node:node --from=build /app/dist ./dist
+COPY --chown=node:node --from=build /app/prisma ./prisma
+
+EXPOSE 3000
 
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]

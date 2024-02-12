@@ -57,3 +57,8 @@ Build multi platform build for production
 ```bash 
 docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/pss-uu/quizzy-2-backend:latest --push .
 ```
+
+Run with Docker
+```bash
+docker compose --profile api up -d
+```
