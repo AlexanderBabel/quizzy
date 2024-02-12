@@ -45,6 +45,7 @@ Response:
 | /summary  | GET    | PLAYER, HOST | Get answer summary         | -        | - answers<ul><li>id</li><li>count (int)</li><li>correct (bool)</li></ul>                |
 | /score    | GET    | PLAYER, HOST | Get score after a question | -        | - players<ul><li>id</li><li>name</li><li>score (int)</li><li>deltaScore (int)</li></ul> |
 | /report   | POST   | PLAYER, HOST | Report a quiz              | reason   | -                                                                                       |
+| /nextround| GET    | HOST         | Start next round           | -        | -                                                                                       |
 
 ### POST answer [PLAYER]
 
