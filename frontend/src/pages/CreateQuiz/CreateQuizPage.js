@@ -69,7 +69,7 @@ function CreateQuizPage() {
 
   useEffect(() => {
     if (deleteInProgress) {
-      if (allQuestions.length == 0) {
+      if (allQuestions.length === 0) {
         addQuestion();
       } else if (allQuestions.length > 0) {
         if (currentQuestionEdit.order > 1) {
@@ -77,7 +77,7 @@ function CreateQuizPage() {
             (question) => question.order === currentQuestionEdit.order - 1
           );
           setCurrentQuestionEdit(newCurrentQuestion.question);
-        } else if (currentQuestionEdit.order == 1) {
+        } else if (currentQuestionEdit.order === 1) {
           const newCurrentQuestion = allQuestions.find(
             (question) => question.order === currentQuestionEdit.order
           );
@@ -86,8 +86,8 @@ function CreateQuizPage() {
       }
     }
     setDeleteInProgress(false);
-  }, [allQuestions]);
- 
+  }, [allQuestions]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     setAllQuestions((prevQuestions) => {
       const updatedQuestions = prevQuestions.map((question) => {
@@ -129,29 +129,30 @@ function CreateQuizPage() {
               className='questionMiniatureWrapper'
               onClick={() => setCurrentQuestionEdit(question.question)}
             >
-            <div className='numAndDelBtn'>
-                 {question.order} 
-              <button
-                style={
-                  activeMiniature == question.order
-                    ? { visibility: 'visible' }
-                    : { visibility: 'hidden' }
-                }
-                className='deleteQuestionBtn'
-                onClick={deleteQuestion}
-              >
-                <FaTrash />
-              </button>
-            </div>
-             
+              <div className='numAndDelBtn'>
+                {question.order}
+                <button
+                  style={
+                    activeMiniature === question.order
+                      ? { visibility: 'visible' }
+                      : { visibility: 'hidden' }
+                  }
+                  className='deleteQuestionBtn'
+                  onClick={deleteQuestion}
+                >
+                  <FaTrash />
+                </button>
+              </div>
+
               <img
                 style={
-                  activeMiniature == question.order ? activeMiniatureStyle : {}
+                  activeMiniature === question.order ? activeMiniatureStyle : {}
                 }
                 className='questionMiniature'
                 src={miniQuestion}
+                alt='miniQuestion'
               />
-             
+
             </div>
           );
         })}
@@ -168,7 +169,7 @@ function CreateQuizPage() {
         />
       </div>
       <div className='finishQuiz'>
-      <button className='finishQuizBtn' >
+        <button className='finishQuizBtn' >
           Finish Quiz
         </button>
       </div>

@@ -1,14 +1,14 @@
-import background from '../../images/blob-scene-haikei-2.svg';
+// import background from '../../images/blob-scene-haikei-2.svg';
 import './CreateQuestion.css';
 import TextField from '@mui/material/TextField';
 import Radio from '@mui/material/Radio';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 const CreateQuestion = (props) => {
 
   useEffect(() => {
     props.func(props.quizQuestion);
-  }, [props.quizQuestion, props.func]);
+  }, [props.quizQuestion, props.func]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleQuizAnswer(e, answerNumber) {
     props.setQuizQuestion({
