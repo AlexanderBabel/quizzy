@@ -33,12 +33,13 @@ export class LobbyService {
     return lobbyWithCode;
   }
 
-  async joinLobby(joinLobby: { lobbyCode: string; name: string }) {
+  async joinLobby(joinLobby: { lobbyCode: string; userName: string }) {
+    console.log(joinLobby.lobbyCode);
     let lobbyWithCode: Lobby = await this.getLobby({
       lobbyCode: joinLobby.lobbyCode,
     });
     const player: Player = {
-      name: joinLobby.name,
+      name: joinLobby.userName,
       id: generateRandomCode(),
     }; //Generate playerId to differentiate player's with the same username
 
@@ -56,6 +57,7 @@ export class LobbyService {
     };
 
     await this.CacheService.set(randomLobbyId, newLobby);
+    return randomLobbyId;
   }
 
   async getPlayers(getPlayers: { lobbyCode: string }) {
@@ -66,7 +68,7 @@ export class LobbyService {
     return lobbyWithCode.players;
   }
 
-  startQuiz() {}
+  startQuiz() {} //TODO: Need the Game API to continue with this
 
   async kickPlayer(kickPlayer: { lobbyCode: string; playerId: string }) {
     let lobbyWithCode: Lobby = await this.getLobby({
