@@ -79,14 +79,8 @@ export class CacheModelService implements OnModuleInit {
     //A bit hacky to initialize the redis client like this - but documentation is sparse
     await this.connectRedis(); //Perhaps this can be streamlined further in the future?
 
-    await this.loadScript(
-      'joinLobby',
-      'src/lobby/lobby/luaScripts/joinLobby.lua',
-    );
+    await this.loadScript('joinLobby', 'src/lobby/luaScripts/joinLobby.lua');
 
-    await this.loadScript(
-      'kickPlayer',
-      'src/lobby/lobby/luaScripts/kickPlayer.lua',
-    );
+    await this.loadScript('kickPlayer', 'src/lobby/luaScripts/kickPlayer.lua');
   }
 }
