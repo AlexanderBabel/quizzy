@@ -1,28 +1,15 @@
+-- Concise Redis Lua script for adding a player to a lobby
 
 -- Parameters
 local lobbyCode = KEYS[1]
-local userName = ARGV[1]
-local playerId = ARGV[2] -- The random player ID is passed in as a parameter
+local userName, playerId = ARGV[1], ARGV[2]
 
-
--- Check if the lobby exists
-local lobbyJson = redis.call('GET', lobbyCode)
-if not lobbyJson then
-    return redis.error_reply("Lobby not found")
-end
-
--- Decode the lobby JSON
+-- Retrieve and decode the lobby
+local lobbyJson = assert(redis.call('GET', lobbyCode), "Lobby not found")
 local lobby = cjson.decode(lobbyJson)
 
--- Create new player and add to the lobby's player list
-local player = {
-    name = userName,
-    id = playerId
-}
-table.insert(lobby.players, player)
-
--- Encode the updated lobby back to JSON and store in Redis
-local updatedLobbyJson = cjson.encode(lobby)
-redis.call('SET', lobbyCode, updatedLobbyJson)
+-- Add new player to the lobby's player list and update the lobby in Redis
+table.insert(lobby.players, { name = userName, id = playerId })
+redis.call('SET', lobbyCode, cjson.encode(lobby))
 
 return redis.status_reply("OK")

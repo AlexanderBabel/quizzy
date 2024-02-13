@@ -1,4 +1,9 @@
-import { Injectable, Inject, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleInit,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { RedisStore, redisStore } from 'cache-manager-redis-yet';
 import { readFileSync } from 'fs';
 
@@ -7,24 +12,24 @@ export class CacheService implements OnModuleInit {
   private scriptShas = new Map<string, string>();
   private redis: RedisStore;
 
-  async set_redis() {
+  async connectRedis() {
     const redis = await redisStore({
       socket: {
         host: process.env.REDIS_HOST,
         port: Number(process.env.REDIS_PORT),
       },
-      ttl: 0,
+      ttl: 0, //Set data to not expire
     });
 
     this.redis = redis;
   }
 
   async set(key: string, data: any): Promise<void> {
-    await this.redis.set(key, data);
+    return this.redis.set(key, data);
   }
 
   async get(key: string): Promise<any> {
-    return await this.redis.get(key);
+    return this.redis.get(key);
   }
 
   private loadScriptFromFile(filepath: string): string {
@@ -38,22 +43,22 @@ export class CacheService implements OnModuleInit {
 
     try {
       const scriptSha = await this.redis.client.scriptLoad(script);
-      console.log('Scripts loaded successfully!');
       this.scriptShas.set(name, scriptSha);
     } catch (error) {
-      console.log('Failed to load scripts!');
+      console.error('Failed to load scripts! ' + error);
+      throw new InternalServerErrorException();
     }
   }
 
   async runScriptByName(
     scriptName: string,
     keys: string[],
-    args: any[],
+    args: string[],
   ): Promise<any> {
     const scriptSha = this.scriptShas.get(scriptName);
 
     if (!scriptSha) {
-      throw new Error('Requested script not loaded!');
+      throw new NotFoundException('Requested script not loaded!');
     }
 
     const EvalOptions = {
@@ -66,15 +71,22 @@ export class CacheService implements OnModuleInit {
       return result;
     } catch (error) {
       console.error('Error running lua script: ' + error);
-      throw error(error);
+      throw new InternalServerErrorException();
     }
   }
 
   async onModuleInit() {
-    await this.set_redis();
+    //A bit hacky to initialize the redis client like this - but documentation is sparse
+    await this.connectRedis(); //Perhaps this can be streamlined further in the future?
+
     await this.loadScript(
       'joinLobby',
       'src/lobby/lobby/luaScripts/joinLobby.lua',
-    ); //Be careful with paths
+    );
+
+    await this.loadScript(
+      'kickPlayer',
+      'src/lobby/lobby/luaScripts/kickPlayer.lua',
+    );
   }
 }

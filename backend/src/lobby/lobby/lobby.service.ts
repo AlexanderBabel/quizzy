@@ -36,7 +36,7 @@ export class LobbyService {
 
     await this.CacheService.runScriptByName(
       'joinLobby',
-      [joinLobby.lobbyCode.toString()],
+      [joinLobby.lobbyCode],
       [joinLobby.userName, playerId],
     );
   }
@@ -62,18 +62,13 @@ export class LobbyService {
     return lobbyWithCode.players;
   }
 
-  startQuiz() {} //TODO: Need the Game API to continue with this
-
   async kickPlayer(kickPlayer: { lobbyCode: string; playerId: string }) {
-    let lobbyWithCode: Lobby = await this.getLobby({
-      lobbyCode: kickPlayer.lobbyCode,
-    });
-
-    const playerIndex = lobbyWithCode.players.findIndex(
-      (player) => player.id === kickPlayer.playerId,
+    await this.CacheService.runScriptByName(
+      'kickPlayer',
+      [kickPlayer.lobbyCode],
+      [kickPlayer.playerId],
     );
-
-    lobbyWithCode.players = lobbyWithCode.players.splice(playerIndex, 1);
-    await this.CacheService.set(kickPlayer.lobbyCode, lobbyWithCode);
   }
+
+  startQuiz() {} //TODO: Need the Game API to continue with this
 }
