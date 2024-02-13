@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body } from '@nestjs/common';
 import { LobbyService } from './lobby.service';
 
 @Controller('v1/lobby')
@@ -26,7 +26,7 @@ export class LobbyController {
   }
 
   @Post('kick')
-  kickPlayer(@Body() kickPlayer: { lobbyCode: string, playerId: string }) {
+  kickPlayer(@Body() kickPlayer: { lobbyCode: string; playerId: string }) {
     return this.lobbyService.kickPlayer(kickPlayer);
   }
 }
