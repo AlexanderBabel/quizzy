@@ -1,0 +1,75 @@
+#SecondPodium{
+    height: 10rem;
+    width: 7rem;
+    color: silver;
+    background-color: gold;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+}
+
+#FirstPodium{
+    height: 5rem;
+    width: 7rem;
+    background-color: silver;
+    border-top-left-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+}
+
+#ThirdPodium{
+    height: 7rem;
+    width: 7rem;
+    background-color: burlywood;
+    border-top-right-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+}
+
+.PodiumWrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+}
+
+#playerName {
+    color: aliceblue;
+    font-size: large;
+}
+
+#playerPoints{
+    color: aliceblue;
+    font-size: large;
+
+}
+
+#PlacementPodiums{
+    display: flex;
+    flex-direction: horizontal;
+}
+
+
+.placementText{
+    color: black;
+    font-size: 1.5rem;
+}
+ 
+.placementBackground{
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    border-radius: 3rem;
+    color: white;
+    background-color: white;
+    height: 2rem;
+    width: 2rem;
+    margin-bottom: 0.5rem;
+}

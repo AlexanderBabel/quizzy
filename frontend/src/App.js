@@ -8,6 +8,7 @@ import Startpage from "./pages/Startpage/Startpage";
 import CreateQuizPage from "./pages/CreateQuiz/CreateQuizPage";
 import AnswerQuizPage from "./pages/AnswerQuiz/AnswerQuizPage";
 import LobbyPage from "./pages/GameLobby/LobbyPage";
+import PostLobbyPage from "./pages/PostGameLobby/PostLobbyPage";
 
 
 function App() {
@@ -20,8 +21,7 @@ function App() {
         <Route path="/CreateQuiz" element={<CreateQuizPage />} />
         <Route path="/AnswerQuiz" element={<AnswerQuizPage />} />
         <Route path="/LobbyPage" element={<LobbyPage />} />
-
-
+        <Route path="/PostLobbyPage" element={<PostLobbyPage />} />
       </Routes>
     </Router>
   );

@@ -28,8 +28,7 @@ function Startpage() {
     {name: 'Test quiz 5'},
     {name: 'Test quiz 6'},
     {name: 'Test quiz 7'},
-
-  ] 
+  ]
 
 
   return (

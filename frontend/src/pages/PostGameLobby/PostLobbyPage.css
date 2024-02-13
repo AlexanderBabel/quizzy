@@ -1,0 +1,10 @@
+
+#PostLobbyPage{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#ResultList {
+    overflow-y: scroll;
+}
