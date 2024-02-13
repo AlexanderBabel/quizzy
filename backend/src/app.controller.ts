@@ -1,12 +1,12 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from './auth/jwt/jwt.guard';
 
 @Controller('v1')
 export class AppController {
   constructor() {}
 
   @Get('info')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async login(@Req() req): Promise<any> {
     return {
       id: req.user.id,
