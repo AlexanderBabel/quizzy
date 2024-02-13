@@ -8,7 +8,7 @@ import { RedisStore, redisStore } from 'cache-manager-redis-yet';
 import { readFileSync } from 'fs';
 
 @Injectable()
-export class CacheService implements OnModuleInit {
+export class CacheModelService implements OnModuleInit {
   private scriptShas = new Map<string, string>();
   private redis: RedisStore;
 

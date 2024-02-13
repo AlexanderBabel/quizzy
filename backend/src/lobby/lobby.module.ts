@@ -6,6 +6,6 @@ import { ModelModule } from 'src/model/model.module';
 @Module({
   controllers: [LobbyController],
   providers: [LobbyService],
-  imports: [ModelModule]
+  imports: [ModelModule],
 })
 export class LobbyModule {}

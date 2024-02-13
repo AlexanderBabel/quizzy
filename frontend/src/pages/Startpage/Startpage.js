@@ -44,7 +44,6 @@ function Startpage() {
           </div>
           <div className='myQuizzes'>
             <MyQuizzes quizzes={quizzes}/>
-
           </div>
         </div>
   );
