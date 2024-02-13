@@ -25,26 +25,20 @@ export class LobbyService {
     let lobbyWithCode: Lobby = await this.CacheService.get(lobbyCode);
 
     if (!lobbyWithCode) {
-      throw new NotFoundException(
-        `Lobby with code ${lobbyCode} not found!`,
-      );
+      throw new NotFoundException(`Lobby with code ${lobbyCode} not found!`);
     }
 
     return lobbyWithCode;
   }
 
   async joinLobby(joinLobby: { lobbyCode: string; userName: string }) {
-    console.log(joinLobby.lobbyCode);
-    let lobbyWithCode: Lobby = await this.getLobby({
-      lobbyCode: joinLobby.lobbyCode,
-    });
-    const player: Player = {
-      name: joinLobby.userName,
-      id: this.generateRandomCode(),
-    }; //Generate playerId to differentiate player's with the same username
+    const playerId: string = this.generateRandomCode();
 
-    lobbyWithCode.players.push(player); //Add users to player array in lobby
-    await this.CacheService.set(joinLobby.lobbyCode, lobbyWithCode); //Store back in cache
+    await this.CacheService.runScriptByName(
+      'joinLobby',
+      [joinLobby.lobbyCode.toString()],
+      [joinLobby.userName, playerId],
+    );
   }
 
   async createLobby(createLobby: { quizId: string }) {
