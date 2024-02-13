@@ -45,7 +45,7 @@ function LobbyPage() {
       <div>
         <div className="header">
           <h1 className="lobbyTitle">{quizName}</h1>
-          {isCreator ? <StartGameBtn /> : null}
+          {isCreator ? <StartGameBtn text={"Start"}/> : null}
           <PlayerCounter playerCount={playersJoined.length}></PlayerCounter>
         </div>
         <h1 className="lobbyCodeTitle">Game Pin: {lobbyCode}</h1>

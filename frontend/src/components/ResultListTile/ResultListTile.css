@@ -5,13 +5,13 @@
 
 .resultListTile{
     padding: 1rem;
-    width: 50vw;
-    height: 2rem;
-    margin: 1rem;
+    width: 40vw;
+    height: 1.3rem;
+    margin: 0.5rem;
     padding-left: 1rem;
     padding-right: 1rem;
     border-radius: 0.5rem;
-    background-color: #DD7BFF;
+    background-color: #6A6DD2;
     display: flex;
     justify-content: space-between;
     flex-direction: row;   

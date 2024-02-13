@@ -1,8 +1,8 @@
 #SecondPodium{
-    height: 10rem;
-    width: 7rem;
+    height: 13rem;
+    width: 8rem;
     color: silver;
-    background-color: gold;
+    background-color: #DD7BFF ;
     border-top-left-radius: 0.5rem;
     border-top-right-radius: 0.5rem;
     display: flex;
@@ -12,9 +12,9 @@
 }
 
 #FirstPodium{
-    height: 5rem;
-    width: 7rem;
-    background-color: silver;
+    height: 9rem;
+    width: 8rem;
+    background-color: #886AEC;
     border-top-left-radius: 0.5rem;
     display: flex;
     flex-direction: column;
@@ -23,9 +23,9 @@
 }
 
 #ThirdPodium{
-    height: 7rem;
-    width: 7rem;
-    background-color: burlywood;
+    height: 5rem;
+    width: 8rem;
+    background-color: #1B4992;
     border-top-right-radius: 0.5rem;
     display: flex;
     flex-direction: column;
@@ -67,7 +67,6 @@
     justify-content: center;
     align-items: center; 
     border-radius: 3rem;
-    color: white;
     background-color: white;
     height: 2rem;
     width: 2rem;

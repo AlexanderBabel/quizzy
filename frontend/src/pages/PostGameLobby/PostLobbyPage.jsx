@@ -1,12 +1,9 @@
 import "./PostLobbyPage.css";
 import background from "./../../images/blob-scene-haikei-4.svg";
-import PlayerNameGrid from "../../components/PlayerNameGrid/PlayerNameGrid";
-import UsernameTextField from "../../components/UsernameTextField/PlayerNameInput";
 import StartGameBtn from "../../components/Buttons/StartGameBtn";
-import PlayerCounter from "../../components/PlayerCounter/PlayerCounter";
-import { useState } from "react";
 import PlacementPodium from "../../components/PlacementPodium/PlacementPodium";
 import ResultList from "../../components/ResultList/ResultList";
+import ReportQuizBtn from "../../components/Buttons/ReportQuizBtn";
 
 function PostLobbyPage() {
 
@@ -27,7 +24,11 @@ function PostLobbyPage() {
 
   return (
     <div id="PostLobbyPage" style={svgStyle}>
-      <h1 className="lobbyTitle">The Winner is...</h1>
+        <div id="header">
+          <ReportQuizBtn></ReportQuizBtn>
+          <h1 className="lobbyTitle">The Winner is...</h1>
+          <StartGameBtn text={"Quit"}></StartGameBtn>
+          </div>
       <PlacementPodium id="podiums" scores={playerScores} players={playerNames}></PlacementPodium>
       <ResultList id="resultList" players={playerNames} playerScores={playerScores}></ResultList>
     </div>
