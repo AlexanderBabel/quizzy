@@ -6,9 +6,9 @@
     font-weight: bolder;
     position: absolute;
     right: 200px;
-    display: flex; /* Ensure it's a flex container */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #playerCountText {
