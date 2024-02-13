@@ -31,18 +31,11 @@ services:
     image: redis
     ports: 
       - 6379:6379
-    
     volumes:
       - redis:/data
 
 volumes: 
   redis:
     driver: local
-    env_file:
-      - .env
-    volumes:
-      - nest-postgres:/var/lib/postgresql/data
-
-volumes:
   nest-postgres:
     name: nest-postgres-db

@@ -13,13 +13,13 @@ type Lobby = {
   players: Player[];
 };
 
-function generateRandomCode(): string {
-  return (Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000).toString(); //generate pseudo-random code as string
-}
-
 @Injectable()
 export class LobbyService {
   constructor(@Inject(CacheService) private CacheService: CacheService) {}
+
+  private generateRandomCode(): string {
+    return (Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000).toString(); //generate pseudo-random code as string
+  }
 
   private async getLobby({ lobbyCode }: { lobbyCode: string }): Promise<Lobby> {
     let lobbyWithCode: Lobby = await this.CacheService.get(lobbyCode);
@@ -40,7 +40,7 @@ export class LobbyService {
     });
     const player: Player = {
       name: joinLobby.userName,
-      id: generateRandomCode(),
+      id: this.generateRandomCode(),
     }; //Generate playerId to differentiate player's with the same username
 
     lobbyWithCode.players.push(player); //Add users to player array in lobby
@@ -48,7 +48,7 @@ export class LobbyService {
   }
 
   async createLobby(createLobby: { quizId: string }) {
-    const randomLobbyId: string = generateRandomCode();
+    const randomLobbyId: string = this.generateRandomCode();
 
     let newLobby: Lobby = {
       lobbyCode: randomLobbyId,

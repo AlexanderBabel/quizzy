@@ -1,10 +1,14 @@
-import { Injectable, Inject, Type } from '@nestjs/common';
+import { Injectable, Inject, Type, OnModuleInit } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import { Cache } from 'cache-manager'
+import { RedisCache } from 'cache-manager-redis-yet';
 
 @Injectable()
-export class CacheService {
-  constructor(@Inject(CACHE_MANAGER) private CacheService: Cache) {}
+export class CacheService implements OnModuleInit {
+  constructor(@Inject(CACHE_MANAGER) private readonly CacheService: RedisCache) {}
+
+  get redis() {
+    return this.CacheService.store.client;
+  }
 
   async set(key: string, data: any): Promise<void> {
     await this.CacheService.set(key, data);
@@ -13,4 +17,9 @@ export class CacheService {
   async get(key: string): Promise<any> {
     return await this.CacheService.get(key);
   }
+
+  async onModuleInit() {
+    console.log("Hello")    
+  }
+
 }
