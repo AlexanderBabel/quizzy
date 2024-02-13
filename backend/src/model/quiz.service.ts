@@ -6,11 +6,27 @@ import { PrismaService } from 'nestjs-prisma';
 export class QuizService {
   constructor(private prisma: PrismaService) {}
 
-  async findQuiz(
-    quizWhereUniqueInput: Prisma.QuizWhereUniqueInput,
-  ): Promise<Quiz | null> {
+  async findQuizWithQuestions(params: {
+    where: Prisma.QuizWhereUniqueInput;
+  }): Promise<
+    | (Quiz & {
+        questions: (QuizQuestion & { answers: QuizQuestionAnswer[] })[];
+      })
+    | null
+  > {
+    const { where } = params;
     return this.prisma.quiz.findUnique({
-      where: quizWhereUniqueInput,
+      where,
+      include: { questions: { include: { answers: true } } },
+    });
+  }
+
+  async findQuiz(params: {
+    where: Prisma.QuizWhereUniqueInput;
+  }): Promise<Quiz | null> {
+    const { where } = params;
+    return this.prisma.quiz.findUnique({
+      where,
     });
   }
 
@@ -20,14 +36,16 @@ export class QuizService {
     cursor?: Prisma.QuizWhereUniqueInput;
     where?: Prisma.QuizWhereInput;
     orderBy?: Prisma.QuizOrderByWithRelationInput;
+    include?: Prisma.QuizInclude;
   }): Promise<Quiz[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+    const { skip, take, cursor, where, orderBy, include } = params;
     return this.prisma.quiz.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
+      include,
     });
   }
 
@@ -56,6 +74,25 @@ export class QuizService {
     });
   }
 
+  async findQuestions(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.QuizQuestionWhereUniqueInput;
+    where?: Prisma.QuizQuestionWhereInput;
+    orderBy?: Prisma.QuizQuestionOrderByWithRelationInput;
+    include?: Prisma.QuizQuestionInclude;
+  }): Promise<QuizQuestion[]> {
+    const { skip, take, cursor, where, orderBy, include } = params;
+    return this.prisma.quizQuestion.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+      include,
+    });
+  }
+
   async createQuestion(params: {
     data: Prisma.QuizQuestionCreateInput;
   }): Promise<QuizQuestion & { answers: QuizQuestionAnswer[] }> {
@@ -69,11 +106,12 @@ export class QuizService {
   async updateQuestion(params: {
     where: Prisma.QuizQuestionWhereUniqueInput;
     data: Prisma.QuizQuestionUpdateInput;
-  }): Promise<QuizQuestion> {
+  }): Promise<QuizQuestion & { answers: QuizQuestionAnswer[] }> {
     const { where, data } = params;
     return this.prisma.quizQuestion.update({
       data,
       where,
+      include: { answers: true },
     });
   }
 

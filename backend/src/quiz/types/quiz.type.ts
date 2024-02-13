@@ -1,7 +1,12 @@
+import { QuizVisibility } from '@prisma/client';
+
 export type ResponseQuiz = {
   quizId: number;
   name: string;
-  questions: ResponseQuizQuestion[];
+  visibility: QuizVisibility;
+  createdAt: Date;
+  updatedAt: Date;
+  questions?: ResponseQuizQuestion[];
 };
 
 export type ResponseQuizQuestion = {
