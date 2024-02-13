@@ -134,26 +134,26 @@ Response:
 ### /add
 
 - name
+- visibility (PUBLIC or PRIVATE)
 - questions
   - order
   - question
   - imageUpload? - see in nestjs documentation
   - answers
-    - order
     - text
     - correct (bool)
 
 ### PUT /:quizId/edit
 
 - name
+- visibility (PUBLIC or PRIVATE)
 - questions
-  - id
+  - questionId
   - order
   - question
   - imageUpload? - see in nestjs documentation
   - answers
-    - id
-    - order
+    - answerId
     - text
     - correct (bool)
 

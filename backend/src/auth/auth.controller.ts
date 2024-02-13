@@ -1,7 +1,8 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthGuard } from '@nestjs/passport';
 import { CreatorService } from 'src/model/creator.service';
+import { GoogleAuthGuard } from './google/google.guard';
+import { JwtAuthType } from './jwt/jwt.enum';
 
 @Controller('v1/auth')
 export class AuthController {
@@ -11,7 +12,7 @@ export class AuthController {
   ) {}
 
   @Get('callback/google')
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleAuthGuard)
   async login(@Req() req): Promise<{ accessToken: string }> {
     const data = {
       email: req.user.email,
@@ -32,6 +33,7 @@ export class AuthController {
         id: creator.id,
         email: creator.email,
         name: creator.name,
+        type: JwtAuthType.Creator,
       }),
     };
   }
