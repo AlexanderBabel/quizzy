@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CreatorService } from './creator.service';
+import { CreatorModelService } from './creator.model.service';
 import { PrismaModule } from 'nestjs-prisma';
-import { QuizService } from './quiz.service';
+import { QuizModelService } from './quiz.model.service';
 import { CacheModule } from '@nestjs/cache-manager';
-import { CacheService } from './cache.service';
+import { CacheModelService } from './cache.model.service';
 import { redisStore } from 'cache-manager-redis-yet';
 
 @Module({
@@ -19,7 +19,7 @@ import { redisStore } from 'cache-manager-redis-yet';
     }),
   ],
   controllers: [],
-  providers: [CreatorService, QuizService, CacheService],
-  exports: [CreatorService, QuizService, CacheService],
+  providers: [CreatorModelService, QuizModelService, CacheModelService],
+  exports: [CreatorModelService, QuizModelService, CacheModelService],
 })
 export class ModelModule {}

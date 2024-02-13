@@ -1,5 +1,5 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { CacheService } from 'src/model/cache.service';
+import { CacheModelService } from 'src/model/cache.model.service';
 
 type Player = {
   //Probably defined somewhere else later, dodge for now
@@ -15,14 +15,16 @@ type Lobby = {
 
 @Injectable()
 export class LobbyService {
-  constructor(@Inject(CacheService) private cacheService: CacheService) {}
+  constructor(
+    @Inject(CacheModelService) private cacheModelService: CacheModelService,
+  ) {}
 
   private generateRandomCode(): string {
     return (Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000).toString(); //generate pseudo-random code as string
   }
 
   private async getLobby({ lobbyCode }: { lobbyCode: string }): Promise<Lobby> {
-    const lobbyWithCode: Lobby = await this.cacheService.get(lobbyCode);
+    const lobbyWithCode: Lobby = await this.cacheModelService.get(lobbyCode);
 
     if (!lobbyWithCode) {
       throw new NotFoundException(`Lobby with code ${lobbyCode} not found!`);
@@ -43,7 +45,7 @@ export class LobbyService {
     }; //Generate playerId to differentiate player's with the same username
 
     lobbyWithCode.players.push(player); //Add users to player array in lobby
-    await this.cacheService.set(joinLobby.lobbyCode, lobbyWithCode); //Store back in cache
+    await this.cacheModelService.set(joinLobby.lobbyCode, lobbyWithCode); //Store back in cache
   }
 
   async createLobby(createLobby: { quizId: string }) {
@@ -55,7 +57,7 @@ export class LobbyService {
       players: [],
     };
 
-    await this.cacheService.set(randomLobbyId, newLobby);
+    await this.cacheModelService.set(randomLobbyId, newLobby);
     return randomLobbyId;
   }
 
@@ -79,6 +81,6 @@ export class LobbyService {
     );
 
     lobbyWithCode.players = lobbyWithCode.players.splice(playerIndex, 1);
-    await this.cacheService.set(kickPlayer.lobbyCode, lobbyWithCode);
+    await this.cacheModelService.set(kickPlayer.lobbyCode, lobbyWithCode);
   }
 }
