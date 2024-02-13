@@ -1,15 +1,16 @@
 import './AnswerQuizPage.css';
 import background from '../../images/blob-scene-haikei-8.svg';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import dummyQuiz from './dummyQuiz.json'
 import AnswerQuizQuestion from '../../components/AnswerQuizQuestion/AnswerQuizQuestion';
 
 function AnswerQuizPage() {
-
+    // eslint-disable-next-line
     const [quiz, setQuiz] = useState(dummyQuiz)
     const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1) 
     const [currentQuestion, setCurrentQuestion] = useState(quiz.quiz.questions[currentQuestionNumber -1]) 
     const [resetCounter, setResetCounter] = useState(false) 
+    // eslint-disable-next-line
     const [currentQuestionStats, setCurrentQuestionStats] = useState()
 
     const pull_data = (data) => {

@@ -14,25 +14,27 @@ const AnswerQuizQuestion = (props) => {
   const [score, setScore] = useState(0)
 
   useEffect(() => {
-    if(props.resetCounterProp == true){
+    if(props.resetCounterProp === true){
         props.setResetCounterProp(false)
         setCounter(30)
     }
     const timer =
       counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
     return () => clearInterval(timer);
+    // eslint-disable-next-line
   }, [counter, props.resetCounterProp]);
 
 
-  useEffect(() => { //inte påbärjat detta än, komemr det gå med flera spelare?
+  useEffect(() => { 
     props.func(score);
+    // eslint-disable-next-line
   }, [score]);
 
 
 
   useEffect(() => {
     let scoreTmp = 0
-    if(chosenAnswer?.correct == true){
+    if(chosenAnswer?.correct === true){
         scoreTmp = 300
         scoreTmp = scoreTmp - timeAnswered * 5
     }
@@ -77,16 +79,18 @@ const AnswerQuizQuestion = (props) => {
               background = { backgroundColor: '#56E75B' };
               icon = swine
               break;
+            default:
+              background = { backgroundColor: 'white' };
           } 
           const cardStyle = {
                 ...background,
-                outline: chosenAnswer == answer && '4px solid red' ,
+                outline: chosenAnswer === answer && '4px solid red' ,
               };
           return (
             <div className='overlayTest'>
 
             <div className='answerCard' style={cardStyle} onClick={() => handleChooseAnswer(answer)}>
-                <img src={icon} className='answerCardIcon'/>
+                <img src={icon} alt='icon' className='answerCardIcon'/>
               <h4>
                 {answer.text} {answerNumber}
               </h4>
