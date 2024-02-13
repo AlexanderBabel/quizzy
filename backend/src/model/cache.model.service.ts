@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { RedisCache } from 'cache-manager-redis-yet';
 
 @Injectable()
-export class CacheService implements OnModuleInit {
+export class CacheModelService implements OnModuleInit {
   constructor(
     @Inject(CACHE_MANAGER) private readonly CacheService: RedisCache,
   ) {}
