@@ -1,6 +1,5 @@
 import { Injectable, Inject, InternalServerErrorException, NotFoundException} from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import { Cache } from 'cache-manager'
+import { CacheService } from 'src/model/cache.service';
 import { GameState } from './domain/gameState.entity';
 import { RoundState } from './domain/roundState.entity';
 
@@ -8,16 +7,16 @@ import { RoundState } from './domain/roundState.entity';
 @Injectable()
 export class GameService {
 
-    
-    constructor(
-        @Inject(CACHE_MANAGER) private cacheService: Cache,
-      ) {}
+    constructor(@Inject(CacheService) private cacheService: CacheService) {}
 
     async getGameState(lobbyCode: string): Promise<GameState | null> {
         const prefix = 'GAME_STATE'; //TODO: Enum
+        console.error('try:', `${prefix}:${lobbyCode}`);
+
         try {
-            const gameState = await this.cacheService.get<string>(lobbyCode);
+            const gameState = await this.cacheService.get(`${prefix}:${lobbyCode}`);
             if (gameState !== null) {
+                console.error('gameState:', `${gameState}`);
                 return JSON.parse(gameState);
             } else {
                 console.error('No game found with lobbyCode:', `${prefix}:${lobbyCode}`);
@@ -33,10 +32,15 @@ export class GameService {
         const prefix = 'GAME_STATE'; //TODO: Enum
 
         const gameState = new GameState(status, round);
-        console.log(`Setting game state for lobby ${lobbyCode} to`, JSON.stringify(gameState));
+        console.log(`Setting game state for key ${prefix}:${lobbyCode} to`, JSON.stringify(gameState));
 
-        await this.cacheService.set(`${prefix}:${lobbyCode}`, JSON.stringify(gameState));
 
+        try {
+            await this.cacheService.set(`${prefix}:${lobbyCode}`, JSON.stringify(gameState));
+        } catch (error) {
+            console.error('Error setting game state in cache:', error);
+            // Handle the error accordingly, such as logging or rethrowing
+          }
         console.log(`DONE Setting game state for lobby ${lobbyCode} to`, JSON.stringify(gameState));
         return true;
     }

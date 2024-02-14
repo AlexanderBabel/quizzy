@@ -7,8 +7,8 @@ import { GameState } from './domain/gameState.entity';
 export class GameController {
   constructor(private readonly gameService: GameService) {}
 
-  @Get('ready/:lobbyCode')
-  async ready(@Param('lobbyCode') lobbyCode: string): Promise<GameState | null> {
+  @Get('ready')
+  async ready(@Body('lobbyCode') lobbyCode: string): Promise<GameState | null> {
     const response = await this.gameService.getGameState(lobbyCode);
     return response;
   }

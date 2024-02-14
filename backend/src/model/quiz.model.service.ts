@@ -3,7 +3,7 @@ import { Prisma, Quiz, QuizQuestion, QuizQuestionAnswer } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
-export class QuizService {
+export class QuizModelService {
   constructor(private prisma: PrismaService) {}
 
   async findQuizWithQuestions(params: {

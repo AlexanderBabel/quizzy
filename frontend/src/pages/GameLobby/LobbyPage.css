@@ -1,0 +1,31 @@
+.lobbyTitle {
+    text-align: center;
+    font-size: 2.7rem;
+    color: aliceblue;
+    font-weight: bolder;
+}
+
+.lobbyPage {
+    justify-content: space-evenly;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.lobbyCodeTitle{
+    text-align: center;
+    font-size: 1.6rem;
+    color: gainsboro;
+    font-weight: bold;
+}
+
+.playerNameInput{
+    align-self: center;
+    align-content: center;
+}
+
+.header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+

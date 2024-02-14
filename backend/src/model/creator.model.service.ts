@@ -3,7 +3,7 @@ import { Creator, Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
-export class CreatorService {
+export class CreatorModelService {
   constructor(private prisma: PrismaService) {}
 
   async creator(
