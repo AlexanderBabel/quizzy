@@ -9,8 +9,11 @@ function PlayerNameInput({ onSubmitted }) {
   };
 
   const handleSubmit = () => {
-    onSubmitted(playerName)
-    setPlayerName("")
+    if(playerName !== ""){
+      onSubmitted(playerName)
+      setPlayerName("")
+    }
+    
   }
 
   return (
