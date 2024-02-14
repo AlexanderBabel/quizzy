@@ -22,7 +22,7 @@ export class GameController {
 
   @Post('nextRound')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async nextRound(@Body('lobbyCode') lobbyCode: string, @Body('status') status: string, @Body('round') round: number): Promise<{ success: boolean }> {
+  async nextRound(@Body('lobbyCode') lobbyCode: string): Promise<{ success: boolean }> {
     const success = await this.gameService.nextRound(lobbyCode);
     return { success: true };
   }
