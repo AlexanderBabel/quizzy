@@ -8,7 +8,16 @@ import { CacheModelService } from './cache.model.service';
 import { redisStore } from 'cache-manager-redis-yet';
 
 @Module({
-  imports: [ConfigModule.forRoot(), PrismaModule],
+  imports: [
+    ConfigModule.forRoot(),
+    PrismaModule,
+    CacheModule.register({
+      isGlobal: true,
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
+      store: redisStore,
+    }),
+  ],
   controllers: [],
   providers: [CreatorModelService, QuizModelService, CacheModelService],
   exports: [CreatorModelService, QuizModelService, CacheModelService],

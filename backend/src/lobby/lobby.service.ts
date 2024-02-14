@@ -24,7 +24,7 @@ export class LobbyService {
   }
 
   private async getLobby({ lobbyCode }: { lobbyCode: string }): Promise<Lobby> {
-    let lobbyWithCode: Lobby = await this.cacheModelService.get(lobbyCode);
+    const lobbyWithCode: Lobby = await this.cacheModelService.get(lobbyCode);
 
     if (!lobbyWithCode) {
       throw new NotFoundException(`Lobby with code ${lobbyCode} not found!`);
@@ -46,7 +46,7 @@ export class LobbyService {
   async createLobby(createLobby: { quizId: string }) {
     const randomLobbyId: string = this.generateRandomCode();
 
-    let newLobby: Lobby = {
+    const newLobby: Lobby = {
       lobbyCode: randomLobbyId,
       quizId: createLobby.quizId,
       players: [],
