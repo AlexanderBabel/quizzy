@@ -44,6 +44,7 @@ export class QuizController {
       data: {
         name: createQuizDto.name,
         creator: { connect: { id: req.user.id } },
+        visibility: createQuizDto.visibility,
       },
     });
 
@@ -80,7 +81,7 @@ export class QuizController {
     @Body() editQuizDto: EditQuizDto,
     @Param('quizId') quizId: string,
   ): Promise<ResponseQuiz> {
-    const quiz = await this.quizModelService.findQuiz({
+    let quiz = await this.quizModelService.findQuiz({
       where: { id: Number.parseInt(quizId) },
     });
     if (!quiz || quiz.creatorId !== req.user.id) {
@@ -91,9 +92,12 @@ export class QuizController {
     this.quizService.validateQuestions(editQuizDto.questions);
 
     // update quiz
-    await this.quizModelService.updateQuiz({
+    quiz = await this.quizModelService.updateQuiz({
       where: { id: quiz.id },
-      data: { name: editQuizDto.name },
+      data: {
+        name: editQuizDto.name,
+        visibility: editQuizDto.visibility,
+      },
     });
 
     // create or update questions
