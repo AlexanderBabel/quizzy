@@ -1,7 +1,7 @@
 import './LoginBtn.css';
 import { useNavigate } from 'react-router-dom';
 
-const CreateQuizBtn = () => {
+const CreateQuizBtn = ({ setToken }) => {
   const navigate = useNavigate();
 
   return (
@@ -12,6 +12,13 @@ const CreateQuizBtn = () => {
         onClick={() => navigate('/CreateQuiz')}
       >
         Create quiz
+      </button>
+      <button type="button" className="loginBtn"
+        onClick={(e) => {
+          e.preventDefault();
+          setToken(null);
+        }}>
+        Log out
       </button>
     </div>
   );

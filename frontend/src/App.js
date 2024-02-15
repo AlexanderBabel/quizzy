@@ -8,20 +8,19 @@ import Startpage from "./pages/Startpage/Startpage";
 import CreateQuizPage from "./pages/CreateQuiz/CreateQuizPage";
 import AnswerQuizPage from "./pages/AnswerQuiz/AnswerQuizPage";
 import LobbyPage from "./pages/GameLobby/LobbyPage";
+import useToken from "./components/useToken/useToken";
 
 
 function App() {
-  // const isLoggedIn= true
+  const { token, setToken } = useToken();
 
   return (
     <Router>
       <Routes>
-        <Route exact path="/" element={<Startpage />} />
+        <Route exact path="/" element={<Startpage token={token} setToken={setToken} />} />
         <Route path="/CreateQuiz" element={<CreateQuizPage />} />
         <Route path="/AnswerQuiz" element={<AnswerQuizPage />} />
         <Route path="/LobbyPage" element={<LobbyPage />} />
-
-
       </Routes>
     </Router>
   );
