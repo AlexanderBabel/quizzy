@@ -1,17 +1,9 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  UseGuards,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CreatorModelService } from 'src/model/creator.model.service';
-import { GoogleAuthGuard } from './google/google.guard';
-import { JwtAuthType } from './jwt/jwt.enum';
+import { JwtAuthType } from './jwt/enums/jwt.enum';
 import { OAuth2Client } from 'google-auth-library';
+import { IsPublic } from './jwt/decorators/public.decorator';
 
 @Controller('v1/auth')
 export class AuthController {
@@ -27,33 +19,7 @@ export class AuthController {
     );
   }
 
-  @Get('callback/google')
-  @UseGuards(GoogleAuthGuard)
-  async login(@Req() req): Promise<{ accessToken: string }> {
-    const data = {
-      email: req.user.email,
-      name: req.user.firstName + ' ' + req.user.lastName,
-    };
-
-    const creator = await this.creatorModelService.createOrUpdateCreator({
-      where: { externalId: req.user.id },
-      create: {
-        externalId: req.user.id,
-        ...data,
-      },
-      update: data,
-    });
-
-    return {
-      accessToken: this.jwtService.sign({
-        id: creator.id,
-        email: creator.email,
-        name: creator.name,
-        type: JwtAuthType.Creator,
-      }),
-    };
-  }
-
+  @IsPublic()
   @Post('login')
   async loginWithJwt(
     @Body('token', new ValidationPipe()) token: string,
