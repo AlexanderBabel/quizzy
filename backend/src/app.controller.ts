@@ -3,8 +3,6 @@ import { JwtAuthGuard } from './auth/jwt/jwt.guard';
 
 @Controller('v1')
 export class AppController {
-  constructor() {}
-
   @Get('info')
   @UseGuards(JwtAuthGuard)
   async login(@Req() req): Promise<any> {
