@@ -11,10 +11,38 @@
     transition: background-color .2s;
     flex-direction: column;
     text-align: center;
+    position: relative;
 }
 
 .cardStartpageWrapper:hover{
     background-color: #A86EFF ;
+
+}
+
+.quizCardBtns{
+    position: absolute;
+    top: 5px;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.iconBtn{
+    background: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(192, 191, 191, 0.523);
+    border: none;
+    cursor: pointer;
+    color: white;
+}
+
+.iconBtn:hover{
+    background: rgba(192, 191, 191, 0.77);
 
 }
 
@@ -36,3 +64,4 @@
     outline: none;
   
 }
+

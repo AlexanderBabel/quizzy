@@ -251,7 +251,8 @@ function CreateQuizPage() {
           Finish Quiz
         </button>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
+
+      <div className='createqtnandsidebar' >
         <div className='leftSidebar'>
           {allQuestions !== null && allQuestions.map((question) => {
             return (
@@ -299,6 +300,7 @@ function CreateQuizPage() {
             setQuizQuestion={setCurrentQuestionEdit}
           />
         </div>
+
       </div>
     </div>
   );

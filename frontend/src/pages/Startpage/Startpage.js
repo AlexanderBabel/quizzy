@@ -3,15 +3,19 @@ import Searchbar from '../../components/Searchbar/Searchbar';
 import CardStartpage from '../../components/Card/CardStartpage';
 import './Startpage.css'
 import LoginBtn from '../../components/Buttons/LoginBtn';
-import CreateQuizBtn from '../../components/Buttons/CreateQuizBtn';
 import MyQuizzes from '../../components/MyQuizzes/MyQuizzes';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 
 function Startpage(props) {
+  const navigate = useNavigate();
+
   const { token, setToken } = props;
   const [myCreatedQuizzes, setMyCreatedQuizzes] = useState([])
+  const [update, setUpdate] = useState(false)
+
   const svgStyle = {
     backgroundImage: `url(${background})`,
     backgroundRepeat: 'no-repeat',
@@ -23,7 +27,7 @@ function Startpage(props) {
     overflow: 'hidden',
   };
 
-  useEffect(() => {
+  function getMyQuizzes() {
     if(token){
       let config = {
         headers: {
@@ -34,21 +38,37 @@ function Startpage(props) {
       setMyCreatedQuizzes(response.data);
     });
     }
+  }
+
+  useEffect(() => {
+    getMyQuizzes()
     // eslint-disable-next-line
   },[]);
+
+  useEffect(() => {
+    if(update){
+      getMyQuizzes()
+    }
+    setUpdate(false)
+    
+  },[update]);
 
   return (
     <div className='startpage' style={svgStyle}>
       <div className='startpageTop'>
         <Searchbar />
-        {token ? <CreateQuizBtn setToken={setToken} /> : <LoginBtn setToken={setToken} />}
+        <LoginBtn token={token} setToken={setToken} />
       </div>
       <div className='cardContainer'>
         <CardStartpage text={'Join a quiz!'} inputBool={true} />
-        <CardStartpage text={'Discover quizzes'} />
+       { token ? <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} /> : <CardStartpage text={'Discover quizzes'} />
+       }
+        
+
       </div>
-      {token && <div className='myQuizzes'>
-        <MyQuizzes quizzes={myCreatedQuizzes} />
+      {token && 
+      <div className='myQuizzes'>
+        <MyQuizzes quizzes={myCreatedQuizzes} setUpdate={setUpdate} />
       </div>}
     </div>
   );
