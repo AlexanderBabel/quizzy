@@ -5,6 +5,7 @@ import './Startpage.css'
 import LoginBtn from '../../components/Buttons/LoginBtn';
 import CreateQuizBtn from '../../components/Buttons/CreateQuizBtn';
 import MyQuizzes from '../../components/MyQuizzes/MyQuizzes';
+import SocketHandler from '../../components/socket/SocketHandler';
 
 function Startpage(props) {
   const { token, setToken } = props;
@@ -30,7 +31,6 @@ function Startpage(props) {
     { name: 'Test quiz 7' },
   ]
 
-
   return (
     <div className='startpage' style={svgStyle}>
       <div className='startpageTop'>
@@ -38,6 +38,7 @@ function Startpage(props) {
         {token ? <CreateQuizBtn setToken={setToken} /> : <LoginBtn setToken={setToken} />}
       </div>
       <div className='cardContainer'>
+        <SocketHandler />
         <CardStartpage text={'Join a quiz!'} inputBool={true} />
         <CardStartpage text={'Discover quizzes'} />
       </div>

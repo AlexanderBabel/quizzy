@@ -1,6 +1,5 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, Req } from '@nestjs/common';
 import { LobbyService } from './lobby.service';
-import { IsPublic } from 'src/auth/jwt/decorators/public.decorator';
 import { Roles } from 'src/auth/jwt/decorators/roles.decorator';
 import { GameRole } from 'src/auth/jwt/enums/roles.enum';
 
@@ -8,16 +7,26 @@ import { GameRole } from 'src/auth/jwt/enums/roles.enum';
 export class LobbyController {
   constructor(private readonly lobbyService: LobbyService) {}
 
-  @IsPublic()
   @Post('join')
-  joinLobby(@Body() joinLobby: { lobbyCode: string; userName: string }) {
-    return this.lobbyService.joinLobby(joinLobby);
+  joinLobby(
+    @Req() req,
+    @Body() joinLobby: { lobbyCode: string; userName: string },
+  ) {
+    return this.lobbyService.joinLobby({
+      lobbyCode: joinLobby.lobbyCode,
+      userName: joinLobby.userName,
+      playerId: req.user.id,
+      playerType: req.user.authType,
+    });
   }
 
-  @IsPublic()
   @Post('create')
-  createLobby(@Body() createLobby: { quizId: string }) {
-    return this.lobbyService.createLobby(createLobby);
+  createLobby(@Req() req, @Body() createLobby: { quizId: string }) {
+    return this.lobbyService.createLobby({
+      quizId: createLobby.quizId,
+      hostId: req.user.id,
+      hostType: req.user.authType,
+    });
   }
 
   @Roles(GameRole.Host, GameRole.Player)

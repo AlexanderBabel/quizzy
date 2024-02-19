@@ -5,22 +5,26 @@ import { IS_PUBLIC_KEY } from './decorators/public.decorator';
 import { GameRole, Role } from './enums/roles.enum';
 import { ROLES_KEY } from './decorators/roles.decorator';
 import { Observable } from 'rxjs';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private reflector: Reflector) {
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly authService: AuthService,
+  ) {
     super();
   }
 
   async canActivate(context: ExecutionContext) {
-    const { headers } = context.switchToHttp().getRequest<Request>();
+    const authHeaderPresent = this.authService.findJwtToken(context);
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
     let result: boolean | Observable<boolean> = true;
-    if (!isPublic || headers['authorization']) {
+    if (!isPublic || authHeaderPresent) {
       result = await super.canActivate(context);
     }
 
@@ -40,7 +44,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return true;
     }
 
-    const { user } = context.switchToHttp().getRequest();
+    const user = this.authService.findUser(context);
     return requiredRoles.some(
       (role) =>
         user?.authType === role ||
