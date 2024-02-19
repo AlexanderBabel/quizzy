@@ -185,7 +185,7 @@ export class QuizModelService {
       cursor,
       where,
       orderBy,
-      include: { quiz: true, creator: true },
+      include: { quiz: true, reporter: true },
     });
   }
 

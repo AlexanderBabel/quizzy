@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -20,6 +21,7 @@ import { Roles } from 'src/auth/jwt/decorators/roles.decorator';
 import { JwtAuthType } from 'src/auth/jwt/enums/jwt.enum';
 import { QuizService } from './quiz.service';
 import { IsPublic } from 'src/auth/jwt/decorators/public.decorator';
+import { ReportQuizDto } from './dtos/report.quiz.dto';
 
 @Controller('v1/quiz')
 export class QuizController {
@@ -76,16 +78,16 @@ export class QuizController {
   async editQuiz(
     @Req() req,
     @Body() editQuizDto: EditQuizDto,
-    @Param('quizId') quizId: string,
+    @Param('quizId', new ParseIntPipe()) quizId: number,
   ): Promise<ResponseQuiz> {
     let quiz = await this.quizModelService.findQuiz({
-      where: { id: Number.parseInt(quizId) },
+      where: { id: quizId },
     });
 
     if (
       !quiz ||
       // don't grant access if the user is not the creator or an admin
-      (quiz.creatorId !== req.user.id && req.user.role !== Role.Admin)
+      (quiz.creatorId !== req.user.id && req.user.isAdmin === false)
     ) {
       throw new BadRequestException('Quiz not found.');
     }
@@ -182,13 +184,14 @@ export class QuizController {
   @Get('/list')
   async listQuizzes(
     @Req() req,
-    @Query('creatorId') creatorId?: number,
+    @Query('creatorId', new ParseIntPipe({ optional: true }))
+    creatorId?: number,
   ): Promise<ResponseQuiz[]> {
     const quizzes = await this.quizModelService.findQuizzes({
       where: {
         creatorId:
           // only allow admins to fetch quizzes from other creators
-          req.user.role === Role.Admin && creatorId ? creatorId : req.user.id,
+          req.user.isAdmin && creatorId ? creatorId : req.user.id,
       },
       include: { questions: true },
     });
@@ -200,11 +203,11 @@ export class QuizController {
   @Get('/:quizId')
   async getQuiz(
     @Req() req,
-    @Param('quizId') quizId: string,
+    @Param('quizId', new ParseIntPipe()) quizId: number,
   ): Promise<ResponseQuiz> {
     const quiz = await this.quizModelService.findQuizWithQuestions({
       where: {
-        id: Number.parseInt(quizId),
+        id: quizId,
         OR: [
           { visibility: QuizVisibility.PUBLIC },
           {
@@ -222,7 +225,7 @@ export class QuizController {
   @Delete('/:quizId/delete')
   async deleteQuiz(
     @Req() req,
-    @Param('quizId') quizId: number,
+    @Param('quizId', new ParseIntPipe()) quizId: number,
   ): Promise<{ success: boolean }> {
     const quiz = await this.quizModelService.findQuiz({
       where: { id: quizId },
@@ -230,7 +233,7 @@ export class QuizController {
     if (
       !quiz ||
       // don't grant access if the user is not the creator or an admin
-      (quiz.creatorId !== req.user.id && req.user.role !== Role.Admin)
+      (quiz.creatorId !== req.user.id && req.user.isAdmin === false)
     ) {
       throw new BadRequestException('Quiz not found.');
     }
@@ -253,8 +256,8 @@ export class QuizController {
   @Post('/:quizId/report')
   async reportQuiz(
     @Req() req,
-    @Param('quizId') quizId: number,
-    @Body('reason') reason: string,
+    @Param('quizId', new ParseIntPipe()) quizId: number,
+    @Body() reportQuizDto: ReportQuizDto,
   ): Promise<{ success: boolean }> {
     const quiz = await this.quizModelService.findQuiz({
       where: { id: quizId },
@@ -265,7 +268,7 @@ export class QuizController {
 
     if (req.user.authType === JwtAuthType.Creator) {
       const report = await this.quizModelService.report({
-        where: { quizId, creatorId: req.user.id },
+        where: { quizId, reporterId: req.user.id },
       });
       if (report) {
         throw new BadRequestException('You have already reported this quiz.');
@@ -275,11 +278,11 @@ export class QuizController {
     const report = await this.quizModelService.reportQuiz({
       data: {
         quiz: { connect: { id: quizId } },
-        creator:
+        reporter:
           req.user.authType === JwtAuthType.Creator
             ? { connect: { id: req.user.id } }
             : null,
-        reason,
+        reason: reportQuizDto.reason,
       },
     });
     return { success: !!report };

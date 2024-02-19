@@ -1,9 +1,10 @@
-import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CreatorModelService } from 'src/model/creator.model.service';
 import { JwtAuthType } from './jwt/enums/jwt.enum';
-import { OAuth2Client } from 'google-auth-library';
+import { LoginTicket, OAuth2Client } from 'google-auth-library';
 import { IsPublic } from './jwt/decorators/public.decorator';
+import { LoginDto } from './dtos/login.dto';
 
 @Controller('v1/auth')
 export class AuthController {
@@ -22,12 +23,17 @@ export class AuthController {
   @IsPublic()
   @Post('login')
   async loginWithJwt(
-    @Body('token', new ValidationPipe()) token: string,
+    @Body() loginDto: LoginDto,
   ): Promise<{ accessToken: string }> {
-    const ticket = await this.googleClient.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
+    let ticket: LoginTicket;
+    try {
+      ticket = await this.googleClient.verifyIdToken({
+        idToken: loginDto.token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+    } catch (error) {
+      throw new BadRequestException('Invalid token');
+    }
 
     const payload = ticket.getPayload();
     const data = {

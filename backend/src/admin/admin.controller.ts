@@ -1,7 +1,15 @@
-import { Controller, Post, Get, Body, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Delete,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { CreatorModelService } from 'src/model/creator.model.service';
 import { QuizModelService } from 'src/model/quiz.model.service';
-import { QuizReport } from '@prisma/client';
+import { Creator, QuizReport } from '@prisma/client';
 import { Roles } from 'src/auth/jwt/decorators/roles.decorator';
 import { Role } from 'src/auth/jwt/enums/roles.enum';
 
@@ -15,10 +23,10 @@ export class AdminController {
   @Roles(Role.Admin)
   @Post('block')
   async blockUser(
-    @Body('userId') userId: number,
+    @Body('creatorId', new ParseIntPipe()) creatorId: number,
   ): Promise<{ success: boolean }> {
     const success = await this.creatorModelService.changeBlockedState(
-      userId,
+      creatorId,
       true,
     );
     return { success };
@@ -27,10 +35,10 @@ export class AdminController {
   @Roles(Role.Admin)
   @Post('unblock')
   async unblockUser(
-    @Body('userId') userId: number,
+    @Body('creatorId', new ParseIntPipe()) creatorId: number,
   ): Promise<{ success: boolean }> {
     const success = await this.creatorModelService.changeBlockedState(
-      userId,
+      creatorId,
       false,
     );
     return { success };
@@ -44,10 +52,20 @@ export class AdminController {
 
   @Roles(Role.Admin)
   @Delete('report/:id/delete')
-  async deleteReport(@Body('id') id: number): Promise<{ success: boolean }> {
+  async deleteReport(
+    @Param('id', new ParseIntPipe()) id: number,
+  ): Promise<{ success: boolean }> {
     const deleteResult = await this.quizModelService.deleteReport({
       where: { id },
     });
     return { success: !!deleteResult };
+  }
+
+  @Roles(Role.Admin)
+  @Get('creator/:creatorId')
+  async getCreator(
+    @Param('creatorId', new ParseIntPipe()) id: number,
+  ): Promise<Creator> {
+    return this.creatorModelService.creator({ id });
   }
 }
