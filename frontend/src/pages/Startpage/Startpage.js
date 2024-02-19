@@ -50,7 +50,7 @@ function Startpage(props) {
       getMyQuizzes()
     }
     setUpdate(false)
-    
+    // eslint-disable-next-line
   },[update]);
 
   return (
