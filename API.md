@@ -37,15 +37,15 @@ Response:
 
 ## /v1/game/
 
-| Route     | Method | Roles        | Description                | Request  | Response                                                                                |
-| --------- | ------ | ------------ | -------------------------- | -------- | --------------------------------------------------------------------------------------- |
-| /ready    | GET    | PLAYER, HOST | Get game state             | -        | state (string)                                                                          |
-| /question | GET    | PLAYER, HOST | Get current question       | -        | - question (string)<br>- answers<ul><li>id</li><li>text</li></ul><br>- endTime (Date)   |
-| /answer   | POST   | PLAYER       | Answer question            | answerId | -                                                                                       |
-| /summary  | GET    | PLAYER, HOST | Get answer summary         | -        | - answers<ul><li>id</li><li>count (int)</li><li>correct (bool)</li></ul>                |
-| /score    | GET    | PLAYER, HOST | Get score after a question | -        | - players<ul><li>id</li><li>name</li><li>score (int)</li><li>deltaScore (int)</li></ul> |
-| /report   | POST   | PLAYER, HOST | Report a quiz              | reason   | -                                                                                       |
-| /nextround| GET    | HOST         | Start next round           | -        | -                                                                                       |
+| Route      | Method | Roles        | Description                | Request  | Response                                                                                |
+| ---------- | ------ | ------------ | -------------------------- | -------- | --------------------------------------------------------------------------------------- |
+| /ready     | GET    | PLAYER, HOST | Get game state             | -        | state (string)                                                                          |
+| /question  | GET    | PLAYER, HOST | Get current question       | -        | - question (string)<br>- answers<ul><li>id</li><li>text</li></ul><br>- endTime (Date)   |
+| /answer    | POST   | PLAYER       | Answer question            | answerId | -                                                                                       |
+| /summary   | GET    | PLAYER, HOST | Get answer summary         | -        | - answers<ul><li>id</li><li>count (int)</li><li>correct (bool)</li></ul>                |
+| /score     | GET    | PLAYER, HOST | Get score after a question | -        | - players<ul><li>id</li><li>name</li><li>score (int)</li><li>deltaScore (int)</li></ul> |
+| /report    | POST   | PLAYER, HOST | Report a quiz              | reason   | -                                                                                       |
+| /nextround | GET    | HOST         | Start next round           | -        | -                                                                                       |
 
 ### POST answer [PLAYER]
 
@@ -110,15 +110,20 @@ Response:
 
 ## /v1/quiz/
 
-| Route   | Method | Roles  | Description | Request | Response |
-| ------- | ------ | ------ | ----------- | ------- | -------- |
-| /search | GET    | PUBLIC | Search quiz | query   | quizzes  |
+| Route           | Method | Roles  | Description   | Request | Response |
+| --------------- | ------ | ------ | ------------- | ------- | -------- |
+| /search         | GET    | PUBLIC | Search quiz   | query   | quizzes  |
+| /:quizId/report | POST   | PLAYER | Report a quiz | reason  | -        |
 
 ### GET search?query="TEXT" [PUBLIC]
 
 Response:
 
 - quizzes
+
+### POST :quizId/report [PLAYER]
+
+- reason
 
 # Creator API:
 
@@ -168,7 +173,18 @@ Response:
 | Route             | Method | Description     | Request | Response        |
 | ----------------- | ------ | --------------- | ------- | --------------- |
 | /v1/admin/block   | POST   | Block a user    | userId  | success (bool)  |
+| /v1/admin/unblock | POST   | Unblock a user  | userId  | success (bool)  |
 | /v1/admin/reports | GET    | Get all reports | -       | reports (array) |
+
+### GET /reports
+
+Response:
+
+- id
+- reason
+- creatorId
+- quizId
+- createdAt
 
 # Game states & requests
 

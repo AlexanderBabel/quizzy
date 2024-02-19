@@ -73,7 +73,7 @@ export class QuizController {
   }
 
   @Put('/:quizId/edit')
-  @Roles(Role.Creator)
+  @Roles(Role.Creator, Role.Admin)
   @UseGuards(RolesGuard)
   async editQuiz(
     @Req() req,
@@ -83,7 +83,12 @@ export class QuizController {
     const quiz = await this.quizModelService.findQuiz({
       where: { id: Number.parseInt(quizId) },
     });
-    if (!quiz || quiz.creatorId !== req.user.id) {
+
+    if (
+      !quiz ||
+      // don't grant access if the user is not the creator or an admin
+      (quiz.creatorId !== req.user.id && req.user.role !== Role.Admin)
+    ) {
       throw new BadRequestException('Quiz not found.');
     }
 
@@ -173,7 +178,7 @@ export class QuizController {
   }
 
   @Get('/:quizId')
-  @Roles(Role.Creator, Role.Player)
+  @Roles(Role.Creator, Role.Player, Role.Admin)
   @UseGuards(RolesGuard)
   async getQuiz(
     @Req() req,
@@ -196,11 +201,18 @@ export class QuizController {
   }
 
   @Get('/list')
-  @Roles(Role.Creator)
+  @Roles(Role.Creator, Role.Admin)
   @UseGuards(RolesGuard)
-  async listQuizzes(@Req() req): Promise<ResponseQuiz[]> {
+  async listQuizzes(
+    @Req() req,
+    @Query('creatorId') creatorId?: number,
+  ): Promise<ResponseQuiz[]> {
     const quizzes = await this.quizModelService.findQuizzes({
-      where: { creatorId: req.user.id },
+      where: {
+        creatorId:
+          // only allow admins to fetch quizzes from other creators
+          req.user.role === Role.Admin && creatorId ? creatorId : req.user.id,
+      },
       include: { questions: true },
     });
 
@@ -208,17 +220,27 @@ export class QuizController {
   }
 
   @Delete('/:quizId/delete')
-  @Roles(Role.Creator)
+  @Roles(Role.Creator, Role.Admin)
   @UseGuards(RolesGuard)
-  async deleteQuiz(@Req() req, @Param('quizId') quizId: number): Promise<Quiz> {
+  async deleteQuiz(
+    @Req() req,
+    @Param('quizId') quizId: number,
+  ): Promise<{ success: boolean }> {
     const quiz = await this.quizModelService.findQuiz({
       where: { id: quizId },
     });
-    if (!quiz || quiz.creatorId !== req.user.id) {
+    if (
+      !quiz ||
+      // don't grant access if the user is not the creator or an admin
+      (quiz.creatorId !== req.user.id && req.user.role !== Role.Admin)
+    ) {
       throw new BadRequestException('Quiz not found.');
     }
 
-    return this.quizModelService.deleteQuiz({ where: { id: quizId } });
+    const deleteResult = await this.quizModelService.deleteQuiz({
+      where: { id: quizId },
+    });
+    return { success: !!deleteResult };
   }
 
   @Get('/search')
@@ -226,5 +248,42 @@ export class QuizController {
     return this.quizModelService.findQuizzes({
       where: { name: { contains: query }, visibility: QuizVisibility.PUBLIC },
     });
+  }
+
+  @Post('/:quizId/report')
+  @Roles(Role.Player)
+  @UseGuards(RolesGuard)
+  async reportQuiz(
+    @Req() req,
+    @Param('quizId') quizId: number,
+    @Body('reason') reason: string,
+  ): Promise<{ success: boolean }> {
+    const quiz = await this.quizModelService.findQuiz({
+      where: { id: quizId },
+    });
+    if (!quiz) {
+      throw new BadRequestException('Quiz not found.');
+    }
+
+    if (req.user.authType === JwtAuthType.Creator) {
+      const report = await this.quizModelService.report({
+        where: { quizId, creatorId: req.user.id },
+      });
+      if (report) {
+        throw new BadRequestException('You have already reported this quiz.');
+      }
+    }
+
+    const report = await this.quizModelService.reportQuiz({
+      data: {
+        quiz: { connect: { id: quizId } },
+        creator:
+          req.user.authType === JwtAuthType.Creator
+            ? { connect: { id: req.user.id } }
+            : null,
+        reason,
+      },
+    });
+    return { success: !!report };
   }
 }

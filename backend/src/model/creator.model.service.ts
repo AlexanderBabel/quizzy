@@ -50,4 +50,22 @@ export class CreatorModelService {
       where,
     });
   }
+
+  async changeBlockedState(
+    userId: number,
+    isBlocked: boolean,
+  ): Promise<boolean> {
+    const creator = await this.prisma.creator.findUnique({
+      where: { id: userId },
+    });
+
+    if (creator) {
+      await this.prisma.creator.update({
+        where: { id: userId },
+        data: { isBlocked },
+      });
+      return true;
+    }
+    return false;
+  }
 }

@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, Quiz, QuizQuestion, QuizQuestionAnswer } from '@prisma/client';
+import {
+  Prisma,
+  Quiz,
+  QuizQuestion,
+  QuizQuestionAnswer,
+  QuizReport,
+} from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
@@ -145,5 +151,50 @@ export class QuizModelService {
   }): Promise<Prisma.BatchPayload> {
     const { where } = params;
     return this.prisma.quizQuestionAnswer.deleteMany({ where });
+  }
+
+  async reportQuiz(params: {
+    data: Prisma.QuizReportCreateInput;
+  }): Promise<QuizReport> {
+    const { data } = params;
+    return this.prisma.quizReport.create({
+      data,
+    });
+  }
+
+  async report(params: {
+    where: Prisma.QuizReportWhereInput;
+  }): Promise<QuizReport | null> {
+    const { where } = params;
+    return this.prisma.quizReport.findFirst({
+      where,
+    });
+  }
+
+  async reports(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.QuizReportWhereUniqueInput;
+    where?: Prisma.QuizReportWhereInput;
+    orderBy?: Prisma.QuizReportOrderByWithRelationInput;
+  }): Promise<QuizReport[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.quizReport.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+      include: { quiz: true, creator: true },
+    });
+  }
+
+  async deleteReport(params: {
+    where: Prisma.QuizReportWhereUniqueInput;
+  }): Promise<QuizReport> {
+    const { where } = params;
+    return this.prisma.quizReport.delete({
+      where,
+    });
   }
 }
