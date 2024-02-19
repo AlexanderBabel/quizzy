@@ -5,10 +5,13 @@ import './Startpage.css'
 import LoginBtn from '../../components/Buttons/LoginBtn';
 import CreateQuizBtn from '../../components/Buttons/CreateQuizBtn';
 import MyQuizzes from '../../components/MyQuizzes/MyQuizzes';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+
 
 function Startpage(props) {
   const { token, setToken } = props;
-
+  const [myCreatedQuizzes, setMyCreatedQuizzes] = useState([])
   const svgStyle = {
     backgroundImage: `url(${background})`,
     backgroundRepeat: 'no-repeat',
@@ -20,16 +23,19 @@ function Startpage(props) {
     overflow: 'hidden',
   };
 
-  const quizzes = [
-    { name: 'Test quiz 1' },
-    { name: 'Test quiz 2' },
-    { name: 'Test quiz 3' },
-    { name: 'Test quiz 4' },
-    { name: 'Test quiz 5' },
-    { name: 'Test quiz 6' },
-    { name: 'Test quiz 7' },
-  ]
-
+  useEffect(() => {
+    if(token){
+      let config = {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
+       axios.get('http://localhost:3001/v1/quiz/list', config).then((response) => {
+      setMyCreatedQuizzes(response.data);
+    });
+    }
+    // eslint-disable-next-line
+  },[]);
 
   return (
     <div className='startpage' style={svgStyle}>
@@ -41,9 +47,9 @@ function Startpage(props) {
         <CardStartpage text={'Join a quiz!'} inputBool={true} />
         <CardStartpage text={'Discover quizzes'} />
       </div>
-      <div className='myQuizzes'>
-        <MyQuizzes quizzes={quizzes} />
-      </div>
+      {token && <div className='myQuizzes'>
+        <MyQuizzes quizzes={myCreatedQuizzes} />
+      </div>}
     </div>
   );
 }
