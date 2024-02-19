@@ -1,17 +1,6 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { CacheModelService } from 'src/model/cache.model.service';
-
-type Player = {
-  //Probably defined somewhere else later, dodge for now
-  name: string;
-  id: string;
-};
-
-type Lobby = {
-  lobbyCode: string;
-  quizId: string;
-  players: Player[];
-};
+import { Lobby } from './types/lobby.type';
 
 @Injectable()
 export class LobbyService {
