@@ -178,6 +178,24 @@ export class QuizController {
     return this.quizService.formatQuiz(quiz, questions);
   }
 
+  @Roles(Role.Creator, Role.Admin)
+  @Get('/list')
+  async listQuizzes(
+    @Req() req,
+    @Query('creatorId') creatorId?: number,
+  ): Promise<ResponseQuiz[]> {
+    const quizzes = await this.quizModelService.findQuizzes({
+      where: {
+        creatorId:
+          // only allow admins to fetch quizzes from other creators
+          req.user.role === Role.Admin && creatorId ? creatorId : req.user.id,
+      },
+      include: { questions: true },
+    });
+
+    return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
+  }
+
   @Roles(Role.Creator, GameRole.Player, Role.Admin)
   @Get('/:quizId')
   async getQuiz(
@@ -198,24 +216,6 @@ export class QuizController {
     });
 
     return this.quizService.formatQuiz(quiz, quiz.questions);
-  }
-
-  @Roles(Role.Creator, Role.Admin)
-  @Get('/list')
-  async listQuizzes(
-    @Req() req,
-    @Query('creatorId') creatorId?: number,
-  ): Promise<ResponseQuiz[]> {
-    const quizzes = await this.quizModelService.findQuizzes({
-      where: {
-        creatorId:
-          // only allow admins to fetch quizzes from other creators
-          req.user.role === Role.Admin && creatorId ? creatorId : req.user.id,
-      },
-      include: { questions: true },
-    });
-
-    return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
   }
 
   @Roles(Role.Creator, Role.Admin)
