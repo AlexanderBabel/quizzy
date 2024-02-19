@@ -9,18 +9,17 @@ import {
   Put,
   Query,
   Req,
-  UseGuards,
 } from '@nestjs/common';
 import { CreateQuizDto } from './dtos/create.quiz.dto';
 import { QuizModelService } from 'src/model/quiz.model.service';
 import { ResponseQuiz } from './types/quiz.type';
 import { EditQuizDto } from './dtos/edit.quiz.dto';
 import { Quiz, QuizVisibility } from '@prisma/client';
-import { Role } from 'src/auth/roles/roles.enum';
-import { Roles } from 'src/auth/roles/roles.decorator';
-import { JwtAuthType } from 'src/auth/jwt/jwt.enum';
-import { RolesGuard } from 'src/auth/roles/roles.guard';
+import { GameRole, Role } from 'src/auth/jwt/enums/roles.enum';
+import { Roles } from 'src/auth/jwt/decorators/roles.decorator';
+import { JwtAuthType } from 'src/auth/jwt/enums/jwt.enum';
 import { QuizService } from './quiz.service';
+import { IsPublic } from 'src/auth/jwt/decorators/public.decorator';
 
 @Controller('v1/quiz')
 export class QuizController {
@@ -29,9 +28,8 @@ export class QuizController {
     private readonly quizService: QuizService,
   ) {}
 
-  @Post('/add')
   @Roles(Role.Creator)
-  @UseGuards(RolesGuard)
+  @Post('/add')
   async addQuiz(
     @Req() req,
     @Body() createQuizDto: CreateQuizDto,
@@ -44,6 +42,7 @@ export class QuizController {
       data: {
         name: createQuizDto.name,
         creator: { connect: { id: req.user.id } },
+        visibility: createQuizDto.visibility,
       },
     });
 
@@ -72,15 +71,14 @@ export class QuizController {
     return this.quizService.formatQuiz(quiz, questions);
   }
 
-  @Put('/:quizId/edit')
   @Roles(Role.Creator)
-  @UseGuards(RolesGuard)
+  @Put('/:quizId/edit')
   async editQuiz(
     @Req() req,
     @Body() editQuizDto: EditQuizDto,
     @Param('quizId') quizId: string,
   ): Promise<ResponseQuiz> {
-    const quiz = await this.quizModelService.findQuiz({
+    let quiz = await this.quizModelService.findQuiz({
       where: { id: Number.parseInt(quizId) },
     });
     if (!quiz || quiz.creatorId !== req.user.id) {
@@ -91,9 +89,12 @@ export class QuizController {
     this.quizService.validateQuestions(editQuizDto.questions);
 
     // update quiz
-    await this.quizModelService.updateQuiz({
+    quiz = await this.quizModelService.updateQuiz({
       where: { id: quiz.id },
-      data: { name: editQuizDto.name },
+      data: {
+        name: editQuizDto.name,
+        visibility: editQuizDto.visibility,
+      },
     });
 
     // create or update questions
@@ -172,9 +173,18 @@ export class QuizController {
     return this.quizService.formatQuiz(quiz, questions);
   }
 
+  @Roles(Role.Creator)
+  @Get('/list')
+  async listQuizzes(@Req() req): Promise<ResponseQuiz[]> {
+    const quizzes = await this.quizModelService.findQuizzes({
+      where: { creatorId: req.user.id },
+      include: { questions: true },
+    });
+
+    return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
+  }
+
   @Get('/:quizId')
-  @Roles(Role.Creator, Role.Player)
-  @UseGuards(RolesGuard)
   async getQuiz(
     @Req() req,
     @Param('quizId') quizId: string,
@@ -195,21 +205,8 @@ export class QuizController {
     return this.quizService.formatQuiz(quiz, quiz.questions);
   }
 
-  @Get('/list')
-  @Roles(Role.Creator)
-  @UseGuards(RolesGuard)
-  async listQuizzes(@Req() req): Promise<ResponseQuiz[]> {
-    const quizzes = await this.quizModelService.findQuizzes({
-      where: { creatorId: req.user.id },
-      include: { questions: true },
-    });
-
-    return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
-  }
-
   @Delete('/:quizId/delete')
   @Roles(Role.Creator)
-  @UseGuards(RolesGuard)
   async deleteQuiz(@Req() req, @Param('quizId') quizId: number): Promise<Quiz> {
     const quiz = await this.quizModelService.findQuiz({
       where: { id: quizId },
@@ -221,6 +218,7 @@ export class QuizController {
     return this.quizModelService.deleteQuiz({ where: { id: quizId } });
   }
 
+  @IsPublic()
   @Get('/search')
   async searchQuizzes(@Query('query') query: string): Promise<Quiz[]> {
     return this.quizModelService.findQuizzes({

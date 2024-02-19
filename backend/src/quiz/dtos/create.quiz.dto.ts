@@ -16,7 +16,7 @@ export class CreateQuizDto {
       QuizVisibility,
     ).join(', ')}`,
   })
-  visibility: string;
+  visibility: QuizVisibility;
 
   @IsNotEmpty()
   questions: CreateQuizQuestionDto[];
