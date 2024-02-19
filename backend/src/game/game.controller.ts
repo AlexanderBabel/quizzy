@@ -1,7 +1,13 @@
-import { Controller, Post, Get, Body, Param, HttpStatus, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
 import { GameService } from './game.service';
 import { GameState } from './domain/gameState.entity';
-
 
 @Controller('v1/game')
 export class GameController {
@@ -13,18 +19,26 @@ export class GameController {
     return response;
   }
 
-
   @Post('gameState')
-  async gameState(@Body('lobbyCode') lobbyCode: string, @Body('status') status: string, @Body('round') round: number): Promise<{ success: boolean }> {
-    const success = await this.gameService.setGameState(lobbyCode, status, round);
+  async gameState(
+    @Body('lobbyCode') lobbyCode: string,
+    @Body('status') status: string,
+    @Body('round') round: number,
+  ): Promise<{ success: boolean }> {
+    const success = await this.gameService.setGameState(
+      lobbyCode,
+      status,
+      round,
+    );
     return { success };
   }
 
   @Post('nextRound')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async nextRound(@Body('lobbyCode') lobbyCode: string): Promise<{ success: boolean }> {
+  async nextRound(
+    @Body('lobbyCode') lobbyCode: string,
+  ): Promise<{ success: boolean }> {
     const success = await this.gameService.nextRound(lobbyCode);
     return { success: true };
   }
-
 }

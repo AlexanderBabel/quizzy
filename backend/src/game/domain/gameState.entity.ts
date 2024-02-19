@@ -1,3 +1,6 @@
 export class GameState {
-  constructor(public status: string, public round: number) {}
+  constructor(
+    public status: string,
+    public round: number,
+  ) {}
 }

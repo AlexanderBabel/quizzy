@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards} from '@nestjs/common';
+import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Report } from './domain/report.entity';
 import { Role } from 'src/auth/roles/roles.enum';
@@ -12,7 +12,9 @@ export class AdminController {
   @Post('block')
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
-  async blockUser(@Body('userId') userId: string): Promise<{ success: boolean }> {
+  async blockUser(
+    @Body('userId') userId: string,
+  ): Promise<{ success: boolean }> {
     const success = await this.adminService.blockUser(userId);
     return { success };
   }
