@@ -71,8 +71,8 @@ export class QuizController {
     return this.quizService.formatQuiz(quiz, questions);
   }
 
-  @Put('/:quizId/edit')
   @Roles(Role.Creator, Role.Admin)
+  @Put('/:quizId/edit')
   async editQuiz(
     @Req() req,
     @Body() editQuizDto: EditQuizDto,
@@ -178,8 +178,8 @@ export class QuizController {
     return this.quizService.formatQuiz(quiz, questions);
   }
 
-  @Get('/:quizId')
   @Roles(Role.Creator, GameRole.Player, Role.Admin)
+  @Get('/:quizId')
   async getQuiz(
     @Req() req,
     @Param('quizId') quizId: string,
@@ -200,8 +200,8 @@ export class QuizController {
     return this.quizService.formatQuiz(quiz, quiz.questions);
   }
 
-  @Get('/list')
   @Roles(Role.Creator, Role.Admin)
+  @Get('/list')
   async listQuizzes(
     @Req() req,
     @Query('creatorId') creatorId?: number,
@@ -218,8 +218,8 @@ export class QuizController {
     return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
   }
 
-  @Delete('/:quizId/delete')
   @Roles(Role.Creator, Role.Admin)
+  @Delete('/:quizId/delete')
   async deleteQuiz(
     @Req() req,
     @Param('quizId') quizId: number,
@@ -249,8 +249,8 @@ export class QuizController {
     });
   }
 
-  @Post('/:quizId/report')
   @Roles(GameRole.Player, GameRole.Host, Role.Creator, Role.Admin)
+  @Post('/:quizId/report')
   async reportQuiz(
     @Req() req,
     @Param('quizId') quizId: number,

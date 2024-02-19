@@ -12,8 +12,8 @@ export class AdminController {
     private readonly quizModelService: QuizModelService,
   ) {}
 
-  @Post('block')
   @Roles(Role.Admin)
+  @Post('block')
   async blockUser(
     @Body('userId') userId: number,
   ): Promise<{ success: boolean }> {
@@ -24,8 +24,8 @@ export class AdminController {
     return { success };
   }
 
-  @Post('unblock')
   @Roles(Role.Admin)
+  @Post('unblock')
   async unblockUser(
     @Body('userId') userId: number,
   ): Promise<{ success: boolean }> {
@@ -36,14 +36,14 @@ export class AdminController {
     return { success };
   }
 
-  @Get('reports')
   @Roles(Role.Admin)
+  @Get('reports')
   async getAllReports(): Promise<QuizReport[]> {
     return this.quizModelService.reports({});
   }
 
-  @Delete('report/:id/delete')
   @Roles(Role.Admin)
+  @Delete('report/:id/delete')
   async deleteReport(@Body('id') id: number): Promise<{ success: boolean }> {
     const deleteResult = await this.quizModelService.deleteReport({
       where: { id },
