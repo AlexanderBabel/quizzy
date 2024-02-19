@@ -172,6 +172,18 @@ export class QuizController {
     return this.quizService.formatQuiz(quiz, questions);
   }
 
+  @Get('/list')
+  @Roles(Role.Creator)
+  @UseGuards(RolesGuard)
+  async listQuizzes(@Req() req): Promise<ResponseQuiz[]> {
+    const quizzes = await this.quizModelService.findQuizzes({
+      where: { creatorId: req.user.id },
+      include: { questions: true },
+    });
+
+    return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
+  }
+
   @Get('/:quizId')
   @Roles(Role.Creator, Role.Player)
   @UseGuards(RolesGuard)
@@ -193,18 +205,6 @@ export class QuizController {
     });
 
     return this.quizService.formatQuiz(quiz, quiz.questions);
-  }
-
-  @Get('/list')
-  @Roles(Role.Creator)
-  @UseGuards(RolesGuard)
-  async listQuizzes(@Req() req): Promise<ResponseQuiz[]> {
-    const quizzes = await this.quizModelService.findQuizzes({
-      where: { creatorId: req.user.id },
-      include: { questions: true },
-    });
-
-    return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
   }
 
   @Delete('/:quizId/delete')
