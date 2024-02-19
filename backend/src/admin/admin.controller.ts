@@ -1,10 +1,9 @@
-import { Controller, Post, Get, Body, UseGuards, Delete } from '@nestjs/common';
-import { Role } from 'src/auth/roles/roles.enum';
-import { Roles } from 'src/auth/roles/roles.decorator';
+import { Controller, Post, Get, Body, Delete } from '@nestjs/common';
 import { CreatorModelService } from 'src/model/creator.model.service';
 import { QuizModelService } from 'src/model/quiz.model.service';
-import { RolesGuard } from 'src/auth/roles/roles.guard';
 import { QuizReport } from '@prisma/client';
+import { Roles } from 'src/auth/jwt/decorators/roles.decorator';
+import { Role } from 'src/auth/jwt/enums/roles.enum';
 
 @Controller('v1/admin')
 export class AdminController {
@@ -15,7 +14,6 @@ export class AdminController {
 
   @Post('block')
   @Roles(Role.Admin)
-  @UseGuards(RolesGuard)
   async blockUser(
     @Body('userId') userId: number,
   ): Promise<{ success: boolean }> {
@@ -28,7 +26,6 @@ export class AdminController {
 
   @Post('unblock')
   @Roles(Role.Admin)
-  @UseGuards(RolesGuard)
   async unblockUser(
     @Body('userId') userId: number,
   ): Promise<{ success: boolean }> {
@@ -41,14 +38,12 @@ export class AdminController {
 
   @Get('reports')
   @Roles(Role.Admin)
-  @UseGuards(RolesGuard)
   async getAllReports(): Promise<QuizReport[]> {
     return this.quizModelService.reports({});
   }
 
   @Delete('report/:id')
   @Roles(Role.Admin)
-  @UseGuards(RolesGuard)
   async deleteReport(@Body('id') id: number): Promise<{ success: boolean }> {
     const deleteResult = await this.quizModelService.deleteReport({
       where: { id },
