@@ -2,7 +2,7 @@ import { Controller, Post, Get, Body } from '@nestjs/common';
 import { LobbyService } from './lobby.service';
 import { IsPublic } from 'src/auth/jwt/decorators/public.decorator';
 import { Roles } from 'src/auth/jwt/decorators/roles.decorator';
-import { GameRole, Role } from 'src/auth/jwt/enums/roles.enum';
+import { GameRole } from 'src/auth/jwt/enums/roles.enum';
 
 @Controller('v1/lobby')
 export class LobbyController {

@@ -184,6 +184,7 @@ export class QuizController {
     return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
   }
 
+  @Roles(Role.Creator, GameRole.Player, Role.Admin)
   @Get('/:quizId')
   async getQuiz(
     @Req() req,
@@ -205,8 +206,8 @@ export class QuizController {
     return this.quizService.formatQuiz(quiz, quiz.questions);
   }
 
-  @Delete('/:quizId/delete')
   @Roles(Role.Creator)
+  @Delete('/:quizId/delete')
   async deleteQuiz(@Req() req, @Param('quizId') quizId: number): Promise<Quiz> {
     const quiz = await this.quizModelService.findQuiz({
       where: { id: quizId },
