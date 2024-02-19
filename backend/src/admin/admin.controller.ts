@@ -42,7 +42,7 @@ export class AdminController {
     return this.quizModelService.reports({});
   }
 
-  @Delete('report/:id')
+  @Delete('report/:id/delete')
   @Roles(Role.Admin)
   async deleteReport(@Body('id') id: number): Promise<{ success: boolean }> {
     const deleteResult = await this.quizModelService.deleteReport({

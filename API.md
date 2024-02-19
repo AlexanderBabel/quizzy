@@ -96,15 +96,19 @@ Response:
 
 ## /v1/auth/
 
-| Route            | Method | Roles  | Description           | Request | Response    |
-| ---------------- | ------ | ------ | --------------------- | ------- | ----------- |
-| /callback/google | GET    | PUBLIC | Google OAuth callback | code    | accessToken |
+| Route  | Method | Roles  | Description           | Request | Response |
+| ------ | ------ | ------ | --------------------- | ------- | -------- |
+| /login | GET    | PUBLIC | Google OAuth callback | token   | token    |
 
-## callback/google [PLAYER, HOST, ADMIN]
+## login [PUBLIC]
+
+Request:
+
+- token (from Google OAuth)
 
 Response:
 
-- accessToken
+- token (access token to be used in the Authorization header for all other requests)
 
 # Quiz Search API
 
@@ -170,11 +174,12 @@ Response:
 
 ## /v1/admin/
 
-| Route             | Method | Description     | Request | Response        |
-| ----------------- | ------ | --------------- | ------- | --------------- |
-| /v1/admin/block   | POST   | Block a user    | userId  | success (bool)  |
-| /v1/admin/unblock | POST   | Unblock a user  | userId  | success (bool)  |
-| /v1/admin/reports | GET    | Get all reports | -       | reports (array) |
+| Route                    | Method | Description     | Request | Response        |
+| ------------------------ | ------ | --------------- | ------- | --------------- |
+| /block                   | POST   | Block a user    | userId  | success (bool)  |
+| /unblock                 | POST   | Unblock a user  | userId  | success (bool)  |
+| /reports                 | GET    | Get all reports | -       | reports (array) |
+| /report/:reportId/delete | DELETE | Delete a report | -       | success (bool)  |
 
 ### GET /reports
 
