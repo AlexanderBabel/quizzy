@@ -20,7 +20,6 @@ const CardStartpage = ({text, inputBool, quizcard, onclick, quiz, setUpdate}) =>
       Authorization: `Bearer ${token}`
     }
   }
-  console.log(typeof(quiz.quizId))
     axios.delete(`http://localhost:3001/v1/quiz/${Number(quiz.quizId)}/delete`, config)
     .then(function (response) {
       setUpdate(true)
