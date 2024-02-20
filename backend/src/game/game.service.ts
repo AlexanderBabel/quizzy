@@ -1,26 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { QuizQuestion, QuizQuestionAnswer } from '@prisma/client';
 import { Socket } from 'socket.io';
 import { Lobby } from 'src/lobby/types/lobby.type';
 import { CacheModelService } from 'src/model/cache.model.service';
 import { QuizModelService } from 'src/model/quiz.model.service';
 import { WsException } from '@nestjs/websockets';
 import { GameRole } from 'src/auth/jwt/enums/roles.enum';
-
-type GameState = {
-  lobbyCode: string;
-  quizId: number;
-  current: {
-    index: number;
-    question: QuizQuestion & { answers: QuizQuestionAnswer[] };
-    count: number;
-    startTime: number;
-    endTime: number;
-  };
-  scores: {
-    [playerId: string]: number;
-  };
-};
+import { GameState } from './types/game.state.type';
 
 const CHECK_INTERVAL = 1000;
 const QUESTION_TIME = 10000;
