@@ -10,7 +10,8 @@ export class LobbyService {
   ) {}
 
   private generateRandomCode(): string {
-    return (Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000).toString(); //generate pseudo-random code as string
+    // generate pseudo-random code as string
+    return (Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000).toString();
   }
 
   async getLobby(lobbyCode: string): Promise<Lobby> {
@@ -23,19 +24,6 @@ export class LobbyService {
     return lobbyWithCode;
   }
 
-  async joinLobby(joinLobby: {
-    lobbyCode: string;
-    userName: string;
-    playerId: string;
-    playerType: JwtAuthType;
-  }) {
-    await this.cacheModelService.runScriptByName(
-      'joinLobby',
-      [joinLobby.lobbyCode],
-      [joinLobby.userName, joinLobby.playerId, joinLobby.playerType],
-    );
-  }
-
   async createLobby(createLobby: {
     quizId: number;
     hostId: string;
@@ -44,27 +32,10 @@ export class LobbyService {
     const newLobby: Lobby = {
       code: this.generateRandomCode(),
       quizId: createLobby.quizId,
-      hostId: createLobby.hostId,
-      hostType: createLobby.hostType,
-      players: [],
     };
 
     await this.cacheModelService.set(newLobby.code, newLobby);
     return newLobby.code;
-  }
-
-  async getPlayers(getPlayers: { lobbyCode: string }) {
-    const lobbyWithCode: Lobby = await this.getLobby(getPlayers.lobbyCode);
-
-    return lobbyWithCode.players;
-  }
-
-  async kickPlayer(kickPlayer: { lobbyCode: string; playerId: string }) {
-    await this.cacheModelService.runScriptByName(
-      'kickPlayer',
-      [kickPlayer.lobbyCode],
-      [kickPlayer.playerId],
-    );
   }
 
   async deleteLobby(lobbyCode: string) {

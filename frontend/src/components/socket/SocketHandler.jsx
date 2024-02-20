@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import useToken from "../useToken/useToken";
-import { io } from "socket.io-client";
 import { useSocket, useSocketEvent } from "socket.io-react-hook";
 
 const URL =
@@ -18,10 +17,10 @@ export const useAuthenticatedSocket = () => {
 
 export default function SocketHandler() {
   const { socket, connected, error } = useAuthenticatedSocket();
-  const { lastMessage, sendMessage } = useSocketEvent(socket, "eventName");
+  const { lastMessage: lobbyMessage, sendMessage: sendLobbyMessage } =
+    useSocketEvent(socket, "lobby:create");
 
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [fooEvents, setFooEvents] = useState([]);
 
   useEffect(() => {
     function onConnect() {
@@ -35,16 +34,11 @@ export default function SocketHandler() {
       setIsConnected(false);
     }
 
-    function onFooEvent(value) {
-      setFooEvents((previous) => [...previous, value]);
-    }
-
     const currentSocket = socket;
 
     console.log("currentSocket", currentSocket);
     currentSocket.on("connect", onConnect);
     currentSocket.on("disconnect", onDisconnect);
-    currentSocket.on("foo", onFooEvent);
     currentSocket.on("exception", function (data) {
       console.log("event", data);
     });
@@ -52,7 +46,6 @@ export default function SocketHandler() {
     return () => {
       currentSocket.off("connect", onConnect);
       currentSocket.off("disconnect", onDisconnect);
-      currentSocket.off("foo", onFooEvent);
       currentSocket.off("exception");
       currentSocket.disconnect();
     };
@@ -62,7 +55,8 @@ export default function SocketHandler() {
     <div>
       <h1>SocketHandler</h1>
       <p>Connected: {isConnected ? "Yes" : "No"}</p>
-      <p>Foo events: {fooEvents.join(", ")}</p>
+      <button onClick={() => sendLobbyMessage(1)}>Create Lobby</button>
+      <p>Last message: {lobbyMessage}</p>
     </div>
   );
 }

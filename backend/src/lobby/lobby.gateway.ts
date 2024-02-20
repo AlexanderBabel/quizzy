@@ -123,16 +123,11 @@ export class LobbyGateway {
       throw new WsException('Lobby not found');
     }
 
-    // if (lobby.gameState !== 'lobby') {
-    //   throw new WsException('Lobby already in progress.');
-    // }
-
-    // if (
-    //   lobby.hostId !== client['user'].id ||
-    //   lobby.hostType !== client['user'].authType
-    // ) {
-    //   throw new WsException('Not the host');
-    // }
+    // at least one player besides the host is required
+    const players = await client.to(lobby.code).fetchSockets();
+    if (players.length < 2) {
+      throw new WsException('Not enough players');
+    }
 
     console.log('start quiz', lobby.code);
     this.server.to(lobby.code).emit('lobby:startQuiz');
@@ -162,13 +157,6 @@ export class LobbyGateway {
     if (!lobby) {
       throw new WsException('Lobby not found');
     }
-
-    // if (
-    //   lobby.hostId !== client['user'].id ||
-    //   lobby.hostType !== client['user'].authType
-    // ) {
-    //   throw new WsException('Not the host');
-    // }
 
     const players = await client.to(lobby.code).fetchSockets();
     for (const player of players) {
