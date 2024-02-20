@@ -17,15 +17,16 @@ enum QuizVisibility {
 }
 
 model Creator {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
+  id         Int          @id @default(autoincrement())
+  email      String       @unique
   name       String
-  externalId String   @unique
+  externalId String       @unique
   quizzes    Quiz[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  isBlocked  Boolean  @default(false)
-  isAdmin    Boolean  @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  isBlocked  Boolean      @default(false)
+  isAdmin    Boolean      @default(false)
+  reports    QuizReport[]
 }
 
 model Quiz {
@@ -38,6 +39,7 @@ model Quiz {
   reported   Int            @default(0)
   visibility QuizVisibility @default(PRIVATE)
   questions  QuizQuestion[]
+  reports    QuizReport[]
 }
 
 model QuizQuestion {
@@ -60,4 +62,14 @@ model QuizQuestionAnswer {
   correct    Boolean
 
   @@unique([questionId, text])
+}
+
+model QuizReport {
+  id         Int      @id @default(autoincrement())
+  quiz       Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quizId     Int
+  reporter   Creator  @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  reporterId Int
+  reason     String
+  createdAt  DateTime @default(now())
 }
