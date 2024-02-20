@@ -61,7 +61,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     return requiredRoles.some(
       (role) =>
-        user?.role === role ||
+        ctxObj.data?.role === role ||
         user?.authType === role ||
         (user?.isAdmin === true && role === Role.Admin),
     );

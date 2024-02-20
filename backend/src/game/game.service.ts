@@ -54,45 +54,64 @@ export class GameService {
     return this.nextQuestion(host, gameState);
   }
 
-  async nextQuestion(host: Socket, gameSate: GameState): Promise<boolean> {
-    if (gameSate.current.index >= gameSate.current.count - 1) {
+  async nextQuestion(host: Socket, game: GameState): Promise<boolean> {
+    if (game.current.index >= game.current.count - 1) {
+      console.log('nextQuestion: no more questions');
       return false;
     }
 
+    game.current.index++;
+    console.log('nextQuestion:gameState', game);
+
     const questions = await this.quizModelService.findQuestions({
-      where: { order: gameSate.current.index, quizId: gameSate.quizId },
+      where: { order: game.current.index, quizId: game.quizId },
       include: { answers: true },
     });
 
+    console.log('nextQuestion', questions);
     if (questions.length !== 1) {
+      console.log('nextQuestion: no question found');
       return false;
     }
 
     const [question] = questions;
-    gameSate.current.question = question;
-    gameSate.current.index++;
-    gameSate.current.startTime = this.now();
-    gameSate.current.endTime = gameSate.current.startTime + QUESTION_TIME;
+    game.current.question = question;
+    game.current.startTime = this.now();
+    game.current.endTime = game.current.startTime + QUESTION_TIME;
 
-    await this.saveGameState(gameSate);
+    await this.saveGameState(game);
 
     // send answer options to players
-    host.to(gameSate.lobbyCode).emit('game:question', {
+    host.to(game.lobbyCode).emit('game:question', {
       answers: question.answers.map((a) => ({ id: a.id, text: a.text })),
-      count: gameSate.current.count,
-      current: gameSate.current.index,
+      count: game.current.count,
+      current: game.current.index,
+      endTime: game.current.endTime,
     });
 
     // send question to host
     host.emit('game:question', {
       question: question.question,
       answers: question.answers.map((a) => ({ id: a.id, text: a.text })),
-      count: gameSate.current.count,
-      current: gameSate.current.index,
+      count: game.current.count,
+      current: game.current.index,
+      endTime: game.current.endTime,
     });
 
     setTimeout(() => this.checkAnswers(host), CHECK_INTERVAL);
     return true;
+  }
+
+  async sendQuestion(client: Socket, game: GameState) {
+    client.emit('game:question', {
+      answers: game.current.question.answers.map((a) => ({
+        id: a.id,
+        text: a.text,
+      })),
+      count: game.current.count,
+      current: game.current.index,
+      endTime: game.current.endTime,
+    });
   }
 
   async answerQuestion(client: Socket, game: GameState, answerId: number) {
@@ -110,12 +129,18 @@ export class GameService {
       (client) => !client.data.answerId && client.data.role === GameRole.Player,
     );
 
-    if (missingAnswers && this.now() < host.data.questionEndTime) {
+    const game = await this.getGameState(host.data.lobbyCode);
+    console.log(
+      'checkAnswers',
+      missingAnswers,
+      players.length,
+      game.current.endTime - this.now(),
+    );
+
+    if (missingAnswers && this.now() < game.current.endTime) {
       setTimeout(() => this.checkAnswers(host), CHECK_INTERVAL);
       return;
     }
-
-    const game = await this.getGameState(host.data.lobbyCode);
 
     const playersWithNoAnswer = [];
     const playersWithCorrectAnswer = players
@@ -169,6 +194,15 @@ export class GameService {
         };
       });
 
+    console.log(
+      'checkAnswers:playersWithNoAnswer',
+      playersWithNoAnswer.map((p) => p.client.data.userName),
+    );
+    console.log(
+      'checkAnswers:playersWithCorrectAnswer',
+      playersWithCorrectAnswer.map((p) => p.client.data.userName),
+    );
+
     const gameOver = game.current.index >= game.current.count - 1;
     const scores = [...playersWithNoAnswer, ...playersWithCorrectAnswer]
       // sort by score to get ranking
@@ -182,7 +216,10 @@ export class GameService {
           delta: data.delta,
         };
 
-        data.client.emit('game:result', {
+        delete data.client.data.answerId;
+        delete data.client.data.submissionTime;
+
+        data.client.emit('game:results', {
           correct: data.correct,
           gameOver,
           ...score,
@@ -198,9 +235,10 @@ export class GameService {
     await this.saveGameState(game);
 
     // send scores to host
-    host.emit('game:scores', {
+    host.emit('game:results', {
       scores: scores,
       gameOver,
     });
+    console.log('checkAnswers:scores', scores);
   }
 }

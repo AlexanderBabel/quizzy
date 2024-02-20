@@ -13,6 +13,9 @@ import { GameRole } from 'src/auth/jwt/enums/roles.enum';
 import { Roles } from 'src/auth/jwt/decorators/roles.decorator';
 import { GameService } from 'src/game/game.service';
 import { WSValidationPipe } from 'src/ws.validation.pipe';
+import { QuizModelService } from 'src/model/quiz.model.service';
+import { QuizVisibility } from '@prisma/client';
+import { JwtAuthType } from 'src/auth/jwt/enums/jwt.enum';
 
 @WebSocketGateway({
   cors: {
@@ -25,6 +28,7 @@ export class LobbyGateway {
   constructor(
     private readonly lobbyService: LobbyService,
     private readonly gameService: GameService,
+    private readonly quizModelService: QuizModelService,
   ) {}
 
   @WebSocketServer()
@@ -38,6 +42,24 @@ export class LobbyGateway {
       throw new WsException('Already in a lobby');
     }
 
+    const quiz = await this.quizModelService.findQuiz({
+      where: {
+        id: Number.parseInt(quizId),
+        OR: [
+          {
+            creatorId:
+              client.data.authType === JwtAuthType.Creator
+                ? client.data.id
+                : -1,
+          },
+          { visibility: QuizVisibility.PUBLIC },
+        ],
+      },
+    });
+    if (!quiz) {
+      throw new WsException('Quiz not found');
+    }
+
     const lobbyCode = await this.lobbyService.createLobby({
       quizId: Number.parseInt(quizId),
       hostId: client.data.id,
@@ -46,6 +68,8 @@ export class LobbyGateway {
 
     client.data.lobbyCode = lobbyCode;
     client.data.role = GameRole.Host;
+
+    client.join(lobbyCode);
 
     console.log('lobby:create', client.data);
     client.emit('lobby:create', lobbyCode);
@@ -56,7 +80,8 @@ export class LobbyGateway {
   @UsePipes(new WSValidationPipe())
   @SubscribeMessage('lobby:join')
   async joinLobby(client: Socket, payload: JoinLobbyDto): Promise<string> {
-    if (client.data.blockedLobbies?.includes(payload.lobbyCode)) {
+    const { lobbyCode } = payload;
+    if (client.data.blockedLobbies?.includes(lobbyCode)) {
       throw new WsException('Lobby not found');
     }
 
@@ -64,26 +89,31 @@ export class LobbyGateway {
       throw new WsException('Already in lobby');
     }
 
-    const lobby = await this.lobbyService.getLobby(payload.lobbyCode);
-    if (!lobby) {
+    const lobby = await this.lobbyService.getLobby(lobbyCode);
+    const game = await this.gameService.getGameState(lobbyCode);
+    console.log('lobby:join', lobbyCode, lobby, game);
+    if (!lobby && !game) {
       throw new WsException('Lobby not found');
     }
 
-    client.data.lobbyCode = lobby.code;
+    client.data.lobbyCode = lobbyCode;
     client.data.userName = payload.userName;
     client.data.role = GameRole.Player;
 
-    client.join(lobby.code);
-    client.to(lobby.code).emit('lobby:playerJoined', client.data.userName);
+    client.join(lobbyCode);
+    client.to(lobbyCode).emit('lobby:playerJoined', client.data.userName);
 
-    const players = await client.to(lobby.code).fetchSockets();
-    client.emit('lobby:players', [
-      ...players.map((p) => ({ name: p.data.userName, id: p.data.id })),
-      {
-        id: client.data.id,
-        name: client.data.userName,
-      },
-    ]);
+    const players = await this.server.to(lobbyCode).fetchSockets();
+    this.server.to(lobbyCode).emit(
+      'lobby:players',
+      players
+        .filter((p) => p.data.role === GameRole.Player)
+        .map((p) => ({ name: p.data.userName, id: p.data.id })),
+    );
+
+    if (game && game.current.endTime > this.gameService.now()) {
+      this.gameService.sendQuestion(client, game);
+    }
 
     console.log('lobby:join', payload, client.data);
     return 'Joined lobby';
@@ -100,7 +130,9 @@ export class LobbyGateway {
     const players = await client.to(lobbyCode).fetchSockets();
     client.emit(
       'lobby:players',
-      players.map((p) => ({ name: p.data.userName, id: p.data.id })),
+      players
+        .filter((p) => p.data.role === GameRole.Player)
+        .map((p) => ({ name: p.data.userName, id: p.data.id })),
     );
     return 'Players sent';
   }
@@ -113,18 +145,20 @@ export class LobbyGateway {
       throw new WsException('Not in a lobby');
     }
 
-    const lobby = await this.lobbyService.getLobby(lobbyCode);
-    if (!lobby) {
-      throw new WsException('Lobby not found');
-    }
-
-    console.log('leave room', lobby.code);
-    client.to(lobby.code).emit('lobby:playerLeft', client.data.userName);
+    console.log('leave room', lobbyCode);
+    client.to(lobbyCode).emit('lobby:playerLeft', { id: client.data.id });
 
     delete client.data.lobbyCode;
     delete client.data.userName;
     delete client.data.role;
-    client.leave(lobby.code);
+    client.leave(lobbyCode);
+
+    this.server.to(lobbyCode).emit(
+      'lobby:players',
+      (await client.to(lobbyCode).fetchSockets())
+        .filter((p) => p.data.role === GameRole.Player)
+        .map((p) => ({ name: p.data.userName, id: p.data.id })),
+    );
 
     return 'Left lobby';
   }
@@ -144,7 +178,7 @@ export class LobbyGateway {
     }
 
     // at least one player besides the host is required
-    const players = await client.to(lobby.code).fetchSockets();
+    const players = await this.server.to(lobby.code).fetchSockets();
     if (players.length < 2) {
       throw new WsException('Not enough players');
     }
@@ -173,30 +207,32 @@ export class LobbyGateway {
       throw new WsException('Not in a lobby');
     }
 
-    const lobby = await this.lobbyService.getLobby(lobbyCode);
-    if (!lobby) {
-      throw new WsException('Lobby not found');
-    }
-
-    const players = await client.to(lobby.code).fetchSockets();
+    const players = await client.to(lobbyCode).fetchSockets();
     for (const player of players) {
       // string to int comparison is intentional
       if (player.data.id == payload.playerId) {
         delete client.data.lobbyCode;
         delete client.data.userName;
         delete client.data.role;
-        player.leave(lobby.code);
+        player.leave(lobbyCode);
 
         if (payload.block) {
           client.data.blockedLobbies = client.data.blockedLobbies ?? [];
           client.data.blockedLobbies.push(payload.block);
         }
 
-        this.server.to(lobby.code).emit('lobby:playerLeft', payload.playerId);
+        this.server.to(lobbyCode).emit('lobby:playerLeft', payload.playerId);
         console.log('kick player', payload, client['user']);
         return 'Kicked player';
       }
     }
+
+    this.server.to(lobbyCode).emit(
+      'lobby:players',
+      (await client.to(lobbyCode).fetchSockets())
+        .filter((p) => p.data.role === GameRole.Player)
+        .map((p) => ({ name: p.data.userName, id: p.data.id })),
+    );
 
     throw new WsException('Player not found');
   }

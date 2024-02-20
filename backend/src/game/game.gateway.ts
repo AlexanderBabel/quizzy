@@ -70,13 +70,6 @@ export class GameGateway {
       throw new WsException('Game not found');
     }
 
-    client.emit('game:question', {
-      answers: game.current.question.answers.map((a) => ({
-        id: a.id,
-        text: a.text,
-      })),
-      count: game.current.count,
-      current: game.current.index,
-    });
+    await this.gameService.sendQuestion(client, game);
   }
 }
