@@ -56,4 +56,27 @@ export class GameGateway {
 
     await this.gameService.answerQuestion(client, game, answerId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage('game:question')
+  async handleQuestion(client: Socket) {
+    const { lobbyCode } = client.data;
+    if (!lobbyCode) {
+      throw new WsException('You are not in a game');
+    }
+
+    const game = await this.gameService.getGameState(lobbyCode);
+    if (!game) {
+      throw new WsException('Game not found');
+    }
+
+    client.emit('game:question', {
+      answers: game.current.question.answers.map((a) => ({
+        id: a.id,
+        text: a.text,
+      })),
+      count: game.current.count,
+      current: game.current.index,
+    });
+  }
 }

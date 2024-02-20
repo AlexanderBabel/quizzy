@@ -15,7 +15,9 @@ export class LobbyService {
   }
 
   async getLobby(lobbyCode: string): Promise<Lobby> {
-    const lobbyWithCode: Lobby = await this.cacheModelService.get(lobbyCode);
+    const lobbyWithCode: Lobby = await this.cacheModelService.get(
+      `lobby:${lobbyCode}`,
+    );
 
     if (!lobbyWithCode) {
       return null;
@@ -34,11 +36,11 @@ export class LobbyService {
       quizId: createLobby.quizId,
     };
 
-    await this.cacheModelService.set(newLobby.code, newLobby);
+    await this.cacheModelService.set(`lobby:${newLobby.code}`, newLobby);
     return newLobby.code;
   }
 
   async deleteLobby(lobbyCode: string) {
-    await this.cacheModelService.del(lobbyCode);
+    await this.cacheModelService.del(`lobby:${lobbyCode}`);
   }
 }

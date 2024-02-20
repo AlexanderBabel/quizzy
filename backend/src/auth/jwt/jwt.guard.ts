@@ -28,6 +28,14 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       result = await super.canActivate(context);
     }
 
+    if (isPublic) {
+      return true;
+    }
+
+    if (!result) {
+      return false;
+    }
+
     // Fix for WS connections
     const ctxObj = context?.getArgs()[0];
     const user = ctxObj?.user;
@@ -41,14 +49,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         authType: user?.authType,
         ...ctxObj.data,
       };
-    }
-
-    if (isPublic) {
-      return true;
-    }
-
-    if (!result) {
-      return false;
     }
 
     const requiredRoles = this.reflector.getAllAndOverride<(Role | GameRole)[]>(

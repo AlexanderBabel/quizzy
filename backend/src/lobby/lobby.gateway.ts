@@ -12,6 +12,7 @@ import { LobbyService } from './lobby.service';
 import { GameRole } from 'src/auth/jwt/enums/roles.enum';
 import { Roles } from 'src/auth/jwt/decorators/roles.decorator';
 import { GameService } from 'src/game/game.service';
+import { WSValidationPipe } from 'src/ws.validation.pipe';
 
 @WebSocketGateway({
   cors: {
@@ -52,7 +53,7 @@ export class LobbyGateway {
   }
 
   @UseGuards(JwtAuthGuard)
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new WSValidationPipe())
   @SubscribeMessage('lobby:join')
   async joinLobby(client: Socket, payload: JoinLobbyDto): Promise<string> {
     if (client.data.blockedLobbies?.includes(payload.lobbyCode)) {
@@ -78,11 +79,30 @@ export class LobbyGateway {
     const players = await client.to(lobby.code).fetchSockets();
     client.emit('lobby:players', [
       ...players.map((p) => ({ name: p.data.userName, id: p.data.id })),
-      payload.userName,
+      {
+        id: client.data.id,
+        name: client.data.userName,
+      },
     ]);
 
-    console.log('lobby:join', payload, client['user']);
+    console.log('lobby:join', payload, client.data);
     return 'Joined lobby';
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage('lobby:players')
+  async getPlayers(client: Socket): Promise<string> {
+    const { lobbyCode } = client.data;
+    if (!lobbyCode) {
+      throw new WsException('Not in a lobby');
+    }
+
+    const players = await client.to(lobbyCode).fetchSockets();
+    client.emit(
+      'lobby:players',
+      players.map((p) => ({ name: p.data.userName, id: p.data.id })),
+    );
+    return 'Players sent';
   }
 
   @UseGuards(JwtAuthGuard)
@@ -160,7 +180,7 @@ export class LobbyGateway {
 
     const players = await client.to(lobby.code).fetchSockets();
     for (const player of players) {
-      // string to int comparison possible
+      // string to int comparison is intentional
       if (player.data.id == payload.playerId) {
         delete client.data.lobbyCode;
         delete client.data.userName;
