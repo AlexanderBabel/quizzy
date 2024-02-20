@@ -1,9 +1,14 @@
+import { UseGuards } from '@nestjs/common';
 import {
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
+import { Roles } from 'src/auth/jwt/decorators/roles.decorator';
+import { GameRole } from 'src/auth/jwt/enums/roles.enum';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { GameService } from './game.service';
 
 @WebSocketGateway({
   cors: {
@@ -13,32 +18,42 @@ import { Server, Socket } from 'socket.io';
   },
 })
 export class GameGateway {
-  @WebSocketServer()
-  private server: Server;
+  constructor(private readonly gameService: GameService) {}
 
-  @SubscribeMessage('message')
-  handleMessage(client: Socket, payload: any): string {
-    return 'Hello world!';
+  @Roles(GameRole.Host)
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage('game:nextQuestion')
+  async handleNextQuestion(client: Socket) {
+    const { lobbyCode } = client.data;
+    if (!lobbyCode) {
+      throw new WsException('You are not in a game');
+    }
+
+    const game = await this.gameService.getGameState(lobbyCode);
+    if (!game) {
+      throw new WsException('Game not found');
+    }
+
+    const nextQuestionFound = await this.gameService.nextQuestion(client, game);
+    if (!nextQuestionFound) {
+      throw new WsException('No more questions');
+    }
   }
 
-  @SubscribeMessage('joinRoom')
-  handleJoinRoom(client: Socket, room: string) {
-    console.log('join room', room);
-    client.join(room);
-  }
+  @Roles(GameRole.Player)
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage('game:answer')
+  async handleAnswer(client: Socket, answerId: number) {
+    const { lobbyCode } = client.data;
+    if (!lobbyCode) {
+      throw new WsException('You are not in a game');
+    }
 
-  @SubscribeMessage('leaveRoom')
-  handleLeaveRoom(client: Socket, room: string) {
-    console.log('leave room', room);
-    client.leave(room);
-  }
+    const game = await this.gameService.getGameState(lobbyCode);
+    if (!game) {
+      throw new WsException('Game not found');
+    }
 
-  @SubscribeMessage('msgToRoom')
-  handleMessageToRoom(
-    client: Socket,
-    { room, message }: { room: string; message: string },
-  ) {
-    console.log('msg to room', room, message);
-    this.server.to(room).emit('msgFromRoom', message);
+    await this.gameService.answerQuestion(client, game, answerId);
   }
 }

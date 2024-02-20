@@ -1,89 +1,221 @@
-import {
-  Injectable,
-  Inject,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { QuizQuestion, QuizQuestionAnswer } from '@prisma/client';
+import { Socket } from 'socket.io';
+import { Lobby } from 'src/lobby/types/lobby.type';
 import { CacheModelService } from 'src/model/cache.model.service';
-import { GameState } from './domain/gameState.entity';
-import { RoundState } from './domain/roundState.entity';
+import { QuizModelService } from 'src/model/quiz.model.service';
+import { WsException } from '@nestjs/websockets';
+import { GameRole } from 'src/auth/jwt/enums/roles.enum';
+
+type GameState = {
+  lobbyCode: string;
+  quizId: number;
+  current: {
+    index: number;
+    question: QuizQuestion & { answers: QuizQuestionAnswer[] };
+    count: number;
+    startTime: number;
+    endTime: number;
+  };
+  scores: {
+    [playerId: string]: number;
+  };
+};
+
+const CHECK_INTERVAL = 1000;
+const QUESTION_TIME = 10000;
 
 @Injectable()
 export class GameService {
   constructor(
-    @Inject(CacheModelService) private cacheModelService: CacheModelService,
+    private readonly cacheModelService: CacheModelService,
+    private readonly quizModelService: QuizModelService,
   ) {}
-  ß;
-  async getGameState(lobbyCode: string): Promise<GameState | null> {
-    const prefix = 'GAME_STATE'; //TODO: Enum
-    console.error('try:', `${prefix}:${lobbyCode}`);
 
-    try {
-      const gameState = await this.cacheModelService.get(
-        `${prefix}:${lobbyCode}`,
-      );
-      if (gameState !== null && gameState != undefined) {
-        return JSON.parse(gameState);
-      } else {
-        console.error('No game found with lobbyCode:', lobbyCode);
-        throw new NotFoundException('Game not found.');
-      }
-    } catch (error) {
-      console.error('Error getting game state:', error);
-      throw new InternalServerErrorException(
-        'An internal server error occurred.',
-      );
-    }
+  now() {
+    return new Date().getTime();
   }
 
-  async setGameState(
-    lobbyCode: string,
-    status: string,
-    round: number,
-  ): Promise<boolean> {
-    const prefix = 'GAME_STATE'; //TODO: Enum
+  async getGameState(lobbyCode: string): Promise<GameState | null> {
+    return this.cacheModelService.get(`game:${lobbyCode}`);
+  }
 
-    const gameState = new GameState(status, round);
-    console.log(
-      `Setting game state for key ${prefix}:${lobbyCode} to`,
-      JSON.stringify(gameState),
-    );
+  async saveGameState(gameState: GameState): Promise<void> {
+    return this.cacheModelService.set(`game:${gameState.lobbyCode}`, gameState);
+  }
 
-    try {
-      await this.cacheModelService.set(
-        `${prefix}:${lobbyCode}`,
-        JSON.stringify(gameState),
-      );
-    } catch (error) {
-      console.error('Error setting game state in cache:', error);
-      throw new InternalServerErrorException(
-        'Error while setting the game state.',
-      );
-      // Handle the error accordingly, such as logging or rethrowing
+  async startGame(host: Socket, lobby: Lobby): Promise<boolean> {
+    const questionIndex = -1;
+    const lobbyCode = lobby.code;
+    const quizId = lobby.quizId;
+
+    const questionCount = await this.quizModelService.countQuestions({
+      where: { quizId },
+    });
+
+    const gameState: GameState = {
+      lobbyCode,
+      quizId,
+      current: {
+        index: questionIndex,
+        question: null,
+        count: questionCount,
+        startTime: null,
+        endTime: null,
+      },
+      scores: {},
+    };
+
+    return this.nextQuestion(host, gameState);
+  }
+
+  async nextQuestion(host: Socket, gameSate: GameState): Promise<boolean> {
+    if (gameSate.current.index >= gameSate.current.count - 1) {
+      return false;
     }
-    console.log(
-      `DONE Setting game state for lobby ${lobbyCode} to`,
-      JSON.stringify(gameState),
-    );
+
+    const questions = await this.quizModelService.findQuestions({
+      where: { order: gameSate.current.index, quizId: gameSate.quizId },
+      include: { answers: true },
+    });
+
+    if (questions.length !== 1) {
+      return false;
+    }
+
+    const [question] = questions;
+    gameSate.current.question = question;
+    gameSate.current.index++;
+    gameSate.current.startTime = this.now();
+    gameSate.current.endTime = gameSate.current.startTime + QUESTION_TIME;
+
+    await this.saveGameState(gameSate);
+
+    // send answer options to players
+    host.to(gameSate.lobbyCode).emit('game:question', {
+      answers: question.answers.map((a) => ({ id: a.id, text: a.text })),
+      count: gameSate.current.count,
+      current: gameSate.current.index,
+    });
+
+    // send question to host
+    host.emit('game:question', {
+      question: question.question,
+      answers: question.answers.map((a) => ({ id: a.id, text: a.text })),
+      count: gameSate.current.count,
+      current: gameSate.current.index,
+    });
+
+    setTimeout(() => this.checkAnswers(host), CHECK_INTERVAL);
     return true;
   }
 
-  async nextRound(lobbyCode: string): Promise<void> {
-    const currentGameState = this.getGameState(lobbyCode);
-    const newRound = (await currentGameState).round + 1;
-    const newStatus = 'started';
-    this.setGameState(lobbyCode, newStatus, newRound);
+  async answerQuestion(client: Socket, game: GameState, answerId: number) {
+    if (game.current.endTime < this.now()) {
+      throw new WsException('Time is up');
+    }
+
+    client.data.answerId = answerId;
+    client.data.submissionTime = this.now();
   }
 
-  async answer(
-    lobbyCode: string,
-    userId: string,
-    answerId: string,
-  ): Promise<void> {
-    //Promise<boolean>
-    //check answer
-    //save it into cache
-    //check if everybody answered, if yes call nextRound or finish the game if it is the last
-    //return true false
+  async checkAnswers(host: Socket) {
+    const players = await host.to(host.data.lobbyCode).fetchSockets();
+    const missingAnswers = players.some(
+      (client) => !client.data.answerId && client.data.role === GameRole.Player,
+    );
+
+    if (missingAnswers && this.now() < host.data.questionEndTime) {
+      setTimeout(() => this.checkAnswers(host), CHECK_INTERVAL);
+      return;
+    }
+
+    const game = await this.getGameState(host.data.lobbyCode);
+
+    const playersWithNoAnswer = [];
+    const playersWithCorrectAnswer = players
+      // filter out host and players with no answer
+      .filter((client) => {
+        // ignore host
+        if (client.data.role !== GameRole.Player) {
+          return false;
+        }
+
+        // init score if not set
+        game.scores[client.data.id] = game.scores[client.data.id] ?? 0;
+
+        const answer = game.current.question.answers.find(
+          (a) => a.id === client.data.answerId,
+        );
+        if (!answer || answer.correct === false) {
+          playersWithNoAnswer.push({
+            client,
+            score: game.scores[client.data.id],
+            delta: 0,
+            correct: false,
+          });
+          return false;
+        }
+
+        return true;
+      })
+
+      // sort by submission time
+      .sort((a, b) => a.data.submissionTime - b.data.submissionTime)
+
+      // calculate scores
+      .map((client, index) => {
+        // maximum score: 1000 points
+        // the score gets smaller by every player that answered correctly before
+        // and the time it took to answer (uses the percentage of the time that has passed to calculate the score)
+        const score = 1000 - index * 100;
+        const timePercentage =
+          (client.data.submissionTime - game.current.startTime) /
+          (game.current.endTime - game.current.startTime);
+
+        const delta = Math.floor(score * (1 - timePercentage));
+        game.scores[client.data.id] += delta;
+
+        return {
+          client,
+          score: game.scores[client.data.id],
+          delta,
+          correct: true,
+        };
+      });
+
+    const gameOver = game.current.index >= game.current.count - 1;
+    const scores = [...playersWithNoAnswer, ...playersWithCorrectAnswer]
+      // sort by score to get ranking
+      .sort((a, b) => b.score - a.score)
+
+      // send results to players
+      .map((data, index) => {
+        const score = {
+          place: index + 1,
+          score: data.score,
+          delta: data.delta,
+        };
+
+        data.client.emit('game:result', {
+          correct: data.correct,
+          gameOver,
+          ...score,
+        });
+
+        return {
+          id: data.client.data.id,
+          name: data.client.data.userName,
+          ...score,
+        };
+      });
+
+    await this.saveGameState(game);
+
+    // send scores to host
+    host.emit('game:scores', {
+      scores: scores,
+      gameOver,
+    });
   }
 }

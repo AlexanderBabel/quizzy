@@ -32,6 +32,10 @@ export class CacheModelService implements OnModuleInit {
     return this.redis.get(key);
   }
 
+  async del(key: string): Promise<any> {
+    return this.redis.del(key);
+  }
+
   private loadScriptFromFile(filepath: string): string {
     const file = readFileSync(filepath, 'utf8');
 

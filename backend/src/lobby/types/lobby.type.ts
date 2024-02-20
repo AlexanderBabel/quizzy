@@ -3,15 +3,14 @@ import { Player } from './player.type';
 
 export type Lobby = {
   code: string;
-  quizId: string;
+  quizId: number;
   players: Player[];
   hostId: string;
   hostType: JwtAuthType;
   // questions: string[];
   // currentQuestion: number;
-  // gameState: 'answer' | 'waiting' | 'results' | 'scoreboard';
+  // gameState: 'lobby' | 'answering' | 'results' | 'scoreboard';
   // scores: { [playerId: string]: number };
-  // hostId: string;
 };
 
 /**

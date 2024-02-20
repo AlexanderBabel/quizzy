@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CacheModelService } from 'src/model/cache.model.service';
 import { Lobby } from './types/lobby.type';
 import { JwtAuthType } from 'src/auth/jwt/enums/jwt.enum';
@@ -17,7 +17,7 @@ export class LobbyService {
     const lobbyWithCode: Lobby = await this.cacheModelService.get(lobbyCode);
 
     if (!lobbyWithCode) {
-      throw new NotFoundException(`Lobby with code ${lobbyCode} not found!`);
+      return null;
     }
 
     return lobbyWithCode;
@@ -37,7 +37,7 @@ export class LobbyService {
   }
 
   async createLobby(createLobby: {
-    quizId: string;
+    quizId: number;
     hostId: string;
     hostType: JwtAuthType;
   }): Promise<string> {
@@ -67,5 +67,7 @@ export class LobbyService {
     );
   }
 
-  startQuiz() {} //TODO: Need the Game API to continue with this
+  async deleteLobby(lobbyCode: string) {
+    await this.cacheModelService.del(lobbyCode);
+  }
 }

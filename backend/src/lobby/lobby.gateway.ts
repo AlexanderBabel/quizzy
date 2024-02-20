@@ -3,11 +3,15 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { JoinLobbyDto } from './dtos/join.lobby.dto';
 import { LobbyService } from './lobby.service';
+import { GameRole } from 'src/auth/jwt/enums/roles.enum';
+import { Roles } from 'src/auth/jwt/decorators/roles.decorator';
+import { GameService } from 'src/game/game.service';
 
 @WebSocketGateway({
   cors: {
@@ -17,63 +21,170 @@ import { LobbyService } from './lobby.service';
   },
 })
 export class LobbyGateway {
-  constructor(private readonly lobbyService: LobbyService) {}
+  constructor(
+    private readonly lobbyService: LobbyService,
+    private readonly gameService: GameService,
+  ) {}
 
   @WebSocketServer()
   private server: Server;
 
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
-  @SubscribeMessage('joinLobby')
-  async joinLobby(client: Socket, payload: JoinLobbyDto): string {
-    const lobby = await this.lobbyService.getLobby(payload.lobbyCode);
-    if (!lobby) {
-      return 'Lobby not found';
-    }
-
-    this.lobbyService.joinLobby({
-      lobbyCode: payload.lobbyCode,
-      userName: payload.userName,
-      playerId: client['user'].id,
-      playerType: client['user'].authType,
+  @SubscribeMessage('lobby:create')
+  async createLobby(client: Socket, quizId: string): Promise<string> {
+    const lobbyCode = await this.lobbyService.createLobby({
+      quizId: Number.parseInt(quizId),
+      hostId: client.data.id,
+      hostType: client.data.authType,
     });
 
-    this.server
-      .to(lobby.id)
-      .emit('playerJoined', client['user'].userName);
+    client.data.lobbyCode = lobbyCode;
+    client.data.role = GameRole.Host;
 
-    console.log('joinLobby', payload, client['user']);
-    return 'Hello world!';
+    console.log('lobby:create', quizId, client.data);
+    return lobbyCode;
   }
 
   @UseGuards(JwtAuthGuard)
-  @SubscribeMessage('leaveLobby')
-  leaveLobby(client: Socket, room: string) {
-    console.log('leave room', room);
-    client.leave(room);
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage('lobby:join')
+  async joinLobby(client: Socket, payload: JoinLobbyDto): Promise<string> {
+    if (client.data.blockedLobbies?.includes(payload.lobbyCode)) {
+      throw new WsException('Lobby not found');
+    }
+
+    if (client.data.lobbyCode) {
+      throw new WsException('Already in lobby');
+    }
+
+    const lobby = await this.lobbyService.getLobby(payload.lobbyCode);
+    if (!lobby) {
+      throw new WsException('Lobby not found');
+    }
+
+    client.data.lobbyCode = lobby.code;
+    client.data.userName = payload.userName;
+    client.data.role = GameRole.Player;
+
+    client.join(lobby.code);
+    client.to(lobby.code).emit('lobby:playerJoined', client.data.userName);
+
+    const players = await client.to(lobby.code).fetchSockets();
+    client.emit('lobby:players', [
+      ...players.map((p) => ({ name: p.data.userName, id: p.data.id })),
+      payload.userName,
+    ]);
+
+    console.log('lobby:join', payload, client['user']);
+    return 'Joined lobby';
   }
 
-  //   @IsPublic()
-  //   @Post('create')
-  //   createLobby(@Body() createLobby: { quizId: string }) {
-  //     return this.lobbyService.createLobby(createLobby);
-  //   }
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage('lobby:leave')
+  async leaveLobby(client: Socket): Promise<string> {
+    const { lobbyCode } = client.data;
+    if (!lobbyCode) {
+      throw new WsException('Not in a lobby');
+    }
 
-  //   @Roles(GameRole.Host, GameRole.Player)
-  //   @Get('players')
-  //   getPlayers(@Body() getPlayers: { lobbyCode: string }) {
-  //     return this.lobbyService.getPlayers(getPlayers);
-  //   }
+    const lobby = await this.lobbyService.getLobby(lobbyCode);
+    if (!lobby) {
+      throw new WsException('Lobby not found');
+    }
 
-  //   @Roles(GameRole.Host)
-  //   @Get('start')
-  //   startQuiz() {
-  //     return this.lobbyService.startQuiz();
-  //   }
+    console.log('leave room', lobby.code);
+    client.to(lobby.code).emit('lobby:playerLeft', client.data.userName);
 
-  //   @Roles(GameRole.Host)
-  //   @Post('kick')
-  //   kickPlayer(@Body() kickPlayer: { lobbyCode: string; playerId: string }) {
-  //     return this.lobbyService.kickPlayer(kickPlayer);
-  //   }
+    delete client.data.lobbyCode;
+    delete client.data.userName;
+    delete client.data.role;
+    client.leave(lobby.code);
+
+    return 'Left lobby';
+  }
+
+  @Roles(GameRole.Host)
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage('lobby:start')
+  async startQuiz(client: Socket): Promise<string> {
+    const { lobbyCode } = client.data;
+    if (!lobbyCode) {
+      throw new WsException('Not in a lobby');
+    }
+
+    const lobby = await this.lobbyService.getLobby(lobbyCode);
+    if (!lobby) {
+      throw new WsException('Lobby not found');
+    }
+
+    // if (lobby.gameState !== 'lobby') {
+    //   throw new WsException('Lobby already in progress.');
+    // }
+
+    // if (
+    //   lobby.hostId !== client['user'].id ||
+    //   lobby.hostType !== client['user'].authType
+    // ) {
+    //   throw new WsException('Not the host');
+    // }
+
+    console.log('start quiz', lobby.code);
+    this.server.to(lobby.code).emit('lobby:startQuiz');
+    this.lobbyService.deleteLobby(lobby.code);
+    const res = await this.gameService.startGame(client, lobby);
+    if (!res) {
+      throw new WsException('Error starting the game');
+    }
+
+    return 'Quiz started';
+  }
+
+  @Roles(GameRole.Host)
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage('lobby:kick')
+  async kickPlayer(
+    client: Socket,
+    payload: { playerId: string; block: boolean },
+  ): Promise<string> {
+    const { lobbyCode } = client.data;
+    if (!lobbyCode) {
+      throw new WsException('Not in a lobby');
+    }
+
+    const lobby = await this.lobbyService.getLobby(lobbyCode);
+    if (!lobby) {
+      throw new WsException('Lobby not found');
+    }
+
+    // if (
+    //   lobby.hostId !== client['user'].id ||
+    //   lobby.hostType !== client['user'].authType
+    // ) {
+    //   throw new WsException('Not the host');
+    // }
+
+    const players = await client.to(lobby.code).fetchSockets();
+    for (const player of players) {
+      // string to int comparison possible
+      if (player.data.id == payload.playerId) {
+        delete client.data.lobbyCode;
+        delete client.data.userName;
+        delete client.data.role;
+        player.leave(lobby.code);
+
+        if (payload.block) {
+          client.data.blockedLobbies = client.data.blockedLobbies ?? [];
+          client.data.blockedLobbies.push(payload.block);
+        }
+
+        this.server.to(lobby.code).emit('lobby:playerLeft', payload.playerId);
+        console.log('kick player', payload, client['user']);
+        return 'Kicked player';
+      }
+    }
+
+    throw new WsException('Player not found');
+  }
 }

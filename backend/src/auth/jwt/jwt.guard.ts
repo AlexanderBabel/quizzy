@@ -28,6 +28,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       result = await super.canActivate(context);
     }
 
+    // Fix for WS connections
+    context.getArgs()[0].data = this.authService.findUser(context);
+
     if (isPublic) {
       return true;
     }
@@ -47,6 +50,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const user = this.authService.findUser(context);
     return requiredRoles.some(
       (role) =>
+        user?.role === role ||
         user?.authType === role ||
         (user?.isAdmin === true && role === Role.Admin),
     );

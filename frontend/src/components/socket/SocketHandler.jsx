@@ -26,7 +26,7 @@ export default function SocketHandler() {
   useEffect(() => {
     function onConnect() {
       console.log("Connected");
-      socket.emit("joinLobby");
+      socket.emit("lobby:create", "1");
       setIsConnected(true);
     }
 

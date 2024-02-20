@@ -15,6 +15,6 @@ export class AuthService {
   }
 
   findUser(ctx: ExecutionContext) {
-    return ctx?.getArgs()[0]?.user;
+    return ctx?.getArgs()[0]?.data ?? ctx?.getArgs()[0]?.user;
   }
 }
