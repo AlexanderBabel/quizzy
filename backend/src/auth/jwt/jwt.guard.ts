@@ -29,7 +29,19 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
     // Fix for WS connections
-    context.getArgs()[0].data = this.authService.findUser(context);
+    const ctxObj = context?.getArgs()[0];
+    const user = ctxObj?.user;
+    if (!user) {
+      return false;
+    }
+
+    if (!ctxObj?.data?.id) {
+      ctxObj.data = {
+        id: user?.id,
+        authType: user?.authType,
+        ...ctxObj.data,
+      };
+    }
 
     if (isPublic) {
       return true;
@@ -47,7 +59,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return true;
     }
 
-    const user = this.authService.findUser(context);
     return requiredRoles.some(
       (role) =>
         user?.role === role ||

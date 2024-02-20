@@ -13,8 +13,4 @@ export class AuthService {
     }
     return parts[1];
   }
-
-  findUser(ctx: ExecutionContext) {
-    return ctx?.getArgs()[0]?.data ?? ctx?.getArgs()[0]?.user;
-  }
 }

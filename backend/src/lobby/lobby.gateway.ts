@@ -33,6 +33,10 @@ export class LobbyGateway {
   @UsePipes(new ValidationPipe())
   @SubscribeMessage('lobby:create')
   async createLobby(client: Socket, quizId: string): Promise<string> {
+    if (client.data.lobbyCode) {
+      throw new WsException('Already in a lobby');
+    }
+
     const lobbyCode = await this.lobbyService.createLobby({
       quizId: Number.parseInt(quizId),
       hostId: client.data.id,
@@ -42,7 +46,8 @@ export class LobbyGateway {
     client.data.lobbyCode = lobbyCode;
     client.data.role = GameRole.Host;
 
-    console.log('lobby:create', quizId, client.data);
+    console.log('lobby:create', client.data);
+    client.emit('lobby:create', lobbyCode);
     return lobbyCode;
   }
 
