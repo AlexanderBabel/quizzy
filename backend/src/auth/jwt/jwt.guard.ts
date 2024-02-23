@@ -19,10 +19,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getClass(),
     ]);
 
-    console.log(headers['authorization']);
-    console.log(process.env.JWT_SECRET
-      )
-
     let result: boolean | Observable<boolean> = true;
     if (!isPublic || headers['authorization']) {
       result = await super.canActivate(context);
