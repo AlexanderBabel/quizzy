@@ -28,30 +28,30 @@ function Startpage(props) {
   };
 
   function getMyQuizzes() {
-    if(token){
+    if (token) {
       let config = {
         headers: {
           "Authorization": `Bearer ${token}`
         }
       }
-       axios.get('http://localhost:3001/v1/quiz/list', config).then((response) => {
-      setMyCreatedQuizzes(response.data);
-    });
+      axios.get('http://localhost:3001/v1/quiz/list', config).then((response) => {
+        setMyCreatedQuizzes(response.data);
+      });
     }
   }
 
   useEffect(() => {
     getMyQuizzes()
     // eslint-disable-next-line
-  },[]);
+  }, []);
 
   useEffect(() => {
-    if(update){
+    if (update) {
       getMyQuizzes()
     }
     setUpdate(false)
     // eslint-disable-next-line
-  },[update]);
+  }, [update]);
 
   return (
     <div className='startpage' style={svgStyle}>
@@ -60,16 +60,17 @@ function Startpage(props) {
         <LoginBtn token={token} setToken={setToken} />
       </div>
       <div className='cardContainer'>
+        <CardStartpage text={'Socket Tester'} onclick={() => navigate('/SocketTester')} />
         <CardStartpage text={'Join a quiz!'} inputBool={true} />
-       { token ? <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} /> : <CardStartpage text={'Discover quizzes'} />
-       }
-        
+        {token ? <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} /> : <CardStartpage text={'Discover quizzes'} />
+        }
+
 
       </div>
-      {token && 
-      <div className='myQuizzes'>
-        <MyQuizzes quizzes={myCreatedQuizzes} setUpdate={setUpdate} />
-      </div>}
+      {token &&
+        <div className='myQuizzes'>
+          <MyQuizzes quizzes={myCreatedQuizzes} setUpdate={setUpdate} />
+        </div>}
     </div>
   );
 }

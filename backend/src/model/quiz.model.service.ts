@@ -87,7 +87,7 @@ export class QuizModelService {
     where?: Prisma.QuizQuestionWhereInput;
     orderBy?: Prisma.QuizQuestionOrderByWithRelationInput;
     include?: Prisma.QuizQuestionInclude;
-  }): Promise<QuizQuestion[]> {
+  }): Promise<(QuizQuestion & { answers: QuizQuestionAnswer[] })[]> {
     const { skip, take, cursor, where, orderBy, include } = params;
     return this.prisma.quizQuestion.findMany({
       skip,
@@ -96,6 +96,23 @@ export class QuizModelService {
       where,
       orderBy,
       include,
+    });
+  }
+
+  async countQuestions(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.QuizQuestionWhereUniqueInput;
+    where?: Prisma.QuizQuestionWhereInput;
+    orderBy?: Prisma.QuizQuestionOrderByWithRelationInput;
+  }): Promise<number> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.quizQuestion.count({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
     });
   }
 

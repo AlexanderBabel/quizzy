@@ -285,6 +285,10 @@ export class QuizController {
       },
     });
 
+    if (!quiz) {
+      throw new BadRequestException('Quiz not found.');
+    }
+
     return this.quizService.formatQuiz(quiz, quiz.questions);
   }
 }

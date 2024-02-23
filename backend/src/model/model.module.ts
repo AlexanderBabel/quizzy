@@ -6,15 +6,15 @@ import { QuizModelService } from './quiz.model.service';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CacheModelService } from './cache.model.service';
 import { redisStore } from 'cache-manager-redis-yet';
+import { RedisClientOptions } from 'redis';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     PrismaModule,
-    CacheModule.register({
+    CacheModule.register<RedisClientOptions>({
       isGlobal: true,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
+      url: process.env.REDIS_URL,
       store: redisStore,
     }),
   ],
