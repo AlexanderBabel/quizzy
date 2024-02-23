@@ -4,7 +4,6 @@ import CardStartpage from '../../components/Card/CardStartpage';
 import './Startpage.css'
 import LoginBtn from '../../components/Buttons/LoginBtn';
 import MyQuizzes from '../../components/MyQuizzes/MyQuizzes';
-import SocketHandler from '../../components/socket/SocketHandler';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -61,7 +60,7 @@ function Startpage(props) {
         <LoginBtn token={token} setToken={setToken} />
       </div>
       <div className='cardContainer'>
-        <SocketHandler />
+        <CardStartpage text={'Socket Tester'} onclick={() => navigate('/SocketTester')} />
         <CardStartpage text={'Join a quiz!'} inputBool={true} />
         {token ? <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} /> : <CardStartpage text={'Discover quizzes'} />
         }
