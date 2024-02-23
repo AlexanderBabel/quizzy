@@ -20,11 +20,11 @@ export default function SocketHandler() {
   const { socket } = useAuthenticatedSocket(token);
   const { lastMessage: lobbyMessage, sendMessage: sendLobbyMessage } =
     useSocketEvent(socket, "lobby:create");
-  const { lastMessage: joinLobbyMessage, sendMessage: sendJoinLobbyMessage } =
+  const { lastMessage: joinLobbyMessage, sendMessage: sendJoinLobbyMessage } = // eslint-disable-line
     useSocketEvent(socket, "lobby:join");
   const { lastMessage: players } = useSocketEvent(socket, "lobby:players");
   const { sendMessage: startQuiz } = useSocketEvent(socket, "lobby:start");
-  const { lastMessage: gameStart } = useSocketEvent(socket, "lobby:startQuiz");
+  const { lastMessage: gameStart } = useSocketEvent(socket, "lobby:startQuiz"); // eslint-disable-line
   const { lastMessage: question } = useSocketEvent(socket, "game:question");
   const { sendMessage: sendAnswer } = useSocketEvent(socket, "game:answer");
   const { lastMessage: results } = useSocketEvent(socket, "game:results");
@@ -41,6 +41,7 @@ export default function SocketHandler() {
   const [tokens, setTokens] = useState(
     JSON.parse(localStorage.getItem("tokens") || "{}")
   );
+  const [role, setRole] = useState("lobby");
 
   useEffect(() => {
     function onConnect() {
@@ -137,31 +138,44 @@ export default function SocketHandler() {
       <div className="cardStartpageWrapper" style={{ height: "500px" }}>
         <p>Lobby</p>
         {question && <p>Game in progress</p>}
-        {!question && (
-          <div>
-            {!players && (
-              <div>
-                <button onClick={() => sendLobbyMessage(1)}>
-                  Create Lobby
-                </button>
-                <p>Create Response: {lobbyMessage}</p>
-                <input
-                  type="text"
-                  value={lobbyCode}
-                  onChange={(e) => setLobbyCode(e.target.value)}
-                />
-                <button
-                  onClick={() => sendJoinLobbyMessage({ lobbyCode, userName })}
-                >
-                  Join Lobby
-                </button>
-              </div>
-            )}
-            {players && (
-              <div>
-                <p>Join Response: {joinLobbyMessage}</p>
-                <p>Players: {JSON.stringify(players)}</p>
-                <p>Game Start: {JSON.stringify(gameStart)}</p>
+        <div>
+          {!question && !players && (
+            <div>
+              {lobbyMessage && <p>Lobby Code: {lobbyMessage}</p>}
+              {!lobbyMessage && (
+                <div>
+                  <button
+                    onClick={() => {
+                      setRole("host");
+                      sendLobbyMessage(1);
+                    }}
+                  >
+                    Create Lobby
+                  </button>
+                  <br />
+                  <br />
+                  <input
+                    type="text"
+                    value={lobbyCode}
+                    onChange={(e) => setLobbyCode(e.target.value)}
+                  />
+                  <button
+                    onClick={() => {
+                      setRole("player");
+                      sendJoinLobbyMessage({ lobbyCode, userName });
+                    }}
+                  >
+                    Join Lobby
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          {players && (
+            <div>
+              <p>Players: {JSON.stringify(players)}</p>
+              <p>Role: {role}</p>
+              {role === "host" && !question && (
                 <button
                   onClick={() => {
                     startQuiz();
@@ -169,10 +183,10 @@ export default function SocketHandler() {
                 >
                   Start Quiz
                 </button>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+        </div>
       </div>
       <div
         className="cardStartpageWrapper"
@@ -186,11 +200,12 @@ export default function SocketHandler() {
               Question: {JSON.stringify(question)}
             </small>
             <h2 style={{ color: "white" }}>{question.question}</h2>
-            {question.answers.map((answer) => (
-              <button onClick={() => sendAnswer(answer.id)}>
-                {answer.text}
-              </button>
-            ))}
+            {role === "player" &&
+              question.answers.map((answer) => (
+                <button onClick={() => sendAnswer(answer.id)}>
+                  {answer.text}
+                </button>
+              ))}
             <br />
             <br />
             <small style={{ color: "white" }}>
@@ -198,7 +213,9 @@ export default function SocketHandler() {
             </small>
             <br />
             <br />
-            <button onClick={() => sendNextQuestion()}>Next Question</button>
+            {role === "host" && (
+              <button onClick={() => sendNextQuestion()}>Next Question</button>
+            )}
           </div>
         )}
       </div>
