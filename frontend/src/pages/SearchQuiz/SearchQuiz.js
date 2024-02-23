@@ -1,6 +1,5 @@
 import background from '../../images/blob-scene-haikei.svg'
 import Searchbar from '../../components/Searchbar/Searchbar';
-import {  useLocation} from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import CardStartpage from '../../components/Card/CardStartpage';
@@ -13,10 +12,6 @@ function SearchQuiz(props) {
     const { token, setToken } = props;
     const [searchTerm, setSearchTerm] = useState('')
     const [res, setRes] = useState()
-    console.log(res)
-
-
-
 
   const searchQuiz = (event) => {
    
@@ -39,6 +34,7 @@ useEffect(() => {
     if (searchTerm  !== ''){
         searchQuiz()
     }
+    // eslint-disable-next-line 
   },[searchTerm]);
 
 

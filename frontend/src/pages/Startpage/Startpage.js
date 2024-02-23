@@ -1,5 +1,4 @@
 import background from '../../images/blob-scene-haikei.svg'
-import Searchbar from '../../components/Searchbar/Searchbar';
 import CardStartpage from '../../components/Card/CardStartpage';
 import './Startpage.css'
 import LoginBtn from '../../components/Buttons/LoginBtn';
@@ -56,7 +55,6 @@ function Startpage(props) {
   return (
     <div className='startpage' style={svgStyle}>
       <div className='startpageTop'>
-        {/* <Searchbar /> */}
         <LoginBtn token={token} setToken={setToken} />
       </div>
       <div className='cardContainer'>

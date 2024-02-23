@@ -1,24 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from 'react';
 
 import './Searchbar.css';
 
 const Searchbar = ({setSearchTerm}) => {
   const [searchInput, setSearchInput] = useState("");
  
-
-  // const navigate = useNavigate();
-
-  // const handleNavigate = (event) => {
-  //   if (event.key === 'Enter' && searchInput !== "") {
-  //      const searchTerm = searchInput;
-  //      setSearchInput("")
-  //   navigate(`/SearchQuiz?searchTerm=${searchTerm}`);
-  //   }
-   
-  // };
-
 
   const handleSearch = (event) => {
     if (event.key === 'Enter' && searchInput !== "") {
