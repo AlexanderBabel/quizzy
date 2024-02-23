@@ -1,17 +1,35 @@
 .createQuizPage {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
     height: 100%;
     min-height: 100vh;
     min-width: 100vw;
 }
 
+.createQuizTop{
+    height: 50px;
+    margin: 20px;
+    background: white;
+    border-radius: 15px;
+    box-sizing: border-box;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quizTitleDiv{
+    width: 70%;
+}
+
 .leftSidebar {
     width: max-content;
-    height: 85vh;
+    min-height: 100%;
+    max-height: 80vh;
     background-color: white;
-    margin: auto 20px;
+    margin-left: 20px;
     border-radius: 20px;
     padding: 20px;
     padding-right: 30px;
@@ -93,43 +111,48 @@
     transition: .3s;
 }
 
-.finishQuiz {
-    width: fit-content;
-    display: flex;
-    justify-content: center;
-}
 
 .finishQuizBtn {
     height: fit-content;
     width: max-content;
     box-sizing: border-box;
     padding: 10px;
-    margin: 20px;
-    margin-top: 50px;
     border-radius: 10px;
     font-weight: bold;
     border: none;
     cursor: pointer;
-}
-
-.finishQuizBtn:hover {
     background: #6A6DD2;
     color: white;
 }
 
+.finishQuizBtn:hover {
+    background: #8e91e7;
+}
+
+.createqtnandsidebar{
+    display: flex;
+    flex-direction: row;
+}
 
 
 @media (max-width: 1000px) {
+    .createqtnandsidebar{
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
     .leftSidebar {
-        position: absolute;
-        bottom: 0;
-        margin: 15px;
-        width: 90%;
+        margin: 0 auto;
+        max-width: 90vw;
+        width: 85vw;
+        min-width: 80vw;
         flex-direction: row;
-        height: 60px;
+        min-height: 60px;
+        max-height: 60px;
         gap: 5px;
         overflow-y: hidden;
         overflow-x: scroll;
+        border: none;
     }
 
     .questionMiniatureWrapper {
