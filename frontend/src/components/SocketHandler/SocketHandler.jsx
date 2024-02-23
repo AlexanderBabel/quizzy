@@ -15,21 +15,6 @@ export const useAuthenticatedSocket = (token) => {
   });
 };
 
-const identities = {
-  creator: {
-    userName: "Creator Account",
-    tokenName: "creator",
-  },
-  guest1: {
-    userName: "Player 1",
-    tokenName: "guest1",
-  },
-  guest2: {
-    userName: "Player 2",
-    tokenName: "guest2",
-  },
-};
-
 export default function SocketHandler() {
   const { token, setToken } = useToken();
   const { socket } = useAuthenticatedSocket(token);
