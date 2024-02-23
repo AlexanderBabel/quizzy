@@ -34,7 +34,6 @@ function AnswerQuizPage() {
     setResetCounter(true)
 
   }
-//   console.log(quiz)
 
   return <div className='answerQuizPage' style={svgStyle}>
         <button className='nextQuestionBtn' onClick={handleNextQuestion}>Next Question</button>

@@ -30,6 +30,14 @@ export class QuizController {
     private readonly quizService: QuizService,
   ) {}
 
+  @IsPublic()
+  @Get('/search')
+  async searchQuizzes(@Query('query') query: string): Promise<Quiz[]> {
+    return this.quizModelService.findQuizzes({
+      where: { name: { contains: query }, visibility: QuizVisibility.PUBLIC },
+    });
+  }
+
   @Roles(Role.Creator)
   @Post('/add')
   async addQuiz(
@@ -71,6 +79,25 @@ export class QuizController {
 
     // return quiz with questions and answers
     return this.quizService.formatQuiz(quiz, questions);
+  }
+
+  @Roles(Role.Creator, Role.Admin)
+  @Get('/list')
+  async listQuizzes(
+    @Req() req,
+    @Query('creatorId', new ParseIntPipe({ optional: true }))
+    creatorId?: number,
+  ): Promise<ResponseQuiz[]> {
+    const quizzes = await this.quizModelService.findQuizzes({
+      where: {
+        creatorId:
+          // only allow admins to fetch quizzes from other creators
+          req.user.isAdmin && creatorId ? creatorId : req.user.id,
+      },
+      include: { questions: true },
+    });
+
+    return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
   }
 
   @Roles(Role.Creator, Role.Admin)
@@ -181,51 +208,6 @@ export class QuizController {
   }
 
   @Roles(Role.Creator, Role.Admin)
-  @Get('/list')
-  async listQuizzes(
-    @Req() req,
-    @Query('creatorId', new ParseIntPipe({ optional: true }))
-    creatorId?: number,
-  ): Promise<ResponseQuiz[]> {
-    const quizzes = await this.quizModelService.findQuizzes({
-      where: {
-        creatorId:
-          // only allow admins to fetch quizzes from other creators
-          req.user.isAdmin && creatorId ? creatorId : req.user.id,
-      },
-      include: { questions: true },
-    });
-
-    return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
-  }
-
-  @Roles(Role.Creator, GameRole.Player, Role.Admin)
-  @Get('/:quizId')
-  async getQuiz(
-    @Req() req,
-    @Param('quizId', new ParseIntPipe()) quizId: number,
-  ): Promise<ResponseQuiz> {
-    const quiz = await this.quizModelService.findQuizWithQuestions({
-      where: {
-        id: quizId,
-        OR: [
-          { visibility: QuizVisibility.PUBLIC },
-          {
-            creatorId:
-              req.user.authType === JwtAuthType.Creator ? req.user.id : -1,
-          },
-        ],
-      },
-    });
-
-    if (!quiz) {
-      throw new BadRequestException('Quiz not found.');
-    }
-
-    return this.quizService.formatQuiz(quiz, quiz.questions);
-  }
-
-  @Roles(Role.Creator, Role.Admin)
   @Delete('/:quizId/delete')
   async deleteQuiz(
     @Req() req,
@@ -246,14 +228,6 @@ export class QuizController {
       where: { id: quizId },
     });
     return { success: !!deleteResult };
-  }
-
-  @IsPublic()
-  @Get('/search')
-  async searchQuizzes(@Query('query') query: string): Promise<Quiz[]> {
-    return this.quizModelService.findQuizzes({
-      where: { name: { contains: query }, visibility: QuizVisibility.PUBLIC },
-    });
   }
 
   @Roles(GameRole.Player, GameRole.Host, Role.Creator, Role.Admin)
@@ -290,5 +264,31 @@ export class QuizController {
       },
     });
     return { success: !!report };
+  }
+
+  @Roles(Role.Creator, GameRole.Player, Role.Admin)
+  @Get('/:quizId')
+  async getQuiz(
+    @Req() req,
+    @Param('quizId', new ParseIntPipe()) quizId: number,
+  ): Promise<ResponseQuiz> {
+    const quiz = await this.quizModelService.findQuizWithQuestions({
+      where: {
+        id: quizId,
+        OR: [
+          { visibility: QuizVisibility.PUBLIC },
+          {
+            creatorId:
+              req.user.authType === JwtAuthType.Creator ? req.user.id : -1,
+          },
+        ],
+      },
+    });
+
+    if (!quiz) {
+      throw new BadRequestException('Quiz not found.');
+    }
+
+    return this.quizService.formatQuiz(quiz, quiz.questions);
   }
 }

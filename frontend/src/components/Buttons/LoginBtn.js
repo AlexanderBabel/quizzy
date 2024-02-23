@@ -1,10 +1,22 @@
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import "./LoginBtn.css";
 
-const LoginBtn = ({ setToken }) => {
+const LoginBtn = ({ token, setToken }) => {
+
   return (
     <div className="loginBtnWrapper">
-      <GoogleOAuthProvider
+      
+      {token ?  
+      
+        <button type="button" className="loginBtn"
+        onClick={(e) => {
+          e.preventDefault();
+          setToken(null);
+        }}>
+        Log out
+      </button>
+      :
+        <GoogleOAuthProvider
         clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
       >
         <GoogleLogin
@@ -37,6 +49,12 @@ const LoginBtn = ({ setToken }) => {
           shape="pill"
         />
       </GoogleOAuthProvider>
+      
+      }
+
+     
+
+
     </div>
   );
 };

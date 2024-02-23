@@ -35,7 +35,7 @@ const CreateQuestion = (props) => {
           variant='standard'
           fullWidth
           multiline
-          inputProps={{ style: { fontSize: 30, color: 'white' } }}
+          inputProps={{ style: { fontSize: 25, color: 'white' } }}
           value={props.quizQuestion.questionTitle}
           onChange={(e) =>
             props.setQuizQuestion({
