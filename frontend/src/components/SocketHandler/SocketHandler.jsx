@@ -100,7 +100,7 @@ export default function SocketHandler() {
 
         <button
           onClick={() => {
-            fetch("http://localhost:3001/v1/auth/guest", {
+            fetch(`${process.env.REACT_APP_API_ENDPOINT}/v1/auth/guest`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
