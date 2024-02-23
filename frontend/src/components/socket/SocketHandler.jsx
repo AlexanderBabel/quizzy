@@ -92,8 +92,8 @@ export default function SocketHandler() {
   const payload = decodeToken(token) || {};
 
   return (
-    <div>
-      <h1>SocketHandler</h1>
+    <div className='cardStartpageWrapper' style={{height: '500px'}}>
+      <p>SocketHandler</p>
       {/* <button
         onClick={() => {
           fetch("http://localhost:3001/v1/auth/guest", {
