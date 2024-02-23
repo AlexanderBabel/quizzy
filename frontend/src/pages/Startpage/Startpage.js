@@ -56,13 +56,14 @@ function Startpage(props) {
   return (
     <div className='startpage' style={svgStyle}>
       <div className='startpageTop'>
-        <Searchbar />
+        {/* <Searchbar /> */}
         <LoginBtn token={token} setToken={setToken} />
       </div>
       <div className='cardContainer'>
         <CardStartpage text={'Join a quiz!'} inputBool={true} />
-       { token ? <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} /> : <CardStartpage text={'Discover quizzes'} />
+       { token && <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} /> 
        }
+       <CardStartpage text={'Discover quizzes'} onclick={() => navigate('/SearchQuiz')}/>
         
 
       </div>

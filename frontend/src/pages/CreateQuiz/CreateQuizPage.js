@@ -173,6 +173,7 @@ function CreateQuizPage() {
 
 
   function createQuiz() {
+    console.log(token)
     let config = {
       headers: {
         "Authorization": `Bearer ${token}`

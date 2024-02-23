@@ -9,6 +9,7 @@ import CreateQuizPage from "./pages/CreateQuiz/CreateQuizPage";
 import AnswerQuizPage from "./pages/AnswerQuiz/AnswerQuizPage";
 import LobbyPage from "./pages/GameLobby/LobbyPage";
 import useToken from "./components/useToken/useToken";
+import SearchQuiz from "./pages/SearchQuiz/SearchQuiz";
 
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
       <Routes>
         <Route exact path="/" element={<Startpage token={token} setToken={setToken} />} />
         <Route path="/CreateQuiz" element={<CreateQuizPage />} />
+        <Route path="/SearchQuiz" element={<SearchQuiz token={token} setToken={setToken} />} />
+
         <Route path="/AnswerQuiz" element={<AnswerQuizPage />} />
         <Route path="/LobbyPage" element={<LobbyPage />} />
       </Routes>
