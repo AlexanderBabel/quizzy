@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom';
 
 
 function CreateQuizPage() {
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
+
   const navigate = useNavigate();
   // eslint-disable-next-line
   const { token, setToken } = useToken(); 
@@ -173,7 +175,6 @@ function CreateQuizPage() {
 
 
   function createQuiz() {
-    console.log(token)
     let config = {
       headers: {
         "Authorization": `Bearer ${token}`
@@ -181,7 +182,7 @@ function CreateQuizPage() {
     }
       const qz = format()
     
-      axios.post('http://localhost:3001/v1/quiz/add', qz, config)
+      axios.post(`${apiEndpoint}/v1/quiz/add`, qz, config)
       .then(function (response) {
         sessionStorage.clear()
         navigate('/')

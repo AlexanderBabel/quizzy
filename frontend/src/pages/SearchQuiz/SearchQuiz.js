@@ -8,6 +8,7 @@ import LoginBtn from '../../components/Buttons/LoginBtn';
 
 
 function SearchQuiz(props) {
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
 
     const { token, setToken } = props;
     const [searchTerm, setSearchTerm] = useState('')
@@ -15,13 +16,11 @@ function SearchQuiz(props) {
 
   const searchQuiz = (event) => {
    
-   console.log('submit')
-      axios.get('http://localhost:3001/v1/quiz/search', {
+      axios.get(`${apiEndpoint}/v1/quiz/search`, {
         params: {
           query: searchTerm
         }})
       .then(function (response) {
-        console.log(response)
         setRes(response.data)
       })
       .catch(function (error) {
@@ -62,7 +61,6 @@ useEffect(() => {
 
       {res && res.length > 0 &&
         res.map((quiz) => {
-            console.log(quiz)
             return (
             <CardStartpage quiz={quiz} quizcard={true}/>
             )

@@ -8,7 +8,12 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 
+
 function Startpage(props) {
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
+
+
+
   const navigate = useNavigate();
 
   const { token, setToken } = props;
@@ -33,7 +38,7 @@ function Startpage(props) {
           "Authorization": `Bearer ${token}`
         }
       }
-      axios.get('http://localhost:3001/v1/quiz/list', config).then((response) => {
+      axios.get(`${apiEndpoint}/v1/quiz/list`, config).then((response) => {
         setMyCreatedQuizzes(response.data);
       });
     }

@@ -8,7 +8,8 @@ import useToken from '../../components/useToken/useToken';
 
 
 const CardStartpage = ({text, inputBool, quizcard, onclick, quiz, setUpdate, deleteAllowed}) => {
- const [hoveredQuizCard, setHoveredQuizCard] = useState(false)
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
+  const [hoveredQuizCard, setHoveredQuizCard] = useState(false)
  // eslint-disable-next-line
  const { token, setToken } = useToken(); 
 
@@ -20,7 +21,7 @@ const CardStartpage = ({text, inputBool, quizcard, onclick, quiz, setUpdate, del
       Authorization: `Bearer ${token}`
     }
   }
-    axios.delete(`http://localhost:3001/v1/quiz/${Number(quiz.quizId)}/delete`, config)
+    axios.delete(`${apiEndpoint}/v1/quiz/${Number(quiz.quizId)}/delete`, config)
     .then(function (response) {
       setUpdate(true)
     })
