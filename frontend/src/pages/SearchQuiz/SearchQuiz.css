@@ -1,0 +1,10 @@
+.searcQuizzes{
+    width: fit-content;
+    margin: 0 auto;
+    
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+    color: white;
+    font-size: 20px;
+}

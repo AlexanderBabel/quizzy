@@ -1,25 +1,25 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CreatorService } from './creator.service';
+import { CreatorModelService } from './creator.model.service';
 import { PrismaModule } from 'nestjs-prisma';
-import { QuizService } from './quiz.service';
+import { QuizModelService } from './quiz.model.service';
 import { CacheModule } from '@nestjs/cache-manager';
-import { CacheService } from './cache.service';
+import { CacheModelService } from './cache.model.service';
 import { redisStore } from 'cache-manager-redis-yet';
+import { RedisClientOptions } from 'redis';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     PrismaModule,
-    CacheModule.register({
+    CacheModule.register<RedisClientOptions>({
       isGlobal: true,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
+      url: process.env.REDIS_URL,
       store: redisStore,
     }),
   ],
   controllers: [],
-  providers: [CreatorService, QuizService, CacheService],
-  exports: [CreatorService, QuizService, CacheService],
+  providers: [CreatorModelService, QuizModelService, CacheModelService],
+  exports: [CreatorModelService, QuizModelService, CacheModelService],
 })
 export class ModelModule {}

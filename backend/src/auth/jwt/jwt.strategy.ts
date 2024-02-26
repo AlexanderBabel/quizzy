@@ -1,14 +1,18 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { CreatorService } from 'src/model/creator.service';
-import { JwtAuthType } from './jwt.enum';
+import { CreatorModelService } from 'src/model/creator.model.service';
+import { JwtAuthType } from './enums/jwt.enum';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private creatorService: CreatorService) {
+  constructor(
+    private readonly creatorModelService: CreatorModelService,
+    private readonly authService: AuthService,
+  ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: authService.findJwtToken,
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
     });
@@ -18,12 +22,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     let user = {};
 
     // check auth type and get user data
-    switch (payload.type) {
+    switch (payload?.type) {
       case JwtAuthType.Creator:
-        const creator = await this.creatorService.creator({ id: payload.id });
-        if (!creator) {
+        const creator = await this.creatorModelService.creator({
+          id: payload?.id,
+        });
+        if (!creator || creator.isBlocked) {
           return null;
         }
+
         user = { authType: payload.type, ...creator };
         break;
       case JwtAuthType.Guest:

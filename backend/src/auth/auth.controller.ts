@@ -1,40 +1,80 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { CreatorService } from 'src/model/creator.service';
-import { GoogleAuthGuard } from './google/google.guard';
-import { JwtAuthType } from './jwt/jwt.enum';
+import { CreatorModelService } from 'src/model/creator.model.service';
+import { JwtAuthType } from './jwt/enums/jwt.enum';
+import { LoginTicket, OAuth2Client } from 'google-auth-library';
+import { IsPublic } from './jwt/decorators/public.decorator';
+import { v4 as uuidv4 } from 'uuid';
+import { LoginDto } from './dtos/login.dto';
 
 @Controller('v1/auth')
 export class AuthController {
-  constructor(
-    private readonly creatorService: CreatorService,
-    private readonly jwtService: JwtService,
-  ) {}
+  private readonly googleClient: OAuth2Client;
 
-  @Get('callback/google')
-  @UseGuards(GoogleAuthGuard)
-  async login(@Req() req): Promise<{ accessToken: string }> {
+  constructor(
+    private readonly creatorModelService: CreatorModelService,
+    private readonly jwtService: JwtService,
+  ) {
+    this.googleClient = new OAuth2Client(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+    );
+  }
+
+  @IsPublic()
+  @Post('login')
+  async loginWithJwt(
+    @Body() loginDto: LoginDto,
+  ): Promise<{ accessToken: string }> {
+    let ticket: LoginTicket;
+    try {
+      ticket = await this.googleClient.verifyIdToken({
+        idToken: loginDto.token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+    } catch (error) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    const payload = ticket.getPayload();
     const data = {
-      email: req.user.email,
-      name: req.user.firstName + ' ' + req.user.lastName,
+      email: payload.email,
+      name: payload.given_name + ' ' + payload.family_name,
     };
 
-    const creator = await this.creatorService.createOrUpdateCreator({
-      where: { externalId: req.user.id },
+    const creator = await this.creatorModelService.createOrUpdateCreator({
+      where: { externalId: payload.sub },
       create: {
-        externalId: req.user.id,
+        externalId: payload.sub,
         ...data,
       },
       update: data,
     });
 
     return {
-      accessToken: this.jwtService.sign({
-        id: creator.id,
-        email: creator.email,
-        name: creator.name,
-        type: JwtAuthType.Creator,
-      }),
+      accessToken: this.jwtService.sign(
+        {
+          id: creator.id,
+          email: creator.email,
+          name: creator.name,
+          type: JwtAuthType.Creator,
+        },
+        { expiresIn: '24h' },
+      ),
+    };
+  }
+
+  @IsPublic()
+  @Post('guest')
+  async guestLogin(): Promise<{ accessToken: string }> {
+    return {
+      accessToken: this.jwtService.sign(
+        {
+          id: uuidv4(),
+          type: JwtAuthType.Guest,
+        },
+        { expiresIn: '24h' },
+      ),
     };
   }
 }

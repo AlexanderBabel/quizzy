@@ -1,14 +1,25 @@
 import background from '../../images/blob-scene-haikei.svg'
-import Searchbar from '../../components/Searchbar/Searchbar';
 import CardStartpage from '../../components/Card/CardStartpage';
 import './Startpage.css'
 import LoginBtn from '../../components/Buttons/LoginBtn';
-import CreateQuizBtn from '../../components/Buttons/CreateQuizBtn';
 import MyQuizzes from '../../components/MyQuizzes/MyQuizzes';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-function Startpage() {
-  const isLoggedIn= true
-  
+
+
+function Startpage(props) {
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
+
+
+
+  const navigate = useNavigate();
+
+  const { token, setToken } = props;
+  const [myCreatedQuizzes, setMyCreatedQuizzes] = useState([])
+  const [update, setUpdate] = useState(false)
+
   const svgStyle = {
     backgroundImage: `url(${background})`,
     backgroundRepeat: 'no-repeat',
@@ -20,31 +31,51 @@ function Startpage() {
     overflow: 'hidden',
   };
 
-  const quizzes = [
-    {name: 'Test quiz 1'},
-    {name: 'Test quiz 2'},
-    {name: 'Test quiz 3'},
-    {name: 'Test quiz 4'},
-    {name: 'Test quiz 5'},
-    {name: 'Test quiz 6'},
-    {name: 'Test quiz 7'},
-  ]
+  function getMyQuizzes() {
+    if (token) {
+      let config = {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
+      axios.get(`${apiEndpoint}/v1/quiz/list`, config).then((response) => {
+        setMyCreatedQuizzes(response.data);
+      });
+    }
+  }
 
+  useEffect(() => {
+    getMyQuizzes()
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    if (update) {
+      getMyQuizzes()
+    }
+    setUpdate(false)
+    // eslint-disable-next-line
+  }, [update]);
 
   return (
-        <div className='startpage' style={svgStyle}>       
-          <div className='startpageTop'>
-          <Searchbar/>
-          {isLoggedIn ? <CreateQuizBtn/> : <LoginBtn/>}
-          </div>
-          <div className='cardContainer'>
-          <CardStartpage text={'Join a quiz!'} inputBool={true}/>
-          <CardStartpage text={'Discover quizzes'}/>
-          </div>
-          <div className='myQuizzes'>
-            <MyQuizzes quizzes={quizzes}/>
-          </div>
-        </div>
+    <div className='startpage' style={svgStyle}>
+      <div className='startpageTop'>
+        <LoginBtn token={token} setToken={setToken} />
+      </div>
+      <div className='cardContainer'>
+        <CardStartpage text={'Socket Tester'} onclick={() => navigate('/SocketTester')} />
+        <CardStartpage text={'Join a quiz!'} inputBool={true} />
+       { token && <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} /> 
+       }
+       <CardStartpage text={'Discover quizzes'} onclick={() => navigate('/SearchQuiz')}/>
+        
+
+      </div>
+      {token &&
+        <div className='myQuizzes'>
+          <MyQuizzes quizzes={myCreatedQuizzes} setUpdate={setUpdate} />
+        </div>}
+    </div>
   );
 }
 

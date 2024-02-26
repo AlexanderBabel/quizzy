@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <script type="module">
+      import { io } from "https://cdn.socket.io/4.7.4/socket.io.esm.min.js";
+
+      const socketOptions = {
+        // transports: ['websocket'],
+        withCredentials: true,
+        extraHeaders: {
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGV4QGFsZXhiYWJlbC5jb20iLCJuYW1lIjoiQWxleCBCYWJlbCIsInR5cGUiOiJjcmVhdG9yIiwiaWF0IjoxNzA4MzU2OTExLCJleHAiOjE3MDg0NDMzMTF9.nbbhVlr7eDVia57OS3VPRxpC0epoIZ1f_gYPbh6FsT0',
+        },
+      };
+
+      const socket = io('ws://127.0.0.1:3001', socketOptions);
+      socket.on('connect', function () {
+        console.log('Connected');
+
+        socket.emit('joinLobby');
+
+        // socket.emit('joinRoom', 'test');
+
+        // socket.emit('msgToRoom', { room: 'test', message: 'HelloRoom' });
+
+        // socket.on('msgFromRoom', (data) => {
+        //   console.log(data);
+        // });
+      });
+
+      socket.on('exception', function (data) {
+        console.log('event', data);
+      });
+      socket.on('disconnect', function () {
+        console.log('Disconnected');
+      });
+    </script>
+  </head>
+
+  <body></body>
+</html>
