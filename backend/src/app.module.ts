@@ -5,14 +5,16 @@ import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { QuizModule } from './quiz/quiz.module';
 import { LobbyModule } from './lobby/lobby.module';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     AuthModule,
-    AdminModule,
     QuizModule,
     LobbyModule,
+    GameModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [],

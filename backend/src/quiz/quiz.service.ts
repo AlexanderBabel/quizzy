@@ -29,7 +29,7 @@ export class QuizService {
     }
 
     // the order should be sequential and not be higher than the amount of questions.
-    if (highestOrder > questions.length) {
+    if (highestOrder > questions.length - 1) {
       throw new BadRequestException('Order numbers are too high.');
     }
   }

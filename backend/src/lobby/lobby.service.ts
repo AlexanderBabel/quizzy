@@ -1,6 +1,7 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CacheModelService } from 'src/model/cache.model.service';
 import { Lobby } from './types/lobby.type';
+import { JwtAuthType } from 'src/auth/jwt/enums/jwt.enum';
 
 @Injectable()
 export class LobbyService {
@@ -9,57 +10,37 @@ export class LobbyService {
   ) {}
 
   private generateRandomCode(): string {
-    return (Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000).toString(); //generate pseudo-random code as string
+    // generate pseudo-random code as string
+    return (Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000).toString();
   }
 
-  private async getLobby({ lobbyCode }: { lobbyCode: string }): Promise<Lobby> {
-    const lobbyWithCode: Lobby = await this.cacheModelService.get(lobbyCode);
+  async getLobby(lobbyCode: string): Promise<Lobby> {
+    const lobbyWithCode: Lobby = await this.cacheModelService.get(
+      `lobby:${lobbyCode}`,
+    );
 
     if (!lobbyWithCode) {
-      throw new NotFoundException(`Lobby with code ${lobbyCode} not found!`);
+      return null;
     }
 
     return lobbyWithCode;
   }
 
-  async joinLobby(joinLobby: { lobbyCode: string; userName: string }) {
-    const playerId: string = this.generateRandomCode();
-
-    await this.cacheModelService.runScriptByName(
-      'joinLobby',
-      [joinLobby.lobbyCode],
-      [joinLobby.userName, playerId],
-    );
-  }
-
-  async createLobby(createLobby: { quizId: string }) {
-    const randomLobbyId: string = this.generateRandomCode();
-
+  async createLobby(createLobby: {
+    quizId: number;
+    hostId: string;
+    hostType: JwtAuthType;
+  }): Promise<string> {
     const newLobby: Lobby = {
-      lobbyCode: randomLobbyId,
+      code: this.generateRandomCode(),
       quizId: createLobby.quizId,
-      players: [],
     };
 
-    await this.cacheModelService.set(randomLobbyId, newLobby);
-    return randomLobbyId;
+    await this.cacheModelService.set(`lobby:${newLobby.code}`, newLobby);
+    return newLobby.code;
   }
 
-  async getPlayers(getPlayers: { lobbyCode: string }) {
-    const lobbyWithCode: Lobby = await this.getLobby({
-      lobbyCode: getPlayers.lobbyCode,
-    });
-
-    return lobbyWithCode.players;
+  async deleteLobby(lobbyCode: string) {
+    await this.cacheModelService.del(`lobby:${lobbyCode}`);
   }
-
-  async kickPlayer(kickPlayer: { lobbyCode: string; playerId: string }) {
-    await this.cacheModelService.runScriptByName(
-      'kickPlayer',
-      [kickPlayer.lobbyCode],
-      [kickPlayer.playerId],
-    );
-  }
-
-  startQuiz() {} //TODO: Need the Game API to continue with this
 }

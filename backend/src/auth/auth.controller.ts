@@ -4,6 +4,7 @@ import { CreatorModelService } from 'src/model/creator.model.service';
 import { JwtAuthType } from './jwt/enums/jwt.enum';
 import { LoginTicket, OAuth2Client } from 'google-auth-library';
 import { IsPublic } from './jwt/decorators/public.decorator';
+import { v4 as uuidv4 } from 'uuid';
 import { LoginDto } from './dtos/login.dto';
 
 @Controller('v1/auth')
@@ -51,12 +52,29 @@ export class AuthController {
     });
 
     return {
-      accessToken: this.jwtService.sign({
-        id: creator.id,
-        email: creator.email,
-        name: creator.name,
-        type: JwtAuthType.Creator,
-      }),
+      accessToken: this.jwtService.sign(
+        {
+          id: creator.id,
+          email: creator.email,
+          name: creator.name,
+          type: JwtAuthType.Creator,
+        },
+        { expiresIn: '24h' },
+      ),
+    };
+  }
+
+  @IsPublic()
+  @Post('guest')
+  async guestLogin(): Promise<{ accessToken: string }> {
+    return {
+      accessToken: this.jwtService.sign(
+        {
+          id: uuidv4(),
+          type: JwtAuthType.Guest,
+        },
+        { expiresIn: '24h' },
+      ),
     };
   }
 }
