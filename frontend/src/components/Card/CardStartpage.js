@@ -7,8 +7,9 @@ import axios from 'axios';
 import useToken from '../../components/useToken/useToken';
 
 
-const CardStartpage = ({text, inputBool, quizcard, onclick, quiz, setUpdate}) => {
- const [hoveredQuizCard, setHoveredQuizCard] = useState(false)
+const CardStartpage = ({text, inputBool, quizcard, onclick, quiz, setUpdate, deleteAllowed}) => {
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
+  const [hoveredQuizCard, setHoveredQuizCard] = useState(false)
  // eslint-disable-next-line
  const { token, setToken } = useToken(); 
 
@@ -20,7 +21,7 @@ const CardStartpage = ({text, inputBool, quizcard, onclick, quiz, setUpdate}) =>
       Authorization: `Bearer ${token}`
     }
   }
-    axios.delete(`http://localhost:3001/v1/quiz/${Number(quiz.quizId)}/delete`, config)
+    axios.delete(`${apiEndpoint}/v1/quiz/${Number(quiz.quizId)}/delete`, config)
     .then(function (response) {
       setUpdate(true)
     })
@@ -39,12 +40,18 @@ const CardStartpage = ({text, inputBool, quizcard, onclick, quiz, setUpdate}) =>
       {quizcard && hoveredQuizCard &&
         <div className='quizCardBtns'>
        
-        <button className='iconBtn'>
+
+       { token && deleteAllowed &&
+       <>
+       <button className='iconBtn'>
           <MdOutlineEdit/>
         </button>
         <button className='iconBtn' onClick={deleteQuiz}>
             <FaTrash/>
         </button>
+       </>
+        }
+        
         <button className='iconBtn'>
            <CiPlay1/>
         </button>

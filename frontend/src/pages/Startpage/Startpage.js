@@ -1,5 +1,4 @@
 import background from '../../images/blob-scene-haikei.svg'
-import Searchbar from '../../components/Searchbar/Searchbar';
 import CardStartpage from '../../components/Card/CardStartpage';
 import './Startpage.css'
 import LoginBtn from '../../components/Buttons/LoginBtn';
@@ -9,7 +8,12 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 
+
 function Startpage(props) {
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
+
+
+
   const navigate = useNavigate();
 
   const { token, setToken } = props;
@@ -34,7 +38,7 @@ function Startpage(props) {
           "Authorization": `Bearer ${token}`
         }
       }
-      axios.get('http://localhost:3001/v1/quiz/list', config).then((response) => {
+      axios.get(`${apiEndpoint}/v1/quiz/list`, config).then((response) => {
         setMyCreatedQuizzes(response.data);
       });
     }
@@ -56,15 +60,15 @@ function Startpage(props) {
   return (
     <div className='startpage' style={svgStyle}>
       <div className='startpageTop'>
-        <Searchbar />
         <LoginBtn token={token} setToken={setToken} />
       </div>
       <div className='cardContainer'>
         <CardStartpage text={'Socket Tester'} onclick={() => navigate('/SocketTester')} />
         <CardStartpage text={'Join a quiz!'} inputBool={true} />
-        {token ? <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} /> : <CardStartpage text={'Discover quizzes'} />
-        }
-
+       { token && <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} /> 
+       }
+       <CardStartpage text={'Discover quizzes'} onclick={() => navigate('/SearchQuiz')}/>
+        
 
       </div>
       {token &&
