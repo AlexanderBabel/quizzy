@@ -10,7 +10,7 @@ import useToken from '../../components/useToken/useToken';
 
 import { useSocket, useSocketEvent } from 'socket.io-react-hook';
 
-function LobbyPage() {
+function LobbyPlayer() {
   const URL =
     process.env.NODE_ENV === 'production' ? undefined : 'ws://127.0.0.1:3001';
 
@@ -27,23 +27,24 @@ function LobbyPage() {
   const { socket } = useAuthenticatedSocket(token);
 
   const location = useLocation();
-  const { quizId } = location.state;
-  // const { playerJoinLobbyId } = location.state;
+//   const { quizId } = location.state;
+  const { playerJoinLobbyId } = location.state;
 
-  const [role, setRole] = useState('lobby');
-  const [lobbyId, setLobbyId] = useState();
+  const [role, setRole] = useState('player');
+//   const [lobbyId, setLobbyId] = useState();
 
-  const { lastMessage: lobbyMessage, sendMessage: sendLobbyMessage } =
-    useSocketEvent(socket, 'lobby:create');
-    // const { lastMessage: joinLobbyMessage, sendMessage: sendJoinLobbyMessage } = // eslint-disable-line
-    // useSocketEvent(socket, "lobby:join");
+//   const { lastMessage: lobbyMessage, sendMessage: sendLobbyMessage } =
+//     useSocketEvent(socket, 'lobby:create');
+    
+    const { lastMessage: joinLobbyMessage, sendMessage: sendJoinLobbyMessage } = // eslint-disable-line
+    useSocketEvent(socket, "lobby:join");
   const { lastMessage: players } = useSocketEvent(socket, 'lobby:players');
 
   const [isConnected, setIsConnected] = useState(socket.connected);
 
-  console.log(players)
- 
+  console.log(joinLobbyMessage)
 
+  
   useEffect(() => {
     function onConnect() {
       setIsConnected(true);
@@ -52,7 +53,6 @@ function LobbyPage() {
     function onDisconnect() {
       setIsConnected(false);
     }
-
     const currentSocket = socket;
     currentSocket.on('connect', onConnect);
     currentSocket.on('disconnect', onDisconnect);
@@ -66,22 +66,37 @@ function LobbyPage() {
     };
   }, [socket]);
 
-  useEffect(() => {
-    if (isConnected && quizId) {
-      setRole('host');
-      sendLobbyMessage(quizId);
-    }
-  }, [isConnected, quizId]);
+  
+ 
+
+ function joinLobby(playerName) {
+    if(isConnected & playerJoinLobbyId) {
+    setRole("player");
+      sendJoinLobbyMessage({ playerJoinLobbyId, playerName });
+    }    
+  }
 
   useEffect(() => {
-    if (lobbyMessage) {
-      setLobbyId(lobbyMessage);
-    }
-  }, [lobbyMessage]);
+    joinLobby('natasha')
+  }, [playerJoinLobbyId, isConnected]);
+
+ 
+
+
+
+
+
+
+
+
+
+
+
 
   var isCreator = true;
 
   var [isJoined, setJoined] = useState(false);
+  
   let [playersJoined, setPlayersJoined] = useState([
     'Natasha',
     'Jocke',
@@ -89,17 +104,6 @@ function LobbyPage() {
     'Alex',
     'Fatih',
   ]);
-
-
-  // useEffect(() => {
-  //   joinLobby('natasha')
-  // }, [playerJoinLobbyId]);
-
-  // function joinLobby(playerName) {
-  //     setRole("player");
-  //     sendJoinLobbyMessage({ lobbyId, playerName });
-  // }
-
 
 
   const svgStyle = {
@@ -123,19 +127,19 @@ function LobbyPage() {
           {isCreator ? <StartGameBtn /> : null}
           <PlayerCounter playerCount={playersJoined.length}></PlayerCounter>
         </div>
-        <h1 className='lobbyCodeTitle'>Game Pin: {lobbyId}</h1>
+        <h1 className='lobbyCodeTitle'>Game Pin: {playerJoinLobbyId}</h1>
       </div>
       {/* <PlayerNameGrid players={playersJoined}></PlayerNameGrid> */}
-      {/* {isJoined ? (
+      {isJoined ? (
         <h1 style={{ color: 'white' }}>Waiting for game to start...</h1>
       ) : (
         <UsernameTextField
           className='playerNameInput'
           // onSubmitted={joinLobby}
         ></UsernameTextField>
-      )} */}
+      )}
     </div>
   );
 }
 
-export default LobbyPage;
+export default LobbyPlayer;

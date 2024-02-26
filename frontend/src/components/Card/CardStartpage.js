@@ -5,17 +5,20 @@ import { FaTrash } from 'react-icons/fa';
 import { CiPlay1 } from "react-icons/ci";
 import axios from 'axios';
 import useToken from '../../components/useToken/useToken';
+import { useNavigate } from 'react-router-dom';
 
 
 const CardStartpage = ({text, inputBool, quizcard, onclick, quiz, setUpdate, deleteAllowed}) => {
   const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
   const [hoveredQuizCard, setHoveredQuizCard] = useState(false)
+  const [lobbyCode, setLobbyCode] = useState()
  // eslint-disable-next-line
  const { token, setToken } = useToken(); 
+ const navigate = useNavigate();
 
-  
  function deleteQuiz() {
-  
+
+ 
   let config = {
     headers: {
       Authorization: `Bearer ${token}`
@@ -52,7 +55,9 @@ const CardStartpage = ({text, inputBool, quizcard, onclick, quiz, setUpdate, del
        </>
         }
         
-        <button className='iconBtn'>
+        <button className='iconBtn' 
+        onClick={() => navigate('/LobbyPage', { state: { quizId: quiz.quizId } })}
+        >
            <CiPlay1/>
         </button>
       </div>}
@@ -60,13 +65,17 @@ const CardStartpage = ({text, inputBool, quizcard, onclick, quiz, setUpdate, del
         <p>{quizcard ? quiz.name : text}</p>
 
         {inputBool &&
+        
+        <form onSubmit={() => navigate('/LobbyPlayer', { state: { playerJoinLobbyId: lobbyCode } })}>
         <input
         className='inputPin'
         type='text'
         placeholder='Game PIN'
-        // onChange={handleChange}
-        // value={searchInput}
+        onChange={(e) => setLobbyCode(e.target.value)}
+        value={lobbyCode}
       />
+        </form>
+
         }
         
        

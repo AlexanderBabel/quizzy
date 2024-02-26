@@ -5,6 +5,7 @@ import dummyQuiz from './dummyQuiz.json'
 import AnswerQuizQuestion from '../../components/AnswerQuizQuestion/AnswerQuizQuestion';
 
 function AnswerQuizPage() {
+    const isCreator = true
     // eslint-disable-next-line
     const [quiz, setQuiz] = useState(dummyQuiz)
     const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1) 
@@ -36,6 +37,7 @@ function AnswerQuizPage() {
   }
 
   return <div className='answerQuizPage' style={svgStyle}>
+
         <button className='nextQuestionBtn' onClick={handleNextQuestion}>Next Question</button>
      
         <AnswerQuizQuestion func={pull_data} question={currentQuestion} resetCounterProp={resetCounter} setResetCounterProp={setResetCounter}/>

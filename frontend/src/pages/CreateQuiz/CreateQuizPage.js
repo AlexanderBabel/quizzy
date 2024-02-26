@@ -20,9 +20,10 @@ function CreateQuizPage() {
     window.sessionStorage.getItem('sessionQuizTitle') || ''
   );
   const [numQuestions, setNumQuestions] = useState(
-    window.sessionStorage.getItem('sessionNumQuestions') || 1
+    window.sessionStorage.getItem('sessionNumQuestions') || 0
   );
-  const [activeMiniature, setActiveMiniature] = useState(1);
+  
+  const [activeMiniature, setActiveMiniature] = useState(0);
   const [deleteInProgress, setDeleteInProgress] = useState(false);
   const [currentQuestionEdit, setCurrentQuestionEdit] = useState(
     JSON.parse(window.sessionStorage.getItem('sessionCurrentQuestionEdit')) || {
@@ -235,6 +236,7 @@ function CreateQuizPage() {
   }, [allQuestions]);
 
 
+  console.log(allQuestions)
   return (
     <div className='createQuizPage' style={svgStyle}>
       <div className='createQuizTop'>
@@ -263,7 +265,7 @@ function CreateQuizPage() {
                 onClick={() => setCurrentQuestionEdit(question.question)}
               >
                 <div className='numAndDelBtn'>
-                  {question.order}
+                  {question.order +1}
                   <button
                     style={
                       activeMiniature === question.order

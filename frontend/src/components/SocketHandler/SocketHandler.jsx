@@ -147,7 +147,7 @@ export default function SocketHandler() {
                   <button
                     onClick={() => {
                       setRole("host");
-                      sendLobbyMessage(1);
+                      sendLobbyMessage(19);
                     }}
                   >
                     Create Lobby
