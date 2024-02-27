@@ -13,12 +13,12 @@ import SocketTester from "./pages/SocketTester/SocketTester";
 
 
 function App() {
-  const { token, setToken } = useToken();
+  const { token, isGuest, setToken } = useToken();
 
   return (
     <Router>
       <Routes>
-        <Route exact path="/" element={<Startpage token={token} setToken={setToken} />} />
+        <Route exact path="/" element={<Startpage token={token} isGuest={isGuest} setToken={setToken} />} />
         <Route path="/CreateQuiz" element={<CreateQuizPage />} />
         <Route path="/AnswerQuiz" element={<AnswerQuizPage />} />
         <Route path="/LobbyPage" element={<LobbyPage />} />
