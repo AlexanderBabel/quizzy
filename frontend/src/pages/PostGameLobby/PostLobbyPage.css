@@ -1,0 +1,18 @@
+
+#PostLobbyPage{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#ResultList {
+    overflow-y: scroll;
+}
+
+#header {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    width: 90%;
+  }
+

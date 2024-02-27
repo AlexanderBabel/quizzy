@@ -42,14 +42,14 @@ function LobbyPage() {
 
   return (
     <div className="lobbyPage" style={svgStyle}>
-      <div>
         <div className="header">
           <h1 className="lobbyTitle">{quizName}</h1>
-          {isCreator ? <StartGameBtn /> : null}
-          <PlayerCounter playerCount={playersJoined.length}></PlayerCounter>
+          <div id="actions">
+          <PlayerCounter playerCount={playersJoined.length} id="counter"></PlayerCounter>
+          {isCreator ? <StartGameBtn text={"Start"}/> : null}
+          </div>
         </div>
         <h1 className="lobbyCodeTitle">Game Pin: {lobbyCode}</h1>
-      </div>
       <PlayerNameGrid players={playersJoined}></PlayerNameGrid>
       {isJoined ? <h1 style={{ color: 'white' }}>Waiting for game to start...</h1> : <UsernameTextField className="playerNameInput" onSubmitted={joinLobby}></UsernameTextField>}
     </div>

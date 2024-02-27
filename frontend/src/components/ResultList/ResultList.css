@@ -1,0 +1,7 @@
+
+#ResultList {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    height: 10px;
+}
