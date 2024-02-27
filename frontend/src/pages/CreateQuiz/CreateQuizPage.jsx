@@ -1,296 +1,245 @@
-import './CreateQuizPage.css';
-import background from '../../images/blob-scene-haikei-16.svg';
-import miniQuestion from '../../images/miniQuestion.png';
-import React, { useState, useEffect } from 'react';
-import CreateQuestion from '../../components/CreateQuestion/CreateQuestion';
-import { FaTrash } from 'react-icons/fa';
-import TextField from '@mui/material/TextField';
-import { useNavigate } from 'react-router-dom';
-import useToken from '../../components/useToken/useToken';
-import useAxios from 'axios-hooks';
+import "./CreateQuizPage.css";
+import background from "../../images/blob-scene-haikei-16.svg";
+import miniQuestion from "../../images/miniQuestion.png";
+import React, { useEffect } from "react";
+import CreateQuestion from "../../components/CreateQuestion/CreateQuestion";
+import { FaTrash } from "react-icons/fa";
+import TextField from "@mui/material/TextField";
+import { useNavigate } from "react-router-dom";
+import useToken from "../../components/useToken/useToken";
+import useAxios from "axios-hooks";
 
+const Type = {
+  SWITCH_QUESTION: "SWITCH_QUESTION",
+  UPDATE_TITLE: "UPDATE_TITLE",
+  UPDATE_CURRENT_QUESTION: "UPDATE_CURRENT_QUESTION",
+  DELETE_QUESTION: "DELETE_QUESTION",
+  ADD_QUESTION: "ADD_QUESTION",
+  EXAMPLE_QUESTIONS: "EXAMPLE_QUESTIONS",
+};
 
-export default function CreateQuizPage() {
-  const navigate = useNavigate();
-  const { isCreator } = useToken();
-  const [{ data }, createQuiz] = useAxios({
-    url: 'quiz/add',
-    method: 'post'
-  }, { manual: true });
+function reducer(state, action) {
+  const newState = { ...state };
 
-  const [quizTitle, setQuizTitle] = useState(
-    window.sessionStorage.getItem('sessionQuizTitle') || ''
-  );
-  const [numQuestions, setNumQuestions] = useState(
-    window.sessionStorage.getItem('sessionNumQuestions') || 1
-  );
-  const [activeMiniature, setActiveMiniature] = useState(1);
-  const [deleteInProgress, setDeleteInProgress] = useState(false);
-  const [currentQuestionEdit, setCurrentQuestionEdit] = useState(
-    JSON.parse(window.sessionStorage.getItem('sessionCurrentQuestionEdit')) || {
-      questionTitle: '',
-      answer1: '',
-      answer2: '',
-      answer3: '',
-      answer4: '',
-      correct: 'null',
-      order: numQuestions,
-    }
-  );
-  const [allQuestions, setAllQuestions] = useState(
-    JSON.parse(window.sessionStorage.getItem('sessionAllQuestions')) || [
-      { order: numQuestions, question: currentQuestionEdit },
-    ]
-  );
-
-  const addQuestion = () => {
-    const newQuestion = {
-      questionTitle: '',
-      answer1: '',
-      answer2: '',
-      answer3: '',
-      answer4: '',
-      correct: 'null',
-      order: parseInt(numQuestions) + 1,
-    };
-    setCurrentQuestionEdit(newQuestion);
-    setAllQuestions([
-      ...allQuestions,
-      { order: parseInt(numQuestions) + 1, question: newQuestion },
-    ]);
-    setNumQuestions(parseInt(numQuestions) + 1);
-  };
-
-  function changeOrders(arr) {
-    const upd = arr.map((item, index) => ({
-      ...item,
-      order: index + 1,
-      question: {
-        ...item.question,
-        order: index + 1,
-      },
-    }));
-    return upd;
+  switch (action.type) {
+    case Type.UPDATE_TITLE:
+      newState.title = action.title;
+      break;
+    case Type.SWITCH_QUESTION:
+      newState.questionIndex = action.questionIndex;
+      break;
+    case Type.UPDATE_CURRENT_QUESTION:
+      newState.questions = newState.questions.map((question, index) => {
+        if (index === state.questionIndex) {
+          return action.question;
+        }
+        return question;
+      });
+      break;
+    case Type.DELETE_QUESTION:
+      newState.questions = newState.questions.filter(
+        (_, index) => index !== action.questionIndex
+      );
+      newState.questionIndex = Math.max(0, newState.questionIndex - 1);
+      break;
+    case Type.ADD_QUESTION:
+      const question = {
+        question: "",
+        answers: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
+      };
+      newState.questions = [...newState.questions, question];
+      newState.questionIndex = newState.questions.length - 1;
+      break;
+    case Type.EXAMPLE_QUESTIONS:
+      newState.questions = [
+        {
+          question: "What is the capital of France?",
+          answers: [
+            { text: "Paris", correct: true },
+            { text: "London", correct: false },
+            { text: "Berlin", correct: false },
+            { text: "Madrid", correct: false },
+          ],
+        },
+        {
+          question: "What is the capital of Germany?",
+          answers: [
+            { text: "Paris", correct: false },
+            { text: "London", correct: false },
+            { text: "Berlin", correct: true },
+            { text: "Madrid", correct: false },
+          ],
+        },
+      ];
+      newState.questionIndex = 0;
+      break;
+    default:
+      break;
   }
 
-  const deleteQuestion = () => {
-    const questionToDelete = currentQuestionEdit;
-    const updatedQuestions = allQuestions.filter(
-      (question) => question.order !== questionToDelete.order
-    );
-    const changedOrders = changeOrders(updatedQuestions);
-    setAllQuestions(changedOrders);
-    setNumQuestions(numQuestions - 1);
-    setDeleteInProgress(true);
-  };
+  localStorage.setItem("createQuiz", JSON.stringify(newState));
+  return newState;
+}
 
-  useEffect(() => {
-    if (deleteInProgress) {
-      if (allQuestions.length === 0) {
-        addQuestion();
-      } else if (allQuestions.length > 0) {
-        if (currentQuestionEdit.order > 1) {
-          const newCurrentQuestion = allQuestions.find(
-            (question) => question.order === currentQuestionEdit.order - 1
-          );
-          setCurrentQuestionEdit(newCurrentQuestion.question);
-        } else if (currentQuestionEdit.order === 1) {
-          const newCurrentQuestion = allQuestions.find(
-            (question) => question.order === currentQuestionEdit.order
-          );
-          setCurrentQuestionEdit(newCurrentQuestion.question);
-        }
-      }
+export default function CreateQuizPage() {
+  const { isCreator } = useToken();
+  const navigate = useNavigate();
+  const [state, dispatch] = React.useReducer(
+    reducer,
+    {
+      title: "",
+      questionIndex: 0,
+      questions: [],
+    },
+    () => {
+      const createQuiz = JSON.parse(localStorage.getItem("createQuiz"));
+      return {
+        title: createQuiz?.title || "",
+        questionIndex: createQuiz?.questionIndex || 0,
+        questions: createQuiz?.questions || [
+          {
+            question: "",
+            answers: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
+          },
+        ],
+      };
     }
-    setDeleteInProgress(false);
-  }, [allQuestions]); // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
-  useEffect(() => {
-    setAllQuestions((prevQuestions) => {
-      if (prevQuestions) {
-        const updatedQuestions = prevQuestions.map((question) => {
-          if (question.order !== currentQuestionEdit.order) {
-            return question;
-          } else {
-            return {
-              ...question,
-              question: currentQuestionEdit,
-            };
-          }
-        });
-
-        return updatedQuestions;
-      }
-    });
-    setActiveMiniature(currentQuestionEdit.order);
-  }, [currentQuestionEdit]);
+  const [{ data }, createQuiz] = useAxios(
+    {
+      url: "quiz/add",
+      method: "post",
+    },
+    { manual: true }
+  );
 
   const svgStyle = {
     backgroundImage: `url(${background})`,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    width: '100%',
-    height: '100%',
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    width: "100%",
+    height: "100%",
     margin: 0,
     padding: 0,
   };
 
   const activeMiniatureStyle = {
-    border: '2px solid #A86EFF',
+    border: "2px solid #A86EFF",
   };
 
   function format() {
     const quiz = {
-      name: quizTitle,
-      visibility: 'PUBLIC',
-      questions: allQuestions.map((item) => ({
-        order: item.order,
-        question: item.question.questionTitle,
-        answers: [
-          {
-            text: item.question.answer1,
-            correct: item.question.correct === item.question.answer1,
-          },
-          {
-            text: item.question.answer2,
-            correct: item.question.correct === item.question.answer2,
-          },
-          {
-            text: item.question.answer3,
-            correct: item.question.correct === item.question.answer3,
-          },
-          {
-            text: item.question.answer4,
-            correct: item.question.correct === item.question.answer4,
-          },
-        ],
+      name: state.title,
+      visibility: "PUBLIC",
+      questions: state.questions.map((q, index) => ({
+        order: index,
+        question: q.question,
+        answers: q.answers.map((a) => ({
+          text: a.text,
+          correct: a.correct || false,
+        })),
       })),
     };
     return quiz;
   }
 
   useEffect(() => {
-    sessionStorage.clear();
+    sessionStorage.removeItem("createQuiz");
   }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    var sessionQuizTitle = window.sessionStorage.getItem('sessionQuizTitle');
-    setQuizTitle(sessionQuizTitle);
-
-    var sessionNumQuestions = window.sessionStorage.getItem(
-      'sessionNumQuestions'
-    );
-    setNumQuestions(sessionNumQuestions);
-
-    var sessionCurrentQuestionEdit = JSON.parse(
-      window.sessionStorage.getItem('sessionCurrentQuestionEdit')
-    );
-    setCurrentQuestionEdit(sessionCurrentQuestionEdit);
-
-    var sessionAllQuestions = JSON.parse(
-      window.sessionStorage.getItem('sessionAllQuestions')
-    );
-    setAllQuestions(sessionAllQuestions);
-  }, []);
-
-  useEffect(() => {
-    window.sessionStorage.setItem('sessionQuizTitle', quizTitle);
-  }, [quizTitle]);
-
-  useEffect(() => {
-    window.sessionStorage.setItem('sessionNumQuestions', numQuestions);
-  }, [numQuestions]);
-
-  useEffect(() => {
-    window.sessionStorage.setItem(
-      'sessionCurrentQuestionEdit',
-      JSON.stringify(currentQuestionEdit)
-    );
-  }, [currentQuestionEdit]);
-
-  useEffect(() => {
-    window.sessionStorage.setItem(
-      'sessionAllQuestions',
-      JSON.stringify(allQuestions)
-    );
-  }, [allQuestions]);
-
   if (!isCreator) {
-    navigate('/');
+    navigate("/");
     return null;
   }
 
   return (
-    <div className='createQuizPage' style={svgStyle}>
-      <div className='createQuizTop'>
-        <div className='quizTitleDiv'>
+    <div className="createQuizPage" style={svgStyle}>
+      <div className="createQuizTop">
+        <div className="quizTitleDiv">
           <TextField
-            label='Quiz title'
-            variant='standard'
+            label="Quiz title"
+            variant="standard"
             fullWidth
             multiline
-            value={quizTitle}
-            onChange={(e) => setQuizTitle(e.target.value)}
+            value={state.title}
+            onChange={(e) =>
+              dispatch({ type: Type.UPDATE_TITLE, title: e.target.value })
+            }
           />
         </div>
 
-        <button className='finishQuizBtn' onClick={() => {
-          const qz = format();
-          createQuiz({
-            data: qz
-          });
-        }}>
+        <button
+          className="finishQuizBtn"
+          onClick={() => {
+            createQuiz({ data: format() });
+          }}
+        >
           Finish Quiz
         </button>
       </div>
 
-      <div className='createqtnandsidebar' >
-        <div className='leftSidebar'>
-          {allQuestions !== null && allQuestions.map((question) => {
-            return (
-              <div
-                className='questionMiniatureWrapper'
-                onClick={() => setCurrentQuestionEdit(question.question)}
-              >
-                <div className='numAndDelBtn'>
-                  {question.order}
-                  <button
-                    style={
-                      activeMiniature === question.order
-                        ? { visibility: 'visible' }
-                        : { visibility: 'hidden' }
-                    }
-                    className='deleteQuestionBtn'
-                    onClick={deleteQuestion}
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
+      <div className="createqtnandsidebar">
+        <div className="leftSidebar">
+          {state.questions?.length >= 0 &&
+            state.questions.map((question, index) => {
+              return (
+                <div key={index} className="questionMiniatureWrapper">
+                  <div className="numAndDelBtn">
+                    {question.order}
+                    <button
+                      style={
+                        state.questionIndex === index
+                          ? { visibility: "visible" }
+                          : { visibility: "hidden" }
+                      }
+                      className="deleteQuestionBtn"
+                      onClick={() =>
+                        dispatch({
+                          type: Type.DELETE_QUESTION,
+                          questionIndex: index,
+                        })
+                      }
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
 
-                <img
-                  style={
-                    activeMiniature === question.order
-                      ? activeMiniatureStyle
-                      : {}
-                  }
-                  className='questionMiniature'
-                  src={miniQuestion}
-                  alt='miniQuestion'
-                />
-              </div>
-            );
-          })}
-          <button className='addQuestionBtn' onClick={addQuestion}>
+                  <img
+                    onClick={() =>
+                      dispatch({
+                        type: Type.SWITCH_QUESTION,
+                        questionIndex: index,
+                      })
+                    }
+                    style={
+                      state.questionIndex === index ? activeMiniatureStyle : {}
+                    }
+                    className="questionMiniature"
+                    src={miniQuestion}
+                    alt="miniQuestion"
+                  />
+                </div>
+              );
+            })}
+          <button
+            className="addQuestionBtn"
+            onClick={() => dispatch({ type: Type.ADD_QUESTION })}
+          >
             +
           </button>
+          {process.env.NODE_ENV === "development" && (
+            <button onClick={() => dispatch({ type: Type.EXAMPLE_QUESTIONS })}>
+              Create Test Questions
+            </button>
+          )}
         </div>
-        <div className='createQuestionDiv'>
+        <div className="createQuestionDiv">
           <CreateQuestion
-            func={(data) => {
-              setCurrentQuestionEdit(data);
+            question={state.questions[state.questionIndex]}
+            setQuestion={(question) => {
+              dispatch({ type: Type.UPDATE_CURRENT_QUESTION, question });
             }}
-            quizQuestion={currentQuestionEdit}
-            setQuizQuestion={setCurrentQuestionEdit}
           />
         </div>
       </div>

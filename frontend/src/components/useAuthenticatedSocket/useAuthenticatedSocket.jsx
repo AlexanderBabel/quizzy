@@ -1,5 +1,6 @@
 import { createContext, useContext } from "react";
 import { useSocket } from "socket.io-react-hook";
+import useToken from "../useToken/useToken";
 
 // parse REACT_APP_API_ENDPOINT and convert to ws or wss endpoint
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
@@ -10,7 +11,8 @@ export default function useAuthenticatedSocket() {
   return useContext(SocketContext);
 }
 
-export function SocketProvider({ children, token }) {
+export function SocketProvider({ children }) {
+  const { token } = useToken();
   const state = useSocket(wsEndpoint, {
     enabled: !!token,
     extraHeaders: {
