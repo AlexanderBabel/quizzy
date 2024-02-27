@@ -5,18 +5,31 @@ import { FaTrash } from 'react-icons/fa';
 import { CiPlay1 } from "react-icons/ci";
 import useToken from '../useToken/useToken';
 import useAxios from 'axios-hooks';
+import { enqueueSnackbar } from 'notistack';
 
-const CardStartpage = ({ text, inputBool, quizcard, onclick, quiz, setUpdate, deleteAllowed }) => {
-  const [{ data }, deleteQuiz] = useAxios(`quiz/${quiz?.quizId}/delete`, { manual: true });
+export default function CardStartpage({ text, inputBool, quizcard, onclick, quiz, setUpdate, deleteAllowed }) {
+  const [{ data, error }, deleteQuiz] = useAxios({
+    url: `quiz/${quiz?.quizId}/delete`, method: 'delete'
+  }, { manual: true });
   const [hoveredQuizCard, setHoveredQuizCard] = useState(false);
   const { isCreator } = useToken();
 
   useEffect(() => {
     if (data) {
       setUpdate(true)
+      enqueueSnackbar(`Quiz "${quiz.name}" deleted`, {
+        variant: "success",
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (error) {
+      enqueueSnackbar(`Failed to delete quiz. Error: ${error.message}`, {
+        variant: "error",
+      });
+    }
+  }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={quizcard ? 'cardStartpageWrapper' : 'cardStartpageWrapper'}
@@ -57,5 +70,3 @@ const CardStartpage = ({ text, inputBool, quizcard, onclick, quiz, setUpdate, de
     </div>
   );
 };
-
-export default CardStartpage;

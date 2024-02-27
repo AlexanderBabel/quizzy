@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
+import { SnackbarProvider } from 'notistack';
 import Startpage from "./pages/Startpage/Startpage";
 import CreateQuizPage from "./pages/CreateQuiz/CreateQuizPage";
 import AnswerQuizPage from "./pages/AnswerQuiz/AnswerQuizPage";
@@ -15,19 +16,21 @@ import { SocketProvider } from "./components/useAuthenticatedSocket/useAuthentic
 
 export default function App() {
   return (
-    <TokenProvider>
-      <SocketProvider>
-        <Router>
-          <Routes>
-            <Route exact path="/" element={<Startpage />} />
-            <Route path="/SearchQuiz" element={<SearchQuiz />} />
-            <Route path="/CreateQuiz" element={<CreateQuizPage />} />
-            <Route path="/AnswerQuiz" element={<AnswerQuizPage />} />
-            <Route path="/LobbyPage" element={<LobbyPage />} />
-            <Route path="/SocketTester" element={<SocketTester />} />
-          </Routes>
-        </Router>
-      </SocketProvider>
-    </TokenProvider>
+    <SnackbarProvider maxSnack={3}>
+      <TokenProvider>
+        <SocketProvider>
+          <Router>
+            <Routes>
+              <Route exact path="/" element={<Startpage />} />
+              <Route path="/SearchQuiz" element={<SearchQuiz />} />
+              <Route path="/CreateQuiz" element={<CreateQuizPage />} />
+              <Route path="/AnswerQuiz" element={<AnswerQuizPage />} />
+              <Route path="/LobbyPage" element={<LobbyPage />} />
+              <Route path="/SocketTester" element={<SocketTester />} />
+            </Routes>
+          </Router>
+        </SocketProvider>
+      </TokenProvider>
+    </SnackbarProvider>
   );
 }

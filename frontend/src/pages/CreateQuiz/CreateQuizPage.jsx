@@ -8,6 +8,7 @@ import TextField from "@mui/material/TextField";
 import { useNavigate } from "react-router-dom";
 import useToken from "../../components/useToken/useToken";
 import useAxios from "axios-hooks";
+import { useSnackbar } from "notistack";
 
 const Type = {
   SWITCH_QUESTION: "SWITCH_QUESTION",
@@ -106,7 +107,8 @@ export default function CreateQuizPage() {
     }
   );
 
-  const [{ data }, createQuiz] = useAxios(
+  const { enqueueSnackbar } = useSnackbar();
+  const [{ data, loading, error }, createQuiz] = useAxios(
     {
       url: "quiz/add",
       method: "post",
@@ -145,11 +147,22 @@ export default function CreateQuizPage() {
   }
 
   useEffect(() => {
-    sessionStorage.removeItem("createQuiz");
+    if (!data) return;
+    localStorage.removeItem("createQuiz");
+    enqueueSnackbar("Quiz created successfully!", { variant: "success" });
+    navigate("/");
   }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (error) {
+      enqueueSnackbar(`Failed to create quiz ${error.message}`, {
+        variant: "error",
+      });
+    }
+  }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (!isCreator) {
-    navigate("/");
+    navigate("/", { replace: true });
     return null;
   }
 
@@ -174,6 +187,7 @@ export default function CreateQuizPage() {
           onClick={() => {
             createQuiz({ data: format() });
           }}
+          disabled={loading || data}
         >
           Finish Quiz
         </button>
