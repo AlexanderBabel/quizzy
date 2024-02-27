@@ -1,74 +1,72 @@
-#SecondPodium{
-    height: 13rem;
-    width: 8rem;
-    color: silver;
-    background-color: #DD7BFF ;
-    border-top-left-radius: 0.5rem;
-    border-top-right-radius: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: end;
+#SecondPodium {
+  height: 13rem;
+  width: 8rem;
+  color: silver;
+  background-color: #dd7bff;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-#FirstPodium{
-    height: 9rem;
-    width: 8rem;
-    background-color: #886AEC;
-    border-top-left-radius: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: end;
+#FirstPodium {
+  height: 9rem;
+  width: 8rem;
+  background-color: #886aec;
+  border-top-left-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-#ThirdPodium{
-    height: 5rem;
-    width: 8rem;
-    background-color: #1B4992;
-    border-top-right-radius: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: end;
+#ThirdPodium {
+  height: 5rem;
+  width: 8rem;
+  background-color: #1b4992;
+  border-top-right-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-.PodiumWrapper{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: end;
+.PodiumWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 #playerName {
-    color: aliceblue;
-    font-size: large;
+  color: aliceblue;
+  font-size: large;
 }
 
-#playerPoints{
-    color: aliceblue;
-    font-size: large;
-
+#playerPoints {
+  color: aliceblue;
+  font-size: large;
 }
 
-#PlacementPodiums{
-    display: flex;
-    flex-direction: horizontal;
+#PlacementPodiums {
+  display: flex;
+  flex-direction: horizontal;
 }
 
-
-.placementText{
-    color: black;
-    font-size: 1.5rem;
+.placementText {
+  color: black;
+  font-size: 1.5rem;
 }
- 
-.placementBackground{
-    display: flex;
-    justify-content: center;
-    align-items: center; 
-    border-radius: 3rem;
-    background-color: white;
-    height: 2rem;
-    width: 2rem;
-    margin-bottom: 0.5rem;
+
+.placementBackground {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3rem;
+  background-color: white;
+  height: 2rem;
+  width: 2rem;
+  margin-bottom: 0.5rem;
 }
