@@ -6,7 +6,10 @@
     color: aliceblue;
     border-radius: 1rem;
     font-weight: bolder;
-    position: absolute;
-    right: 40px;
     border-color: #6A6DD2;
+}
+
+#wrapper{
+    display: flex;
+    align-items: center;
 }

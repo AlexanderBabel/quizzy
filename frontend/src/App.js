@@ -10,6 +10,7 @@ import CreateQuizPage from "./pages/CreateQuiz/CreateQuizPage";
 import AnswerQuizPage from "./pages/AnswerQuiz/AnswerQuizPage";
 import LobbyPage from "./pages/GameLobby/LobbyPage";
 import { TokenProvider } from "./components/useToken/useToken";
+import PostLobbyPage from "./pages/PostGameLobby/PostLobbyPage";
 import SearchQuiz from "./pages/SearchQuiz/SearchQuiz";
 import SocketTester from "./pages/SocketTester/SocketTester";
 import { SocketProvider } from "./components/useAuthenticatedSocket/useAuthenticatedSocket";
@@ -26,6 +27,7 @@ export default function App() {
               <Route path="/CreateQuiz" element={<CreateQuizPage />} />
               <Route path="/AnswerQuiz" element={<AnswerQuizPage />} />
               <Route path="/LobbyPage" element={<LobbyPage />} />
+              <Route path="/PostLobbyPage" element={<PostLobbyPage />} />
               <Route path="/SocketTester" element={<SocketTester />} />
             </Routes>
           </Router>
