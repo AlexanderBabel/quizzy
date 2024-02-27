@@ -4,8 +4,6 @@
     height: 3.5rem;
     width: 3.5rem;
     font-weight: bolder;
-    position: absolute;
-    right: 200px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,4 +13,11 @@
     text-align: center;
     font-size: 1.5rem;
     color: aliceblue;
+}
+
+#wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 2rem;
 }

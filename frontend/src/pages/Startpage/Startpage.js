@@ -16,7 +16,7 @@ function Startpage(props) {
 
   const navigate = useNavigate();
 
-  const { token, setToken } = props;
+  const { token, isGuest, setToken } = props;
   const [myCreatedQuizzes, setMyCreatedQuizzes] = useState([])
   const [update, setUpdate] = useState(false)
 
@@ -32,7 +32,7 @@ function Startpage(props) {
   };
 
   function getMyQuizzes() {
-    if (token) {
+    if (!isGuest) {
       let config = {
         headers: {
           "Authorization": `Bearer ${token}`
@@ -47,7 +47,7 @@ function Startpage(props) {
   useEffect(() => {
     getMyQuizzes()
     // eslint-disable-next-line
-  }, []);
+  }, [token, isGuest]);
 
   useEffect(() => {
     if (update) {
@@ -60,18 +60,15 @@ function Startpage(props) {
   return (
     <div className='startpage' style={svgStyle}>
       <div className='startpageTop'>
-        <LoginBtn token={token} setToken={setToken} />
+        <LoginBtn isGuest={isGuest} setToken={setToken} />
       </div>
       <div className='cardContainer'>
         <CardStartpage text={'Socket Tester'} onclick={() => navigate('/SocketTester')} />
         <CardStartpage text={'Join a quiz!'} inputBool={true} />
-       { token && <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} /> 
-       }
-       <CardStartpage text={'Discover quizzes'} onclick={() => navigate('/SearchQuiz')}/>
-        
-
+        {!isGuest && <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} />}
+        <CardStartpage text={'Discover quizzes'} onclick={() => navigate('/SearchQuiz')} />
       </div>
-      {token &&
+      {!isGuest &&
         <div className='myQuizzes'>
           <MyQuizzes quizzes={myCreatedQuizzes} setUpdate={setUpdate} />
         </div>}

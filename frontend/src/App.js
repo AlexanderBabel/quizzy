@@ -9,25 +9,25 @@ import CreateQuizPage from "./pages/CreateQuiz/CreateQuizPage";
 import AnswerQuizPage from "./pages/AnswerQuiz/AnswerQuizPage";
 import LobbyPage from "./pages/GameLobby/LobbyPage";
 import LobbyPlayer from "./pages/GameLobby/LobbyPlayer";
+import PostLobbyPage from "./pages/PostGameLobby/PostLobbyPage";
 import useToken from "./components/useToken/useToken";
 import SearchQuiz from "./pages/SearchQuiz/SearchQuiz";
 import SocketTester from "./pages/SocketTester/SocketTester";
 
-
 function App() {
-  const { token, setToken } = useToken();
+  const { token, isGuest, setToken } = useToken();
 
   return (
     <Router>
       <Routes>
-        <Route exact path="/" element={<Startpage token={token} setToken={setToken} />} />
+        <Route exact path="/" element={<Startpage token={token} isGuest={isGuest} setToken={setToken} />} />
         <Route path="/CreateQuiz" element={<CreateQuizPage />} />
         <Route path="/SearchQuiz" element={<SearchQuiz token={token} setToken={setToken} />} />
 
         <Route path="/AnswerQuiz" element={<AnswerQuizPage />} />
         <Route path="/LobbyPage" element={<LobbyPage />} />
         <Route path="/LobbyPlayer" element={<LobbyPlayer />} />
-
+        <Route path="/PostLobbyPage" element={<PostLobbyPage />} />
         <Route path="/SocketTester" element={<SocketTester />} />
       </Routes>
     </Router>
