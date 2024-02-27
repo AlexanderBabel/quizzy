@@ -1,75 +1,59 @@
 import './CardStartpage.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MdOutlineEdit } from "react-icons/md";
 import { FaTrash } from 'react-icons/fa';
 import { CiPlay1 } from "react-icons/ci";
-import axios from 'axios';
-import useToken from '../../components/useToken/useToken';
+import useToken from '../useToken/useToken';
+import useAxios from 'axios-hooks';
 
+const CardStartpage = ({ text, inputBool, quizcard, onclick, quiz, setUpdate, deleteAllowed }) => {
+  const [{ data }, deleteQuiz] = useAxios(`quiz/${quiz?.quizId}/delete`, { manual: true });
+  const [hoveredQuizCard, setHoveredQuizCard] = useState(false);
+  const { isCreator } = useToken();
 
-const CardStartpage = ({text, inputBool, quizcard, onclick, quiz, setUpdate, deleteAllowed}) => {
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
-  const [hoveredQuizCard, setHoveredQuizCard] = useState(false)
- // eslint-disable-next-line
- const { token, setToken } = useToken(); 
-
-  
- function deleteQuiz() {
-  
-  let config = {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  }
-    axios.delete(`${apiEndpoint}/v1/quiz/${Number(quiz.quizId)}/delete`, config)
-    .then(function (response) {
+  useEffect(() => {
+    if (data) {
       setUpdate(true)
-    })
-    .catch(function (error) {
-      console.log(error);
-    })
-}
- 
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
   return (
-    <div className={quizcard ? 'cardStartpageWrapper' :'cardStartpageWrapper'} 
-    onClick={onclick}
-    onMouseEnter={() => setHoveredQuizCard(true)}
-    onMouseLeave={() => setHoveredQuizCard(false)}
+    <div className={quizcard ? 'cardStartpageWrapper' : 'cardStartpageWrapper'}
+      onClick={onclick}
+      onMouseEnter={() => setHoveredQuizCard(true)}
+      onMouseLeave={() => setHoveredQuizCard(false)}
 
     >
       {quizcard && hoveredQuizCard &&
         <div className='quizCardBtns'>
-       
+          {isCreator && deleteAllowed &&
+            <>
+              <button className='iconBtn'>
+                <MdOutlineEdit />
+              </button>
+              <button className='iconBtn' onClick={() => deleteQuiz()}>
+                <FaTrash />
+              </button>
+            </>
+          }
 
-       { token && deleteAllowed &&
-       <>
-       <button className='iconBtn'>
-          <MdOutlineEdit/>
-        </button>
-        <button className='iconBtn' onClick={deleteQuiz}>
-            <FaTrash/>
-        </button>
-       </>
-        }
-        
-        <button className='iconBtn'>
-           <CiPlay1/>
-        </button>
-      </div>}
+          <button className='iconBtn'>
+            <CiPlay1 />
+          </button>
+        </div>}
 
-        <p>{quizcard ? quiz.name : text}</p>
+      <p>{quizcard ? quiz.name : text}</p>
 
-        {inputBool &&
+      {inputBool &&
         <input
-        className='inputPin'
-        type='text'
-        placeholder='Game PIN'
+          className='inputPin'
+          type='text'
+          placeholder='Game PIN'
         // onChange={handleChange}
         // value={searchInput}
-      />
-        }
-        
-       
+        />
+      }
     </div>
   );
 };

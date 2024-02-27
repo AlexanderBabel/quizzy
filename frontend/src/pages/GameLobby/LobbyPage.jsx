@@ -7,24 +7,21 @@ import PlayerCounter from "../../components/PlayerCounter/PlayerCounter";
 import { useState } from "react";
 
 function LobbyPage() {
+  const isHost = true;
 
-  var isCreator = true
-
-  var [isJoined, setJoined] = useState(false)
-  let [playersJoined, setPlayersJoined] = useState([
+  const [isJoined, setJoined] = useState(false);
+  const [playersJoined, setPlayersJoined] = useState([
     "Natasha",
     "Jocke",
     "Lukas",
     "Alex",
-    "Fatih"
+    "Fatih",
   ]);
 
-
   function joinLobby(playerName) {
-    setPlayersJoined([...playersJoined, playerName])
-    setJoined(true)
+    setPlayersJoined([...playersJoined, playerName]);
+    setJoined(true);
   }
-  
 
   const svgStyle = {
     backgroundImage: `url(${background})`,
@@ -45,13 +42,20 @@ function LobbyPage() {
       <div>
         <div className="header">
           <h1 className="lobbyTitle">{quizName}</h1>
-          {isCreator ? <StartGameBtn /> : null}
+          {isHost ? <StartGameBtn /> : null}
           <PlayerCounter playerCount={playersJoined.length}></PlayerCounter>
         </div>
         <h1 className="lobbyCodeTitle">Game Pin: {lobbyCode}</h1>
       </div>
       <PlayerNameGrid players={playersJoined}></PlayerNameGrid>
-      {isJoined ? <h1 style={{ color: 'white' }}>Waiting for game to start...</h1> : <UsernameTextField className="playerNameInput" onSubmitted={joinLobby}></UsernameTextField>}
+      {isJoined ? (
+        <h1 style={{ color: "white" }}>Waiting for game to start...</h1>
+      ) : (
+        <UsernameTextField
+          className="playerNameInput"
+          onSubmitted={joinLobby}
+        ></UsernameTextField>
+      )}
     </div>
   );
 }

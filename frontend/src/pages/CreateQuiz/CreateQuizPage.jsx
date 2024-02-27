@@ -5,17 +5,19 @@ import React, { useState, useEffect } from 'react';
 import CreateQuestion from '../../components/CreateQuestion/CreateQuestion';
 import { FaTrash } from 'react-icons/fa';
 import TextField from '@mui/material/TextField';
-import useToken from '../../components/useToken/useToken';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import useToken from '../../components/useToken/useToken';
+import useAxios from 'axios-hooks';
 
 
-function CreateQuizPage() {
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
-
+export default function CreateQuizPage() {
   const navigate = useNavigate();
-  // eslint-disable-next-line
-  const { token, setToken } = useToken(); 
+  const { isCreator } = useToken();
+  const [{ data }, createQuiz] = useAxios({
+    url: 'quiz/add',
+    method: 'post'
+  }, { manual: true });
+
   const [quizTitle, setQuizTitle] = useState(
     window.sessionStorage.getItem('sessionQuizTitle') || ''
   );
@@ -41,10 +43,6 @@ function CreateQuizPage() {
     ]
   );
 
-  const pull_data = (data) => {
-    setCurrentQuestionEdit(data);
-  };
-
   const addQuestion = () => {
     const newQuestion = {
       questionTitle: '',
@@ -63,7 +61,7 @@ function CreateQuizPage() {
     setNumQuestions(parseInt(numQuestions) + 1);
   };
 
- function changeOrders(arr) {
+  function changeOrders(arr) {
     const upd = arr.map((item, index) => ({
       ...item,
       order: index + 1,
@@ -85,8 +83,6 @@ function CreateQuizPage() {
     setNumQuestions(numQuestions - 1);
     setDeleteInProgress(true);
   };
-
- 
 
   useEffect(() => {
     if (deleteInProgress) {
@@ -111,19 +107,19 @@ function CreateQuizPage() {
 
   useEffect(() => {
     setAllQuestions((prevQuestions) => {
-      if(prevQuestions){
-      const updatedQuestions = prevQuestions.map((question) => {
-        if (question.order !== currentQuestionEdit.order) {
-          return question;
-        } else {
-          return {
-            ...question,
-            question: currentQuestionEdit,
-          };
-        }
-      });
+      if (prevQuestions) {
+        const updatedQuestions = prevQuestions.map((question) => {
+          if (question.order !== currentQuestionEdit.order) {
+            return question;
+          } else {
+            return {
+              ...question,
+              question: currentQuestionEdit,
+            };
+          }
+        });
 
-      return updatedQuestions;
+        return updatedQuestions;
       }
     });
     setActiveMiniature(currentQuestionEdit.order);
@@ -173,24 +169,9 @@ function CreateQuizPage() {
     return quiz;
   }
 
-
-  function createQuiz() {
-    let config = {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    }
-      const qz = format()
-    
-      axios.post(`${apiEndpoint}/v1/quiz/add`, qz, config)
-      .then(function (response) {
-        sessionStorage.clear()
-        navigate('/')
-      })
-      .catch(function (error) {
-        console.log(error);
-      })
-  }
+  useEffect(() => {
+    sessionStorage.clear();
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     var sessionQuizTitle = window.sessionStorage.getItem('sessionQuizTitle');
@@ -234,6 +215,10 @@ function CreateQuizPage() {
     );
   }, [allQuestions]);
 
+  if (!isCreator) {
+    navigate('/');
+    return null;
+  }
 
   return (
     <div className='createQuizPage' style={svgStyle}>
@@ -249,7 +234,12 @@ function CreateQuizPage() {
           />
         </div>
 
-        <button className='finishQuizBtn' onClick={createQuiz}>
+        <button className='finishQuizBtn' onClick={() => {
+          const qz = format();
+          createQuiz({
+            data: qz
+          });
+        }}>
           Finish Quiz
         </button>
       </div>
@@ -294,18 +284,16 @@ function CreateQuizPage() {
             +
           </button>
         </div>
-
         <div className='createQuestionDiv'>
           <CreateQuestion
-            func={pull_data}
+            func={(data) => {
+              setCurrentQuestionEdit(data);
+            }}
             quizQuestion={currentQuestionEdit}
             setQuizQuestion={setCurrentQuestionEdit}
           />
         </div>
-
       </div>
     </div>
   );
 }
-
-export default CreateQuizPage;

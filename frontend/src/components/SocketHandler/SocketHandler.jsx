@@ -1,26 +1,19 @@
 import { useEffect, useState } from "react";
-import useToken from "../useToken/useToken";
-import { useSocket, useSocketEvent } from "socket.io-react-hook";
+import { useSocketEvent } from "socket.io-react-hook";
 import { decodeToken, isExpired } from "react-jwt";
-
-const URL =
-  process.env.NODE_ENV === "production" ? undefined : "ws://127.0.0.1:3001";
-
-export const useAuthenticatedSocket = (token) => {
-  return useSocket(URL, {
-    enabled: !!token,
-    extraHeaders: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
+import useToken from "../useToken/useToken";
+import useAuthenticatedSocket from "../useAuthenticatedSocket/useAuthenticatedSocket";
 
 export default function SocketHandler() {
   const { token, setToken } = useToken();
-  const { socket } = useAuthenticatedSocket(token);
+  const { socket } = useAuthenticatedSocket();
+
   const { lastMessage: lobbyMessage, sendMessage: sendLobbyMessage } =
     useSocketEvent(socket, "lobby:create");
-  const { lastMessage: joinLobbyMessage, sendMessage: sendJoinLobbyMessage } = // eslint-disable-line
+  const {
+    lastMessage: joinLobbyMessage,
+    sendMessage: sendJoinLobbyMessage,
+  } = // eslint-disable-line
     useSocketEvent(socket, "lobby:join");
   const { lastMessage: players } = useSocketEvent(socket, "lobby:players");
   const { sendMessage: startQuiz } = useSocketEvent(socket, "lobby:start");

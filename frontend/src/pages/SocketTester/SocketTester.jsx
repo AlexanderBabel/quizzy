@@ -1,10 +1,11 @@
 import background from '../../images/blob-scene-haikei.svg'
 import './SocketTester.css'
 import SocketHandler from '../../components/SocketHandler/SocketHandler';
+import { useNavigate } from 'react-router-dom';
 
 
-function SocketTester(props) {
-
+function SocketTester() {
+  const navigate = useNavigate();
   const svgStyle = {
     backgroundImage: `url(${background})`,
     backgroundRepeat: 'no-repeat',
@@ -15,6 +16,11 @@ function SocketTester(props) {
     padding: 0,
     overflow: 'hidden',
   };
+
+  if (process.env.NODE_ENV !== 'development') {
+    navigate('/');
+    return;
+  }
 
   return (
     <div className='startpage' style={svgStyle}>

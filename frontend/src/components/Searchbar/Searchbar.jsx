@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 
 import './Searchbar.css';
 
-const Searchbar = ({setSearchTerm}) => {
+export default function Searchbar({ setSearchTerm }) {
   const [searchInput, setSearchInput] = useState("");
- 
 
   const handleSearch = (event) => {
     if (event.key === 'Enter' && searchInput !== "") {
@@ -13,18 +12,13 @@ const Searchbar = ({setSearchTerm}) => {
     }
   }
 
-
   const handleChange = (event) => {
     const query = event.target.value;
     setSearchInput(query);
   };
 
- 
-
   return (
     <div className='searchbarWrapper'>
-     
-
       <input
         className='searchInput'
         type='text'
@@ -33,9 +27,6 @@ const Searchbar = ({setSearchTerm}) => {
         value={searchInput}
         onKeyUp={handleSearch}
       />
-  
     </div>
   );
 };
-
-export default Searchbar;

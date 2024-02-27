@@ -4,8 +4,7 @@ import TextField from '@mui/material/TextField';
 import Radio from '@mui/material/Radio';
 import React, { useEffect } from 'react';
 
-const CreateQuestion = (props) => {
-
+export default function CreateQuestion(props) {
   useEffect(() => {
     props.func(props.quizQuestion);
   }, [props.quizQuestion, props.func]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -26,7 +25,6 @@ const CreateQuestion = (props) => {
     }
   }
 
-
   return (
     <div className='createQuestionPage'>
       <div className='titleDiv'>
@@ -45,7 +43,6 @@ const CreateQuestion = (props) => {
           }
         />
       </div>
-
       <div className='answers'>
         <div className='answerCard'>
           <Radio
@@ -119,5 +116,3 @@ const CreateQuestion = (props) => {
     </div>
   );
 };
-
-export default CreateQuestion;
