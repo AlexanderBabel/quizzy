@@ -23,9 +23,20 @@
     align-content: center;
 }
 
-.header{
-    display: flex;
-    flex-direction: row;
+.header {
+    display: grid;
     align-items: center;
+    grid-template-columns: auto auto; /* Adjust column sizes as needed */
 }
 
+#actions {
+    position: absolute;
+    right: 2vw;
+    margin-left: auto;
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+#counter {
+    margin-right: 1000px;
+}

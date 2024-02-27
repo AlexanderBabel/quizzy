@@ -8,3 +8,8 @@
     font-weight: bolder;
     border-color: #6A6DD2;
 }
+
+#wrapper{
+    display: flex;
+    align-items: center;
+}
