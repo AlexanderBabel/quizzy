@@ -11,10 +11,9 @@ export default function SocketHandler() {
   const { lastMessage: lobbyMessage, sendMessage: sendLobbyMessage } =
     useSocketEvent(socket, "lobby:create");
   const {
-    lastMessage: joinLobbyMessage,
+    lastMessage: joinLobbyMessage, // eslint-disable-line
     sendMessage: sendJoinLobbyMessage,
-  } = // eslint-disable-line
-    useSocketEvent(socket, "lobby:join");
+  } = useSocketEvent(socket, "lobby:join");
   const { lastMessage: players } = useSocketEvent(socket, "lobby:players");
   const { sendMessage: startQuiz } = useSocketEvent(socket, "lobby:start");
   const { lastMessage: gameStart } = useSocketEvent(socket, "lobby:startQuiz"); // eslint-disable-line
