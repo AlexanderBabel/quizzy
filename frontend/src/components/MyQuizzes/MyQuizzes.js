@@ -14,7 +14,7 @@ const MyQuizzes = ({quizzes, setUpdate}) => {
         {quizzes.length > 0 ?
         quizzes.map((quiz) => {
             return (
-            <CardStartpage quizcard={true} quiz={quiz} setUpdate={setUpdate}/>
+            <CardStartpage quizcard={true} quiz={quiz} setUpdate={setUpdate} deleteAllowed={true}/>
             )
             
         }) :
