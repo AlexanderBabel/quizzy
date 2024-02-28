@@ -1,20 +1,18 @@
-.AnswerQuestion{
-    width: fit-content;
-    text-align: center;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 40px;
+.AnswerQuestion {
+  width: fit-content;
+  text-align: center;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 40px;
 }
 
-.answerCardIcon{
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 10px 0 0 10px;
-    max-width: 40px;
-    max-height: 40px;
+.answerCardIcon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 10px 0 0 10px;
+  max-width: 40px;
+  max-height: 40px;
 }
-
-

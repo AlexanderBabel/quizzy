@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import './Searchbar.css';
+import "./Searchbar.css";
 
 export default function Searchbar({ setSearchTerm }) {
   const [searchInput, setSearchInput] = useState("");
 
   const handleSearch = (event) => {
-    if (event.key === 'Enter' && searchInput !== "") {
-      setSearchTerm(searchInput)
-      setSearchInput('')
+    if (event.key === "Enter" && searchInput !== "") {
+      setSearchTerm(searchInput);
+      setSearchInput("");
     }
-  }
+  };
 
   const handleChange = (event) => {
     const query = event.target.value;
@@ -18,15 +18,15 @@ export default function Searchbar({ setSearchTerm }) {
   };
 
   return (
-    <div className='searchbarWrapper'>
+    <div className="searchbarWrapper">
       <input
-        className='searchInput'
-        type='text'
-        placeholder='Search quiz...'
+        className="searchInput"
+        type="text"
+        placeholder="Search quiz..."
         onChange={handleChange}
         value={searchInput}
         onKeyUp={handleSearch}
       />
     </div>
   );
-};
+}
