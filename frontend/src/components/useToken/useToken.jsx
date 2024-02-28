@@ -1,5 +1,8 @@
-import { useEffect, useReducer } from "react";
-import { decodeToken, isExpired } from "react-jwt";
+import useAxios from "axios-hooks";
+import { getTokenFromLocalStorage, isGuestToken } from "../axios";
+import { useReducer, useContext, createContext, useEffect } from "react";
+
+const TokenContext = createContext({});
 
 const Type = {
   Guest: "guest",
@@ -7,18 +10,22 @@ const Type = {
   Logout: "logout",
 };
 
-function reducer(state, action) {
+function reducer(_state, action) {
   if (action.type === Type.Guest) {
     localStorage.setItem("guestToken", action.token);
+    const isGuest = isGuestToken(action.token);
     return {
       token: action.token,
-      isGuest: isGuestToken(action.token),
+      isGuest,
+      isCreator: !isGuest,
     };
   } else if (action.type === Type.Creator) {
     localStorage.setItem("token", action.token);
+    const isGuest = isGuestToken(action.token);
     return {
       token: action.token,
-      isGuest: isGuestToken(action.token),
+      isGuest,
+      isCreator: !isGuest,
     };
   } else if (action.type === Type.Logout) {
     localStorage.removeItem("token");
@@ -27,51 +34,15 @@ function reducer(state, action) {
   throw Error("Unknown action.");
 }
 
-function generateGuestToken(dispatch) {
-  fetch(`${process.env.REACT_APP_API_ENDPOINT}/v1/auth/guest`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      dispatch({ type: Type.Guest, token: data.accessToken });
-    });
-}
+export function TokenProvider({ children }) {
+  const [{ data }, refetch] = useAxios(
+    { method: "POST", url: "/auth/guest" },
+    { manual: true }
+  );
 
-function getTokenFromLocalStorage(name = "token") {
-  const token = localStorage.getItem(name);
-  if (token === null) {
-    return {
-      token: null,
-      isGuest: false,
-    };
-  }
-
-  if (isExpired(token)) {
-    localStorage.removeItem(name);
-    return {
-      token: null,
-      isGuest: false,
-    };
-  }
-
-  return {
-    token: token,
-    isGuest: isGuestToken(token),
-  };
-}
-
-function isGuestToken(token) {
-  const payload = decodeToken(token);
-  return payload?.type === Type.Guest;
-}
-
-export default function useToken() {
   const [state, dispatch] = useReducer(
     reducer,
-    { token: null, isGuest: false },
+    { token: null, isGuest: false, isCreator: false },
     () => {
       const creatorToken = getTokenFromLocalStorage("token");
       if (creatorToken.token !== null) {
@@ -91,11 +62,17 @@ export default function useToken() {
   );
 
   useEffect(() => {
-    if (state.token !== null) {
-      return;
+    if (state.token === null) {
+      refetch();
     }
-    generateGuestToken(dispatch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.token]);
+
+  useEffect(() => {
+    if (data?.accessToken) {
+      dispatch({ type: Type.Guest, token: data.accessToken });
+    }
+  }, [data]);
 
   const saveToken = (token) => {
     if (token === null) {
@@ -106,9 +83,20 @@ export default function useToken() {
     dispatch({ type: Type.Creator, token: token });
   };
 
-  return {
-    setToken: saveToken,
-    token: state.token,
-    isGuest: state.isGuest,
-  };
+  return (
+    <TokenContext.Provider
+      value={{
+        setToken: saveToken,
+        token: state.token,
+        isGuest: state.isGuest,
+        isCreator: state.isCreator,
+      }}
+    >
+      {children}
+    </TokenContext.Provider>
+  );
+}
+
+export default function useToken() {
+  return useContext(TokenContext);
 }

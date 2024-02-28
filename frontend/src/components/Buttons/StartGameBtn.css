@@ -1,15 +1,14 @@
-
-#startGameButton{
-    height: 3.5rem;
-    width: 7rem;
-    background-color: #6A6DD2;
-    color: aliceblue;
-    border-radius: 1rem;
-    font-weight: bolder;
-    border-color: #6A6DD2;
+#startGameButton {
+  height: 3.5rem;
+  width: 7rem;
+  background-color: #6a6dd2;
+  color: aliceblue;
+  border-radius: 1rem;
+  font-weight: bolder;
+  border-color: #6a6dd2;
 }
 
-#wrapper{
-    display: flex;
-    align-items: center;
+#wrapper {
+  display: flex;
+  align-items: center;
 }

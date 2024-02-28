@@ -1,35 +1,33 @@
-.titleDiv{
-    margin: 40px 100px;
+.titleDiv {
+  margin: 40px 100px;
 }
 
-.answers{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: fit-content;
-    gap: 40px;
-    margin: 0 auto;
-    padding: 20px;
-
+.answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: fit-content;
+  gap: 40px;
+  margin: 0 auto;
+  padding: 20px;
 }
-.answerCard{
-    background-color:white;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 20px;
-    width: 230px;
-    height: 130px;
-    cursor: pointer;
-    flex-direction: column;
-    position: relative;
-    overflow: scroll;
+.answerCard {
+  background-color: white;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  width: 230px;
+  height: 130px;
+  cursor: pointer;
+  flex-direction: column;
+  position: relative;
+  overflow: scroll;
 }
 
-.radioAnswer{
-    position: absolute !important;
-    top: 0;
-    right: 0;
-    margin: 10px !important;
-   
+.radioAnswer {
+  position: absolute !important;
+  top: 0;
+  right: 0;
+  margin: 10px !important;
 }
