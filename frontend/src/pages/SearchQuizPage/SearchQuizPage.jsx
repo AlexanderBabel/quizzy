@@ -1,40 +1,34 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { Skeleton } from "@mui/material";
+import useAxios from "axios-hooks";
 import "./SearchQuizPage.css";
 import background from "../../images/blob-scene-haikei.svg";
-import Searchbar from "../../components/Searchbar/Searchbar";
+import SearchBar from "../../components/SearchBar/SearchBar";
 import CardStartPage from "../../components/Card/CardStartPage";
 import LoginBtn from "../../components/Buttons/LoginBtn";
-import useToken from "../../context/useToken";
+import { enqueueSnackbar } from "notistack";
 
 export default function SearchQuizPage() {
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
-  const { token, isGuest, setToken } = useToken();
-
   const [searchTerm, setSearchTerm] = useState("");
-  const [res, setRes] = useState();
-
-  const searchQuiz = () => {
-    axios
-      .get(`${apiEndpoint}/v1/quiz/search`, {
-        params: {
-          query: searchTerm,
-        },
-      })
-      .then(function (response) {
-        setRes(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
+  const [{ data, error, loading }, fetchResults] = useAxios(
+    { url: "quiz/search", method: "get" },
+    { manual: true }
+  );
 
   useEffect(() => {
     if (searchTerm !== "") {
-      searchQuiz();
+      fetchResults({ params: { query: searchTerm } });
     }
     // eslint-disable-next-line
   }, [searchTerm]);
+
+  useEffect(() => {
+    if (error) {
+      enqueueSnackbar(`Error fetching quizzes. Message: ${error.message}`, {
+        variant: "error",
+      });
+    }
+  }, [error]);
 
   const svgStyle = {
     backgroundImage: `url(${background})`,
@@ -50,15 +44,25 @@ export default function SearchQuizPage() {
   return (
     <div className="startPage" style={svgStyle}>
       <div className="startPageTop">
-        <Searchbar setSearchTerm={setSearchTerm} />
-        <LoginBtn token={token} isGuest={isGuest} setToken={setToken} />
+        <SearchBar setSearchTerm={(term) => setSearchTerm(term)} />
+        <LoginBtn />
       </div>
 
       <div className="searchQuizzes">
-        {res &&
-          res.length > 0 &&
-          res.map((quiz) => {
-            return <CardStartPage quiz={quiz} quizcard={true} />;
+        {loading &&
+          [0, 0, 0, 0].map((_, i) => (
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              width={230}
+              height={130}
+              className="cardStartPageWrapper"
+            />
+          ))}
+        {!loading &&
+          data?.length > 0 &&
+          data.map((quiz) => {
+            return <CardStartPage quiz={quiz} quizCard={true} />;
           })}
       </div>
     </div>

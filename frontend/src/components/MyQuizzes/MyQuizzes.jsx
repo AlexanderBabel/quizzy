@@ -29,7 +29,7 @@ export default function MyQuizzes() {
                 return (
                   <CardStartPage
                     key={quiz?.quizId}
-                    quizcard={true}
+                    quizCard={true}
                     quiz={quiz}
                     setUpdate={() => refetch()}
                     deleteAllowed={true}
