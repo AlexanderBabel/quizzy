@@ -3,6 +3,11 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class AuthService {
   findJwtToken(req: any): string | null {
+    const token = req?.handshake?.auth?.token;
+    if (token) {
+      return token;
+    }
+
     const headers = req?.headers || req?.handshake?.headers;
     if (!headers) {
       return null;

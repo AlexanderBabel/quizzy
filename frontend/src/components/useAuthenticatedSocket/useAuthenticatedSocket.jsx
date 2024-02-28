@@ -15,8 +15,9 @@ export function SocketProvider({ children }) {
   const { token } = useToken();
   const state = useSocket(wsEndpoint, {
     enabled: !!token,
-    extraHeaders: {
-      Authorization: `Bearer ${token}`,
+    transports: ["websocket"],
+    auth: {
+      token,
     },
   });
 
