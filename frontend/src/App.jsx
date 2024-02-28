@@ -10,6 +10,7 @@ import SearchQuizPage from "./pages/SearchQuizPage/SearchQuizPage";
 import SocketTester from "./pages/SocketTester/SocketTester";
 import { SocketProvider } from "./context/useAuthenticatedSocket";
 import { LobbyProvider } from "./context/useLobby";
+import { GameProvider } from "./context/useGame";
 
 export default function App() {
   return (
@@ -17,17 +18,19 @@ export default function App() {
       <TokenProvider>
         <SocketProvider>
           <LobbyProvider>
-            <Router>
-              <Routes>
-                <Route exact path="/" element={<StartPage />} />
-                <Route path="/search" element={<SearchQuizPage />} />
-                <Route path="/create" element={<CreateQuizPage />} />
-                <Route path="/AnswerQuiz" element={<AnswerQuizPage />} />
-                <Route path="/join/:lobbyCode?" element={<LobbyPage />} />
-                <Route path="/PostLobbyPage" element={<PostLobbyPage />} />
-                <Route path="/tester" element={<SocketTester />} />
-              </Routes>
-            </Router>
+            <GameProvider>
+              <Router>
+                <Routes>
+                  <Route exact path="/" element={<StartPage />} />
+                  <Route path="/search" element={<SearchQuizPage />} />
+                  <Route path="/create" element={<CreateQuizPage />} />
+                  <Route path="/game" element={<AnswerQuizPage />} />
+                  <Route path="/join/:lobbyCode?" element={<LobbyPage />} />
+                  <Route path="/PostLobbyPage" element={<PostLobbyPage />} />
+                  <Route path="/tester" element={<SocketTester />} />
+                </Routes>
+              </Router>
+            </GameProvider>
           </LobbyProvider>
         </SocketProvider>
       </TokenProvider>

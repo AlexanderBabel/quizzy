@@ -109,7 +109,10 @@ export class LobbyGateway {
       this.gameService.sendQuestion(client, game);
     }
 
-    console.log('lobby:join', payload, client.data);
+    console.log('lobby:join', payload, client.data, {
+      state: game ? 'game' : 'lobby',
+    });
+    client.emit('lobby:join', { state: game ? 'game' : 'lobby' });
     return 'Joined lobby';
   }
 
@@ -178,7 +181,7 @@ export class LobbyGateway {
     }
 
     console.log('start quiz', lobby.code);
-    this.server.to(lobby.code).emit('lobby:startQuiz');
+    this.server.to(lobby.code).emit('lobby:start', { success: true });
     this.lobbyService.deleteLobby(lobby.code);
     const res = await this.gameService.startGame(client, lobby);
     if (!res) {

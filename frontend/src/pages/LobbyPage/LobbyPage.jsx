@@ -3,23 +3,28 @@ import background from "./../../images/blob-scene-haikei-2.svg";
 import StartGameBtn from "../../components/Buttons/StartGameBtn";
 import PlayerCounter from "../../components/PlayerCounter/PlayerCounter";
 import { useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { useSocketEvent } from "socket.io-react-hook";
 import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
 import useLobby, { GameRole, LobbyActionType } from "../../context/useLobby";
 import PlayerNameGrid from "../../components/PlayerNameGrid/PlayerNameGrid";
 import UsernameTextField from "../../components/PlayerNameInput/PlayerNameInput";
+import { enqueueSnackbar } from "notistack";
 
 export default function LobbyPage() {
+  const navigate = useNavigate();
   const { state, dispatch } = useLobby();
   const { socket } = useAuthenticatedSocket();
   const quizId = useLocation()?.state?.quizId;
   const { lobbyCode } = useParams();
 
-  const { sendMessage: joinLobby } = useSocketEvent(socket, "lobby:join");
+  const { lastMessage: joinLobbyResponse, sendMessage: joinLobby } =
+    useSocketEvent(socket, "lobby:join");
   const { lastMessage: createResponse, sendMessage: createLobby } =
     useSocketEvent(socket, "lobby:create");
+  const { lastMessage: startGameResponse, sendMessage: startQuiz } =
+    useSocketEvent(socket, "lobby:start");
 
   // create lobby is quizId is provided
   useEffect(() => {
@@ -34,6 +39,7 @@ export default function LobbyPage() {
   // handle create response
   useEffect(() => {
     if (createResponse) {
+      navigate(`/join/${createResponse}`, { replace: true, state: { quizId } });
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
         role: GameRole.HOST,
@@ -41,6 +47,42 @@ export default function LobbyPage() {
       });
     }
   }, [createResponse]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // handle quiz start response
+  useEffect(() => {
+    if (startGameResponse) {
+      navigate("/game");
+      enqueueSnackbar("Game started!", { variant: "success" });
+      return;
+    }
+  }, [startGameResponse]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // handle join lobby response
+  useEffect(() => {
+    if (joinLobbyResponse?.state === "game") {
+      navigate("/game");
+      enqueueSnackbar(
+        "Game is already running. Continuing with next question...",
+        { variant: "info" }
+      );
+      dispatch({
+        type: LobbyActionType.JOIN_LOBBY,
+        role: GameRole.PLAYER,
+        lobbyCode,
+      });
+    }
+
+    if (joinLobbyResponse?.state === "lobby") {
+      enqueueSnackbar("Lobby joined! Waiting for start...", {
+        variant: "success",
+      });
+      dispatch({
+        type: LobbyActionType.JOIN_LOBBY,
+        role: GameRole.PLAYER,
+        lobbyCode,
+      });
+    }
+  }, [joinLobbyResponse]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const svgStyle = {
     backgroundImage: `url(${background})`,
@@ -60,7 +102,9 @@ export default function LobbyPage() {
       <div>
         <div className="header">
           <h1 className="lobbyTitle">{quizName}</h1>
-          {state.role === GameRole.HOST && <StartGameBtn />}
+          {state.role === GameRole.HOST && state.players?.length > 0 && (
+            <StartGameBtn text="Start Game" onClick={() => startQuiz()} />
+          )}
           {state.role !== null && (
             <PlayerCounter playerCount={state.players.length}></PlayerCounter>
           )}
@@ -68,6 +112,10 @@ export default function LobbyPage() {
         <h1 className="lobbyCodeTitle">
           Game Pin: {state.lobbyCode ?? lobbyCode}
         </h1>
+        <p className="lobbyCodeTitle">
+          Go to {window.location.origin}/join/{state.lobbyCode ?? lobbyCode} to
+          join this lobby.
+        </p>
       </div>
       {state.role !== null ? (
         <div>
