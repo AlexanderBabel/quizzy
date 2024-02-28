@@ -10,13 +10,7 @@ import { GameRole } from 'src/auth/jwt/enums/roles.enum';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { GameService } from './game.service';
 
-@WebSocketGateway({
-  cors: {
-    origin: 'http://localhost:3000',
-    allowedHeaders: ['Authorization'],
-    credentials: true,
-  },
-})
+@WebSocketGateway({ cors: true })
 export class GameGateway {
   constructor(private readonly gameService: GameService) {}
 

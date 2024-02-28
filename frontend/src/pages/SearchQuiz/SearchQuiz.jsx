@@ -5,36 +5,36 @@ import axios from 'axios';
 import CardStartpage from '../../components/Card/CardStartpage';
 import './SearchQuiz.css'
 import LoginBtn from '../../components/Buttons/LoginBtn';
+import useToken from '../../components/useToken/useToken';
 
 
-function SearchQuiz(props) {
+function SearchQuiz() {
   const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
+  const { token, isGuest, setToken } = useToken();
 
-    const { token, setToken } = props;
-    const [searchTerm, setSearchTerm] = useState('')
-    const [res, setRes] = useState()
+  const [searchTerm, setSearchTerm] = useState('');
+  const [res, setRes] = useState();
 
-  const searchQuiz = (event) => {
-   
-      axios.get(`${apiEndpoint}/v1/quiz/search`, {
-        params: {
-          query: searchTerm
-        }})
+  const searchQuiz = () => {
+    axios.get(`${apiEndpoint}/v1/quiz/search`, {
+      params: {
+        query: searchTerm
+      }
+    })
       .then(function (response) {
         setRes(response.data)
       })
       .catch(function (error) {
         console.log(error);
       })
-    
   }
 
-useEffect(() => {
-    if (searchTerm  !== ''){
-        searchQuiz()
+  useEffect(() => {
+    if (searchTerm !== '') {
+      searchQuiz()
     }
     // eslint-disable-next-line 
-  },[searchTerm]);
+  }, [searchTerm]);
 
 
   const svgStyle = {
@@ -53,21 +53,18 @@ useEffect(() => {
   return (
     <div className='startpage' style={svgStyle}>
       <div className='startpageTop'>
-        <Searchbar setSearchTerm={setSearchTerm}/>
-        <LoginBtn token={token} setToken={setToken} />
+        <Searchbar setSearchTerm={setSearchTerm} />
+        <LoginBtn token={token} isGuest={isGuest} setToken={setToken} />
       </div>
-     
+
       <div className='searcQuizzes'>
-
-      {res && res.length > 0 &&
-        res.map((quiz) => {
+        {res && res.length > 0 &&
+          res.map((quiz) => {
             return (
-            <CardStartpage quiz={quiz} quizcard={true}/>
+              <CardStartpage quiz={quiz} quizcard={true} />
             )
-            
-        })
+          })
         }
-
       </div>
     </div>
   );

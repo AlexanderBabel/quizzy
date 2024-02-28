@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./PlayerNameInput.css";
 
-function PlayerNameInput({ onSubmitted }) {
+export default function PlayerNameInput({ onSubmitted }) {
   const [playerName, setPlayerName] = useState("");
 
   const onChange = (event) => {
@@ -29,5 +29,3 @@ function PlayerNameInput({ onSubmitted }) {
     </div>
   );
 }
-
-export default PlayerNameInput;

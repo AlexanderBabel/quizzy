@@ -1,24 +1,14 @@
+import { useNavigate } from 'react-router-dom';
+import './Startpage.css'
 import background from '../../images/blob-scene-haikei.svg'
 import CardStartpage from '../../components/Card/CardStartpage';
-import './Startpage.css'
 import LoginBtn from '../../components/Buttons/LoginBtn';
 import MyQuizzes from '../../components/MyQuizzes/MyQuizzes';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import useToken from '../../components/useToken/useToken';
 
-
-
-function Startpage(props) {
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
-
-
-
+function Startpage() {
+  const { isCreator } = useToken();
   const navigate = useNavigate();
-
-  const { token, isGuest, setToken } = props;
-  const [myCreatedQuizzes, setMyCreatedQuizzes] = useState([])
-  const [update, setUpdate] = useState(false)
 
   const svgStyle = {
     backgroundImage: `url(${background})`,
@@ -31,46 +21,22 @@ function Startpage(props) {
     overflow: 'hidden',
   };
 
-  function getMyQuizzes() {
-    if (!isGuest) {
-      let config = {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      }
-      axios.get(`${apiEndpoint}/v1/quiz/list`, config).then((response) => {
-        setMyCreatedQuizzes(response.data);
-      });
-    }
-  }
-
-  useEffect(() => {
-    getMyQuizzes()
-    // eslint-disable-next-line
-  }, [token, isGuest]);
-
-  useEffect(() => {
-    if (update) {
-      getMyQuizzes()
-    }
-    setUpdate(false)
-    // eslint-disable-next-line
-  }, [update]);
-
   return (
     <div className='startpage' style={svgStyle}>
       <div className='startpageTop'>
-        <LoginBtn isGuest={isGuest} setToken={setToken} />
+        <LoginBtn />
       </div>
       <div className='cardContainer'>
-        <CardStartpage text={'Socket Tester'} onclick={() => navigate('/SocketTester')} />
+        {process.env.NODE_ENV === 'development' &&
+          <CardStartpage text={'Socket Tester'} onclick={() => navigate('/SocketTester')} />
+        }
         <CardStartpage text={'Join a quiz!'} inputBool={true} />
-        {!isGuest && <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} />}
+        {isCreator && <CardStartpage onclick={() => navigate('/CreateQuiz')} text={'Create quiz'} />}
         <CardStartpage text={'Discover quizzes'} onclick={() => navigate('/SearchQuiz')} />
       </div>
-      {!isGuest &&
+      {isCreator &&
         <div className='myQuizzes'>
-          <MyQuizzes quizzes={myCreatedQuizzes} setUpdate={setUpdate} />
+          <MyQuizzes />
         </div>}
     </div>
   );
