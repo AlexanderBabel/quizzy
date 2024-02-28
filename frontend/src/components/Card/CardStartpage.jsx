@@ -1,22 +1,34 @@
-import './CardStartpage.css';
-import { useEffect, useState } from 'react';
+import "./CardStartpage.css";
+import { useEffect, useState } from "react";
 import { MdOutlineEdit } from "react-icons/md";
-import { FaTrash } from 'react-icons/fa';
+import { FaTrash } from "react-icons/fa";
 import { CiPlay1 } from "react-icons/ci";
-import useToken from '../useToken/useToken';
-import useAxios from 'axios-hooks';
-import { enqueueSnackbar } from 'notistack';
+import useToken from "../useToken/useToken";
+import useAxios from "axios-hooks";
+import { enqueueSnackbar } from "notistack";
 
-export default function CardStartpage({ text, inputBool, quizcard, onclick, quiz, setUpdate, deleteAllowed }) {
-  const [{ data, error }, deleteQuiz] = useAxios({
-    url: `quiz/${quiz?.quizId}/delete`, method: 'delete'
-  }, { manual: true });
+export default function CardStartpage({
+  text,
+  inputBool,
+  quizcard,
+  onclick,
+  quiz,
+  setUpdate,
+  deleteAllowed,
+}) {
+  const [{ data, error }, deleteQuiz] = useAxios(
+    {
+      url: `quiz/${quiz?.quizId}/delete`,
+      method: "delete",
+    },
+    { manual: true }
+  );
   const [hoveredQuizCard, setHoveredQuizCard] = useState(false);
   const { isCreator } = useToken();
 
   useEffect(() => {
     if (data) {
-      setUpdate(true)
+      setUpdate(true);
       enqueueSnackbar(`Quiz "${quiz.name}" deleted`, {
         variant: "success",
       });
@@ -32,41 +44,42 @@ export default function CardStartpage({ text, inputBool, quizcard, onclick, quiz
   }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className={quizcard ? 'cardStartpageWrapper' : 'cardStartpageWrapper'}
+    <div
+      className={quizcard ? "cardStartpageWrapper" : "cardStartpageWrapper"}
       onClick={onclick}
       onMouseEnter={() => setHoveredQuizCard(true)}
       onMouseLeave={() => setHoveredQuizCard(false)}
-
     >
-      {quizcard && hoveredQuizCard &&
-        <div className='quizCardBtns'>
-          {isCreator && deleteAllowed &&
+      {quizcard && hoveredQuizCard && (
+        <div className="quizCardBtns">
+          {isCreator && deleteAllowed && (
             <>
-              <button className='iconBtn'>
+              <button className="iconBtn">
                 <MdOutlineEdit />
               </button>
-              <button className='iconBtn' onClick={() => deleteQuiz()}>
+              <button className="iconBtn" onClick={() => deleteQuiz()}>
                 <FaTrash />
               </button>
             </>
-          }
+          )}
 
-          <button className='iconBtn'>
+          <button className="iconBtn">
             <CiPlay1 />
           </button>
-        </div>}
+        </div>
+      )}
 
       <p>{quizcard ? quiz.name : text}</p>
 
-      {inputBool &&
+      {inputBool && (
         <input
-          className='inputPin'
-          type='text'
-          placeholder='Game PIN'
-        // onChange={handleChange}
-        // value={searchInput}
+          className="inputPin"
+          type="text"
+          placeholder="Game PIN"
+          // onChange={handleChange}
+          // value={searchInput}
         />
-      }
+      )}
     </div>
   );
-};
+}

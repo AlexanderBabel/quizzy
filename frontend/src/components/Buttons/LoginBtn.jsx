@@ -6,7 +6,10 @@ import { useEffect } from "react";
 
 export default function LoginBtn() {
   const { isCreator, setToken } = useToken();
-  const [{ data, error }, login] = useAxios({ url: '/auth/login', method: 'post' }, { manual: true });
+  const [{ data, error }, login] = useAxios(
+    { url: "/auth/login", method: "post" },
+    { manual: true }
+  );
 
   useEffect(() => {
     if (error) {
@@ -22,18 +25,19 @@ export default function LoginBtn() {
 
   return (
     <div className="loginBtnWrapper">
-      {isCreator ?
-        <button type="button" className="loginBtn"
+      {isCreator ? (
+        <button
+          type="button"
+          className="loginBtn"
           onClick={(e) => {
             e.preventDefault();
             setToken(null);
-          }}>
+          }}
+        >
           Log out
         </button>
-        :
-        <GoogleOAuthProvider
-          clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
-        >
+      ) : (
+        <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
           <GoogleLogin
             useOneTap={false}
             onSuccess={async (credentialResponse) => {
@@ -46,7 +50,7 @@ export default function LoginBtn() {
             shape="pill"
           />
         </GoogleOAuthProvider>
-      }
+      )}
     </div>
   );
 }
