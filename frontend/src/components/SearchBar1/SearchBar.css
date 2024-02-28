@@ -1,0 +1,26 @@
+.searchbarWrapper {
+  padding: 20px;
+  width: 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: fit-content;
+  margin: 0 auto;
+}
+
+.searchInput {
+  padding: 15px;
+  border-radius: 40px;
+  border: none;
+  width: 100%;
+}
+
+.searchInput:focus {
+  outline: none;
+}
+
+@media (max-width: 950px) {
+  .searchbarWrapper {
+    margin-left: 0;
+  }
+}
