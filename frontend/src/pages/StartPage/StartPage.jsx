@@ -30,19 +30,19 @@ export default function Startpage() {
         {process.env.NODE_ENV === "development" && (
           <CardStartPage
             text={"Socket Tester"}
-            onclick={() => navigate("/SocketTester")}
+            onclick={() => navigate("/tester")}
           />
         )}
         <CardStartPage text={"Join a quiz!"} inputBool={true} />
         {isCreator && (
           <CardStartPage
-            onclick={() => navigate("/CreateQuiz")}
+            onclick={() => navigate("/create")}
             text={"Create quiz"}
           />
         )}
         <CardStartPage
           text={"Discover quizzes"}
-          onclick={() => navigate("/SearchQuiz")}
+          onclick={() => navigate("/search")}
         />
       </div>
       {isCreator && (

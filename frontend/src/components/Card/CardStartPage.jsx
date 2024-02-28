@@ -69,7 +69,7 @@ export default function CardStartPage({
           <button
             className="iconBtn"
             onClick={() =>
-              navigate("/LobbyPage", { state: { quizId: quiz.quizId } })
+              navigate("/join", { state: { quizId: quiz.quizId } })
             }
           >
             <CiPlay1 />

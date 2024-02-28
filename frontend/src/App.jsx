@@ -20,12 +20,12 @@ export default function App() {
             <Router>
               <Routes>
                 <Route exact path="/" element={<StartPage />} />
-                <Route path="/SearchQuiz" element={<SearchQuizPage />} />
-                <Route path="/CreateQuiz" element={<CreateQuizPage />} />
+                <Route path="/search" element={<SearchQuizPage />} />
+                <Route path="/create" element={<CreateQuizPage />} />
                 <Route path="/AnswerQuiz" element={<AnswerQuizPage />} />
-                <Route path="/LobbyPage" element={<LobbyPage />} />
+                <Route path="/join/:lobbyCode?" element={<LobbyPage />} />
                 <Route path="/PostLobbyPage" element={<PostLobbyPage />} />
-                <Route path="/SocketTester" element={<SocketTester />} />
+                <Route path="/tester" element={<SocketTester />} />
               </Routes>
             </Router>
           </LobbyProvider>

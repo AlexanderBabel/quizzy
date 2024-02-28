@@ -3,7 +3,7 @@ import background from "./../../images/blob-scene-haikei-2.svg";
 import StartGameBtn from "../../components/Buttons/StartGameBtn";
 import PlayerCounter from "../../components/PlayerCounter/PlayerCounter";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 import { useSocketEvent } from "socket.io-react-hook";
 import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
@@ -13,8 +13,9 @@ import UsernameTextField from "../../components/PlayerNameInput/PlayerNameInput"
 
 export default function LobbyPage() {
   const { state, dispatch } = useLobby();
-  const socket = useAuthenticatedSocket();
+  const { socket } = useAuthenticatedSocket();
   const quizId = useLocation()?.state?.quizId;
+  const { lobbyCode } = useParams();
 
   const { sendMessage: joinLobby } = useSocketEvent(socket, "lobby:join");
   const { lastMessage: createResponse, sendMessage: createLobby } =
@@ -25,9 +26,10 @@ export default function LobbyPage() {
     if (!socket.connected) return;
 
     if (quizId && state.lobbyCode === null) {
+      console.log("Creating lobby", quizId);
       createLobby(quizId);
     }
-  }, [socket.connected, quizId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [socket.connected]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // handle create response
   useEffect(() => {
@@ -63,13 +65,18 @@ export default function LobbyPage() {
             <PlayerCounter playerCount={state.players.length}></PlayerCounter>
           )}
         </div>
-        <h1 className="lobbyCodeTitle">Game Pin: {state.lobbyCode}</h1>
+        <h1 className="lobbyCodeTitle">
+          Game Pin: {state.lobbyCode ?? lobbyCode}
+        </h1>
       </div>
       {state.role !== null ? (
         <div>
-          {state.role === GameRole.HOST && (
-            <PlayerNameGrid players={state.players}></PlayerNameGrid>
-          )}
+          {state.role === GameRole.HOST &&
+            (state.players.length === 0 ? (
+              <h1 style={{ color: "white" }}>Waiting for players...</h1>
+            ) : (
+              <PlayerNameGrid players={state.players}></PlayerNameGrid>
+            ))}
           {state.role === GameRole.PLAYER && (
             <h1 style={{ color: "white" }}>Waiting for game to start...</h1>
           )}
@@ -77,9 +84,7 @@ export default function LobbyPage() {
       ) : (
         <UsernameTextField
           className="playerNameInput"
-          onSubmitted={(userName) =>
-            joinLobby({ lobbyCode: state.lobbyCode, userName })
-          }
+          onSubmitted={(userName) => joinLobby({ lobbyCode, userName })}
         ></UsernameTextField>
       )}
     </div>

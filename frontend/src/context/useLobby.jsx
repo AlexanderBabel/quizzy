@@ -65,8 +65,8 @@ export function LobbyProvider({ children }) {
   }, [players]);
 
   return (
-    <LobbyProvider.Provider value={{ state, dispatch, getPlayers }}>
+    <LobbyContext.Provider value={{ state, dispatch, getPlayers }}>
       {children}
-    </LobbyProvider.Provider>
+    </LobbyContext.Provider>
   );
 }
