@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "./StartPage.css";
 import background from "../../images/blob-scene-haikei.svg";
-import CardStartPage from "../../components/Card/CardStartpage1";
+import CardStartPage from "../../components/Card/CardStartPage";
 import LoginBtn from "../../components/Buttons/LoginBtn";
 import MyQuizzes from "../../components/MyQuizzes/MyQuizzes";
 import useToken from "../../context/useToken";
