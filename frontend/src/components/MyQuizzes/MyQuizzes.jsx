@@ -1,5 +1,5 @@
 import useAxios from "axios-hooks";
-import CardStartpage from "../Card/CardStartpage";
+import CardStartPage from "../Card/CardStartPage";
 import "./MyQuizzes.css";
 import { Skeleton } from "@mui/material";
 
@@ -20,14 +20,14 @@ export default function MyQuizzes() {
                 variant="rectangular"
                 width={230}
                 height={130}
-                className="cardStartpageWrapper"
+                className="cardStartPageWrapper"
               />
             ))}
           {!loading &&
             (data && data.length > 0 ? (
               data.map((quiz) => {
                 return (
-                  <CardStartpage
+                  <CardStartPage
                     key={quiz?.quizId}
                     quizcard={true}
                     quiz={quiz}

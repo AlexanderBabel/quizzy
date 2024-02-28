@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import { useSocket } from "socket.io-react-hook";
-import useToken from "../useToken/useToken";
+import useToken from "./useToken";
 
 // parse REACT_APP_API_ENDPOINT and convert to ws or wss endpoint
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;

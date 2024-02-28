@@ -1,14 +1,14 @@
-import "./CardStartpage.css";
+import "./CardStartPage.css";
 import { useEffect, useState } from "react";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import { CiPlay1 } from "react-icons/ci";
-import useToken from "../useToken/useToken";
+import useToken from "../../context/useToken";
 import useAxios from "axios-hooks";
 import { enqueueSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 
-export default function CardStartpage({
+export default function CardStartPage({
   text,
   inputBool,
   quizcard,
@@ -48,7 +48,7 @@ export default function CardStartpage({
 
   return (
     <div
-      className={quizcard ? "cardStartpageWrapper" : "cardStartpageWrapper"}
+      className={quizcard ? "cardStartPageWrapper" : "cardStartPageWrapper"}
       onClick={onclick}
       onMouseEnter={() => setHoveredQuizCard(true)}
       onMouseLeave={() => setHoveredQuizCard(false)}

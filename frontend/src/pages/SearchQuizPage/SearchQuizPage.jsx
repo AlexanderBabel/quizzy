@@ -1,13 +1,13 @@
-import background from "../../images/blob-scene-haikei.svg";
-import Searchbar from "../../components/Searchbar/Searchbar";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import CardStartpage from "../../components/Card/CardStartpage";
-import "./SearchQuiz.css";
+import "./SearchQuizPage.css";
+import background from "../../images/blob-scene-haikei.svg";
+import Searchbar from "../../components/Searchbar/Searchbar";
+import CardStartPage from "../../components/Card/CardStartPage";
 import LoginBtn from "../../components/Buttons/LoginBtn";
-import useToken from "../../components/useToken/useToken";
+import useToken from "../../context/useToken";
 
-function SearchQuiz() {
+export default function SearchQuizPage() {
   const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
   const { token, isGuest, setToken } = useToken();
 
@@ -48,8 +48,8 @@ function SearchQuiz() {
   };
 
   return (
-    <div className="startpage" style={svgStyle}>
-      <div className="startpageTop">
+    <div className="startPage" style={svgStyle}>
+      <div className="startPageTop">
         <Searchbar setSearchTerm={setSearchTerm} />
         <LoginBtn token={token} isGuest={isGuest} setToken={setToken} />
       </div>
@@ -58,11 +58,9 @@ function SearchQuiz() {
         {res &&
           res.length > 0 &&
           res.map((quiz) => {
-            return <CardStartpage quiz={quiz} quizcard={true} />;
+            return <CardStartPage quiz={quiz} quizcard={true} />;
           })}
       </div>
     </div>
   );
 }
-
-export default SearchQuiz;

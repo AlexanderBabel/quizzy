@@ -4,26 +4,26 @@ import "./PlayerNameInput.css";
 export default function PlayerNameInput({ onSubmitted }) {
   const [playerName, setPlayerName] = useState("");
 
-  const onChange = (event) => {
-    setPlayerName(event.target.value);
-  };
-
-  const handleSubmit = () => {
-    if (playerName !== "") {
-      onSubmitted(playerName);
-      setPlayerName("");
-    }
-  };
-
   return (
     <div className="playerNameField">
       <input
         className="playerNameInput"
         placeholder="Enter Name..."
         value={playerName} // Controlled input value
-        onChange={onChange}
+        onChange={(event) => setPlayerName(event.target.value)}
       />
-      <button type="submit" className="joinButton" onClick={handleSubmit}>
+      <button
+        type="submit"
+        className="joinButton"
+        onClick={() => {
+          if (playerName === "") {
+            return;
+          }
+
+          onSubmitted(playerName);
+          setPlayerName("");
+        }}
+      >
         Join
       </button>
     </div>
