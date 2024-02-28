@@ -17,13 +17,7 @@ import { QuizModelService } from 'src/model/quiz.model.service';
 import { QuizVisibility } from '@prisma/client';
 import { JwtAuthType } from 'src/auth/jwt/enums/jwt.enum';
 
-@WebSocketGateway({
-  cors: {
-    origin: 'http://localhost:3000',
-    allowedHeaders: ['Authorization'],
-    credentials: true,
-  },
-})
+@WebSocketGateway({ cors: true })
 export class LobbyGateway {
   constructor(
     private readonly lobbyService: LobbyService,
