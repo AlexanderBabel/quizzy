@@ -33,6 +33,8 @@ export default function LobbyPage() {
     if (quizId && state.lobbyCode === null) {
       console.log("Creating lobby", quizId);
       createLobby(quizId);
+    } else if (lobbyCode && state.lobbyCode === null) {
+      joinLobby({ lobbyCode });
     }
   }, [socket.connected]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -67,7 +69,7 @@ export default function LobbyPage() {
       );
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
-        role: GameRole.PLAYER,
+        role: joinLobbyResponse.role ?? GameRole.PLAYER,
         lobbyCode,
       });
     }
@@ -76,9 +78,10 @@ export default function LobbyPage() {
       enqueueSnackbar("Lobby joined! Waiting for start...", {
         variant: "success",
       });
+      navigate(`/join/${lobbyCode}`, { replace: true, state: { quizId } });
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
-        role: GameRole.PLAYER,
+        role: joinLobbyResponse.role ?? GameRole.PLAYER,
         lobbyCode,
       });
     }
