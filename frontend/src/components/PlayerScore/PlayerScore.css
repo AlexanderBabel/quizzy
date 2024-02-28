@@ -1,0 +1,16 @@
+.playerScoreWrapper {
+    min-width: 25rem;
+    max-width: 30rem;
+    height: 3rem;
+    background: rgba(255, 255, 255, 0.376);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 20px;
+    align-items: center;
+    font-size: 1.3rem;
+    color: white;
+    font-weight: bold;
+}
