@@ -90,7 +90,7 @@ export default function LobbyPage() {
     }
 
     if (joinLobbyResponse?.state === "lobby") {
-      enqueueSnackbar("Lobby joined! Waiting for start...", {
+      enqueueSnackbar("Lobby joined!", {
         variant: "success",
       });
       navigate(`/join/${lobbyCode}`, { replace: true, state: { quizId } });
