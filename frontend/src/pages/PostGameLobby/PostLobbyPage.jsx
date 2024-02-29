@@ -44,9 +44,7 @@ function PostLobbyPage() {
     <div id="PostLobbyPage" style={svgStyle}>
       <div id="header">
         <ReportQuizBtn></ReportQuizBtn>
-        <h1 className="lobbyTitle" id="title">
-          The Winner is...
-        </h1>
+        <h1 className="lobbyTitle">The Winner is...</h1>
         <StartGameBtn text={"Quit"}></StartGameBtn>
       </div>
       <PlacementPodium

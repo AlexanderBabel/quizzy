@@ -1,24 +1,24 @@
-.startpage{
-    display: flex;
-    flex-direction: column;
+.startpage {
+  display: flex;
+  flex-direction: column;
 }
 
-.startpageTop{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 20px;
-    justify-content: flex-end;
+.startpageTop {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px;
+  justify-content: flex-end;
 }
 
-.cardContainer{
-    margin: auto;
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
+.cardContainer {
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
 }
 
-.myQuizzes{
-    padding: 40px;
-    padding-top: 0;
+.myQuizzes {
+  padding: 40px;
+  padding-top: 0;
 }

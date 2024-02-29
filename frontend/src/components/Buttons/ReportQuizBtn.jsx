@@ -1,5 +1,5 @@
 import { MdReport } from "react-icons/md";
-import './ReportQuizBtn.css'
+import "./ReportQuizBtn.css";
 
 function ReportQuizBtn() {
   const iconSize = () => {
@@ -15,10 +15,9 @@ function ReportQuizBtn() {
     <div id="reportQuizWrapper">
       {" "}
       <h1 id="reportButtonText">Report Quiz</h1>
-      <MdReport size={iconSize()} id="reportIcon"/>
+      <MdReport size={30} id="reportIcon" />
     </div>
   );
 }
 
-
-export default ReportQuizBtn
+export default ReportQuizBtn;

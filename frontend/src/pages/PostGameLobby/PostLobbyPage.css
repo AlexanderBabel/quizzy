@@ -7,19 +7,10 @@
 #ResultList {
   overflow-y: scroll;
 }
-#title {
-  font-size: 3rem;
-}
-
-@media screen and (max-width: 700px) {
-  #title {
-    font-size: 1.3rem;
-  }
-}
 
 #header {
   display: flex;
   justify-content: space-between;
   flex-direction: row;
-  width: 95%;
+  width: 90%;
 }

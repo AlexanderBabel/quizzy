@@ -1,6 +1,6 @@
 import "./ResultListTile.css";
 
-function ResultListTile({ score, name, placement }) {
+export default function ResultListTile({ score, name, placement }) {
   return (
     <div className="resultListTile">
       <div className="tileStart">
@@ -13,5 +13,3 @@ function ResultListTile({ score, name, placement }) {
     </div>
   );
 }
-
-export default ResultListTile;

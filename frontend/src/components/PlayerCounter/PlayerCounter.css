@@ -1,23 +1,23 @@
 .PlayerCounter {
-    border-radius: 50%;
-    background-color: #6A6DD2;
-    height: 3.5rem;
-    width: 3.5rem;
-    font-weight: bolder;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  border-radius: 50%;
+  background-color: #6a6dd2;
+  height: 3.5rem;
+  width: 3.5rem;
+  font-weight: bolder;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #playerCountText {
-    text-align: center;
-    font-size: 1.5rem;
-    color: aliceblue;
+  text-align: center;
+  font-size: 1.5rem;
+  color: aliceblue;
 }
 
-#wrapper{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 2rem;
+#wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 2rem;
 }

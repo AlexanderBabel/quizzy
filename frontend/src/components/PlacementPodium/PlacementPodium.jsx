@@ -1,6 +1,6 @@
 import "./PlacementPodium.css";
 
-const PlacementPodium = ({ scores, players }) => {
+export default function PlacementPodium({ scores, players }) {
   return (
     <div id="PlacementPodiums">
       <div className="PodiumWrapper">
@@ -36,6 +36,4 @@ const PlacementPodium = ({ scores, players }) => {
       </div>
     </div>
   );
-};
-
-export default PlacementPodium;
+}

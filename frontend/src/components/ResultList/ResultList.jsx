@@ -1,6 +1,6 @@
 import ResultListTile from "../ResultListTile/ResultListTile";
 
-function ResultList({ players, playerScores }) {
+export default function ResultList({ players, playerScores }) {
   return (
     <div id="ResultList">
       {players.map((e) => (
@@ -14,5 +14,3 @@ function ResultList({ players, playerScores }) {
     </div>
   );
 }
-
-export default ResultList;
