@@ -1,15 +1,20 @@
-#reportIcon{
-    color: white;
-    size: 20rem;
+#reportIcon {
+  color: white;
 }
 
-#reportButtonText{
-    color: white;
-    font-size: 1.5rem;
+#reportButtonText {
+  color: white;
+  font-size: 1.5rem;
 }
 
-#reportQuizWrapper{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+@media screen and (max-width: 500px) {
+  #reportButtonText {
+    font-size: 0.7rem;
+  }
+}
+
+#reportQuizWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }

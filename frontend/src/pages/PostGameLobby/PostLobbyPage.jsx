@@ -6,10 +6,28 @@ import ResultList from "../../components/ResultList/ResultList";
 import ReportQuizBtn from "../../components/Buttons/ReportQuizBtn";
 
 function PostLobbyPage() {
-
-
-  var playerNames = ["Jocke", "Lucas", "Natasha", "Jocke", "Lucas", "Natasha", "Jocke", "Lucas", "Natasha"]
-  var playerScores = ["973", "675", "432", "973", "675", "432", "973", "675", "432"]
+  var playerNames = [
+    "Jocke",
+    "Lucas",
+    "Natasha",
+    "Jocke",
+    "Lucas",
+    "Natasha",
+    "Jocke",
+    "Lucas",
+    "Natasha",
+  ];
+  var playerScores = [
+    "973",
+    "675",
+    "432",
+    "973",
+    "675",
+    "432",
+    "973",
+    "675",
+    "432",
+  ];
 
   const svgStyle = {
     backgroundImage: `url(${background})`,
@@ -24,13 +42,23 @@ function PostLobbyPage() {
 
   return (
     <div id="PostLobbyPage" style={svgStyle}>
-        <div id="header">
-          <ReportQuizBtn></ReportQuizBtn>
-          <h1 className="lobbyTitle">The Winner is...</h1>
-          <StartGameBtn text={"Quit"}></StartGameBtn>
-          </div>
-      <PlacementPodium id="podiums" scores={playerScores} players={playerNames}></PlacementPodium>
-      <ResultList id="resultList" players={playerNames} playerScores={playerScores}></ResultList>
+      <div id="header">
+        <ReportQuizBtn></ReportQuizBtn>
+        <h1 className="lobbyTitle" id="title">
+          The Winner is...
+        </h1>
+        <StartGameBtn text={"Quit"}></StartGameBtn>
+      </div>
+      <PlacementPodium
+        id="podiums"
+        scores={playerScores}
+        players={playerNames}
+      ></PlacementPodium>
+      <ResultList
+        id="resultList"
+        players={playerNames}
+        playerScores={playerScores}
+      ></ResultList>
     </div>
   );
 }

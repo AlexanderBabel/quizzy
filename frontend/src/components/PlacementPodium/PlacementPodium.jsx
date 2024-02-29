@@ -5,7 +5,7 @@ const PlacementPodium = ({ scores, players }) => {
     <div id="PlacementPodiums">
       <div className="PodiumWrapper">
         <h1 id="playerName">{players[1]}</h1>
-        <div id="FirstPodium">
+        <div id="FirstPodium" className="podium">
           <div className="placementBackground">
             {" "}
             <h1 className="placementText">2</h1>
@@ -16,7 +16,7 @@ const PlacementPodium = ({ scores, players }) => {
       <div className="PodiumWrapper">
         <h1 id="playerName">{players[0]}</h1>
 
-        <div id="SecondPodium">
+        <div id="SecondPodium" className="podium">
           <div className="placementBackground">
             {" "}
             <h1 className="placementText">1</h1>
@@ -26,7 +26,7 @@ const PlacementPodium = ({ scores, players }) => {
       </div>
       <div className="PodiumWrapper">
         <h1 id="playerName">{players[2]}</h1>
-        <div id="ThirdPodium">
+        <div id="ThirdPodium" className="podium">
           <div className="placementBackground">
             {" "}
             <h1 className="placementText">3</h1>

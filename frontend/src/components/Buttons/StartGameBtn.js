@@ -1,6 +1,6 @@
 import "./StartGameBtn.css";
 function StartGameBtn({route, text}) {
-  return <div id="wrapper"><button id="startGameButton">{text}</button></div>;
+  return <button id="startGameButton">{text}</button>;
 }
 
 export default StartGameBtn;
