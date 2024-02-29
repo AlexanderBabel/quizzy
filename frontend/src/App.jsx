@@ -7,6 +7,7 @@ import LobbyPage from "./pages/LobbyPage/LobbyPage";
 import { TokenProvider } from "./context/useToken";
 import PostLobbyPage from "./pages/PostGameLobbyPage/PostLobbyPage";
 import SearchQuizPage from "./pages/SearchQuizPage/SearchQuizPage";
+import QuestionStats from "./pages/QuestionStats/QuestionStats";
 import SocketTester from "./pages/SocketTester/SocketTester";
 import { SocketProvider } from "./context/useAuthenticatedSocket";
 import { LobbyProvider } from "./context/useLobby";
@@ -24,9 +25,10 @@ export default function App() {
                   <Route exact path="/" element={<StartPage />} />
                   <Route path="/search" element={<SearchQuizPage />} />
                   <Route path="/create" element={<CreateQuizPage />} />
-                  <Route path="/game" element={<AnswerQuizPage />} />
                   <Route path="/join/:lobbyCode?" element={<LobbyPage />} />
-                  <Route path="/PostLobbyPage" element={<PostLobbyPage />} />
+                  <Route path="/game" element={<AnswerQuizPage />} />
+                  <Route path="/game/stats" element={<QuestionStats />} />
+                  <Route path="/game/results" element={<PostLobbyPage />} />
                   <Route path="/tester" element={<SocketTester />} />
                 </Routes>
               </Router>
