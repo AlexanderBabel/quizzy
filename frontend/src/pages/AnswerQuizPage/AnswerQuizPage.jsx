@@ -1,28 +1,16 @@
 import "./AnswerQuizPage.css";
 import background from "../../images/blob-scene-haikei-8.svg";
-import React from "react";
+import React, { useEffect } from "react";
 import AnswerQuizQuestion from "../../components/AnswerQuizQuestion/AnswerQuizQuestion";
-import useLobby, { GameRole } from "../../context/useLobby";
+import useLobby from "../../context/useLobby";
 import { useNavigate, useParams } from "react-router-dom";
+import useGame from "../../context/useGame";
 
 export default function AnswerQuizPage() {
-  const { state } = useLobby();
+  const { state: lobbyState } = useLobby();
+  const { state: gameState } = useGame();
   const navigate = useNavigate();
   const { lobbyCode } = useParams();
-  // const { question } = useGame();
-  // eslint-disable-next-line
-  // const [quiz, setQuiz] = useState(dummyQuiz);
-  // const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
-  // const [currentQuestion, setCurrentQuestion] = useState(
-  //   quiz.quiz.questions[currentQuestionNumber - 1]
-  // );
-  // const [resetCounter, setResetCounter] = useState(false);
-  // // eslint-disable-next-line
-  // const [currentQuestionStats, setCurrentQuestionStats] = useState();
-
-  // const pullData = (data) => {
-  //   setCurrentQuestionStats(data);
-  // };
 
   const svgStyle = {
     backgroundImage: `url(${background})`,
@@ -35,7 +23,13 @@ export default function AnswerQuizPage() {
     padding: 0,
   };
 
-  if (lobbyCode && !state.lobbyCode) {
+  useEffect(() => {
+    if (gameState.results) {
+      navigate("/game/stats");
+    }
+  }, [gameState.results]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (lobbyCode && !lobbyState.lobbyCode) {
     navigate(`/join/${lobbyCode}`);
     return (
       <div className="answerQuizPage" style={svgStyle}>
@@ -44,8 +38,7 @@ export default function AnswerQuizPage() {
     );
   }
 
-  if (!lobbyCode && !state.lobbyCode) {
-    console.log(state);
+  if (!lobbyCode && !lobbyState.lobbyCode) {
     navigate("/");
     return (
       <div className="answerQuizPage" style={svgStyle}>
@@ -54,20 +47,8 @@ export default function AnswerQuizPage() {
     );
   }
 
-  // function handleNextQuestion() {
-  //   //change this so it directs to stats before new question pops up
-  //   setCurrentQuestionNumber(currentQuestionNumber + 1);
-  //   setCurrentQuestion(quiz.quiz.questions[currentQuestionNumber]);
-  //   setResetCounter(true);
-  // }
-
   return (
     <div className="answerQuizPage" style={svgStyle}>
-      {state.role === GameRole.HOST && (
-        <button className="nextQuestionBtn" onClick={() => {}}>
-          Next Question
-        </button>
-      )}
       <AnswerQuizQuestion />
     </div>
   );

@@ -45,7 +45,6 @@ export default function LobbyPage() {
     if (!socket.connected) return;
 
     if (quizId && state.lobbyCode === null) {
-      console.log("Creating lobby", quizId);
       createLobby(quizId);
     } else if (lobbyCode && state.lobbyCode === null) {
       joinLobby({ lobbyCode });

@@ -203,6 +203,17 @@ export class GameService {
       playersWithCorrectAnswer.map((p) => p.client.data.userName),
     );
 
+    const answersCountsObj = players.reduce((acc, client) => {
+      const { answerId } = client.data;
+      if (!answerId) {
+        return acc;
+      }
+
+      acc[answerId] = acc[answerId] ?? 0;
+      acc[answerId] += 1;
+      return acc;
+    }, {});
+
     const gameOver = game.current.index >= game.current.count - 1;
     const scores = [...playersWithNoAnswer, ...playersWithCorrectAnswer]
       // sort by score to get ranking
@@ -238,6 +249,11 @@ export class GameService {
     host.emit('game:results', {
       scores: scores,
       gameOver,
+      answerCounts: game.current.question.answers.map((a) => ({
+        id: a.id,
+        correct: a.correct,
+        count: answersCountsObj[a.id] ?? 0,
+      })),
     });
     console.log('checkAnswers:scores', scores);
   }
