@@ -1,16 +1,22 @@
-import './LobbyPage.css';
-import background from './../../images/blob-scene-haikei-2.svg';
-import StartGameBtn from '../../components/Buttons/StartGameBtn';
-import PlayerCounter from '../../components/PlayerCounter/PlayerCounter';
-import { useEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import "./LobbyPage.css";
+import background from "./../../images/blob-scene-haikei-2.svg";
+import StartGameBtn from "../../components/Buttons/StartGameBtn";
+import PlayerCounter from "../../components/PlayerCounter/PlayerCounter";
+import { useEffect } from "react";
+import {
+  useBlocker,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 
-import { useSocketEvent } from 'socket.io-react-hook';
-import useAuthenticatedSocket from '../../context/useAuthenticatedSocket';
-import useLobby, { GameRole, LobbyActionType } from '../../context/useLobby';
-import PlayerNameGrid from '../../components/PlayerNameGrid/PlayerNameGrid';
-import UsernameTextField from '../../components/PlayerNameInput/PlayerNameInput';
-import { enqueueSnackbar } from 'notistack';
+import { useSocketEvent } from "socket.io-react-hook";
+import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
+import useLobby, { GameRole, LobbyActionType } from "../../context/useLobby";
+import PlayerNameGrid from "../../components/PlayerNameGrid/PlayerNameGrid";
+import UsernameTextField from "../../components/PlayerNameInput/PlayerNameInput";
+import { enqueueSnackbar } from "notistack";
+import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
 
 export default function LobbyPage() {
   const navigate = useNavigate();
@@ -24,15 +30,24 @@ export default function LobbyPage() {
   const { lastMessage: createResponse, sendMessage: createLobby } =
     useSocketEvent(socket, 'lobby:create');
   const { lastMessage: startGameResponse, sendMessage: startQuiz } =
-    useSocketEvent(socket, 'lobby:start');
+    useSocketEvent(socket, "lobby:start");
+  const { sendMessage: leaveLobby } = useSocketEvent(socket, "lobby:leave");
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      currentLocation.pathname !== nextLocation.pathname &&
+      nextLocation.pathname !== "/game" &&
+      !nextLocation.pathname.startsWith("/join")
+  );
 
   // create lobby is quizId is provided
   useEffect(() => {
     if (!socket.connected) return;
 
     if (quizId && state.lobbyCode === null) {
-      console.log('Creating lobby', quizId);
       createLobby(quizId);
+    } else if (lobbyCode && state.lobbyCode === null) {
+      joinLobby({ lobbyCode });
     }
   }, [socket.connected]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -40,6 +55,7 @@ export default function LobbyPage() {
   useEffect(() => {
     if (createResponse) {
       navigate(`/join/${createResponse}`, { replace: true, state: { quizId } });
+      enqueueSnackbar("Lobby created!", { variant: "success" });
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
         role: GameRole.HOST,
@@ -67,18 +83,19 @@ export default function LobbyPage() {
       );
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
-        role: GameRole.PLAYER,
+        role: joinLobbyResponse.role ?? GameRole.PLAYER,
         lobbyCode,
       });
     }
 
-    if (joinLobbyResponse?.state === 'lobby') {
-      enqueueSnackbar('Lobby joined! Waiting for start...', {
-        variant: 'success',
+    if (joinLobbyResponse?.state === "lobby") {
+      enqueueSnackbar("Lobby joined!", {
+        variant: "success",
       });
+      navigate(`/join/${lobbyCode}`, { replace: true, state: { quizId } });
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
-        role: GameRole.PLAYER,
+        role: joinLobbyResponse.role ?? GameRole.PLAYER,
         lobbyCode,
       });
     }
@@ -147,6 +164,31 @@ export default function LobbyPage() {
           ></UsernameTextField>
         </div>
       )}
+
+      <Dialog
+        open={blocker.state === "blocked"}
+        onClose={() => blocker.reset()}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Do you want to leave the current Lobby?"}
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={() => blocker.reset()}>Stay</Button>
+          <Button
+            onClick={() => {
+              leaveLobby();
+              dispatch({ type: LobbyActionType.LEAVE_LOBBY });
+              enqueueSnackbar("Lobby left!", { variant: "info" });
+              blocker.proceed();
+            }}
+            autoFocus
+          >
+            Leave
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

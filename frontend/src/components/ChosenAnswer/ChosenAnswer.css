@@ -1,0 +1,12 @@
+.countBar {
+  width: 35px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-self: flex-end;
+  border-radius: 40px;
+  box-sizing: border-box;
+  padding-top: 10px;
+  color: black;
+  font-weight: bold;
+}

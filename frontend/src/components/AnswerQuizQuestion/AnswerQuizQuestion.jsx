@@ -43,66 +43,31 @@ export default function AnswerQuizQuestion(props) {
   const { sendMessage: answer } = useSocketEvent(socket, "game:answer");
   const [chosenAnswer, setChosenAnswer] = useState();
 
-  // const [counter, setCounter] = useState(30);
-  // const [timeAnswered, setTimeAnswered] = useState(0);
-  // const [score, setScore] = useState(0);
-
-  // useEffect(() => {
-  //   if (props.resetCounterProp === true) {
-  //     props.setResetCounterProp(false);
-  //     setCounter(30);
-  //   }
-  //   const timer =
-  //     counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
-  //   return () => clearInterval(timer);
-  //   // eslint-disable-next-line
-  // }, [counter, props.resetCounterProp]);
-
-  // useEffect(() => {
-  //   props.func(score);
-  //   // eslint-disable-next-line
-  // }, [score]);
-
-  // useEffect(() => {
-  //   let scoreTmp = 0;
-  //   if (chosenAnswer?.correct === true) {
-  //     scoreTmp = 300;
-  //     scoreTmp = scoreTmp - timeAnswered * 5;
-  //   } else {
-  //     scoreTmp = 0;
-  //   }
-  //   setScore(scoreTmp);
-  // }, [timeAnswered, chosenAnswer]);
-
-  // const handleChooseAnswer = (answer) => {
-  //   if (counter > 0) {
-  //     setChosenAnswer(answer);
-  //     setTimeAnswered(30 - counter);
-  //   }
-  // };
-
   if (!state.question) return <div>Loading...</div>;
 
+  // TODO: Add countdown and progress bar for the host
+  // TODO: show loading animation to the player after they answer
+  // TODO: make cards only clickable for the player
   return (
     <div className="AnswerQuestion">
       <h1>{state.question.question}</h1>
       {/* <h2> 00:{counter < 10 ? `0${counter}` : counter} </h2> */}
       <div className="answers">
-        {state.question.answers.map(({ answerId, text }, index) => {
+        {state.question.answers.map(({ id, text }, index) => {
           const { background, icon } = getCardStyle(index);
           const cardStyle = {
             ...background,
-            outline: chosenAnswer === answerId && "4px solid red",
+            outline: chosenAnswer === id && "4px solid red",
           };
           return (
-            <div className="overlayTest">
+            <div key={index} className="overlayTest">
               <div
                 className="answerCard"
                 style={cardStyle}
                 onClick={() => {
                   if (chosenAnswer) return;
-                  answer(answerId);
-                  setChosenAnswer(answerId);
+                  answer(id);
+                  setChosenAnswer(id);
                 }}
               >
                 <img src={icon} alt="icon" className="answerCardIcon" />

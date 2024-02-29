@@ -29,7 +29,7 @@ export const GameState = {
 
 export const initialState = {
   question: null,
-  results: [],
+  results: null,
   state: GameState.WAITING,
 };
 
@@ -38,6 +38,7 @@ function reducer(state, action) {
   switch (action.type) {
     case LobbyActionType.UPDATE_QUESTION:
       newState.question = action.question;
+      newState.results = null;
       break;
     case LobbyActionType.UPDATE_RESULTS:
       newState.results = action.results;
