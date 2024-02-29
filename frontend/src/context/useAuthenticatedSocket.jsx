@@ -25,7 +25,7 @@ export function SocketProvider({ children }) {
   useEffect(() => {
     state.socket.on("exception", function (data) {
       console.log("event", data);
-      enqueueSnackbar(`Error from server: ${data}`, { variant: "error" });
+      enqueueSnackbar(`Error from server: ${data?.message}`, { variant: "error" });
     });
 
     return () => {

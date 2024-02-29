@@ -3,7 +3,12 @@ import background from "./../../images/blob-scene-haikei-2.svg";
 import StartGameBtn from "../../components/Buttons/StartGameBtn";
 import PlayerCounter from "../../components/PlayerCounter/PlayerCounter";
 import { useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  useBlocker,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 
 import { useSocketEvent } from "socket.io-react-hook";
 import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
@@ -11,6 +16,7 @@ import useLobby, { GameRole, LobbyActionType } from "../../context/useLobby";
 import PlayerNameGrid from "../../components/PlayerNameGrid/PlayerNameGrid";
 import UsernameTextField from "../../components/PlayerNameInput/PlayerNameInput";
 import { enqueueSnackbar } from "notistack";
+import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
 
 export default function LobbyPage() {
   const navigate = useNavigate();
@@ -25,6 +31,14 @@ export default function LobbyPage() {
     useSocketEvent(socket, "lobby:create");
   const { lastMessage: startGameResponse, sendMessage: startQuiz } =
     useSocketEvent(socket, "lobby:start");
+  const { sendMessage: leaveLobby } = useSocketEvent(socket, "lobby:leave");
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      currentLocation.pathname !== nextLocation.pathname &&
+      nextLocation.pathname !== "/game" &&
+      !nextLocation.pathname.startsWith("/join")
+  );
 
   // create lobby is quizId is provided
   useEffect(() => {
@@ -42,6 +56,7 @@ export default function LobbyPage() {
   useEffect(() => {
     if (createResponse) {
       navigate(`/join/${createResponse}`, { replace: true, state: { quizId } });
+      enqueueSnackbar("Lobby created!", { variant: "success" });
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
         role: GameRole.HOST,
@@ -138,6 +153,31 @@ export default function LobbyPage() {
           onSubmitted={(userName) => joinLobby({ lobbyCode, userName })}
         ></UsernameTextField>
       )}
+
+      <Dialog
+        open={blocker.state === "blocked"}
+        onClose={() => blocker.reset()}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Do you want to leave the current Lobby?"}
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={() => blocker.reset()}>Stay</Button>
+          <Button
+            onClick={() => {
+              leaveLobby();
+              dispatch({ type: LobbyActionType.LEAVE_LOBBY });
+              enqueueSnackbar("Lobby left!", { variant: "info" });
+              blocker.proceed();
+            }}
+            autoFocus
+          >
+            Leave
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
