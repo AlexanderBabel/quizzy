@@ -1,46 +1,31 @@
 .chosenAnswers {
-    display: flex;
-    flex-direction: column;
-    width: 500px;
-    min-height: fit-content;
-    max-height: 600px;
-    box-sizing: border-box;
-    padding: 30px;
-    border-radius: 30px;
-    background: rgba(255, 255, 255, 0.376);
-    justify-content: flex-end;
-
-
-}
-
-.countBar {
-    width: 35px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    align-self: flex-end;
-    border-radius: 40px;
-    box-sizing: border-box;
-    padding-top: 10px;
-    color: black;
-    font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+  min-height: fit-content;
+  max-height: 600px;
+  box-sizing: border-box;
+  padding: 30px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.376);
+  justify-content: flex-end;
 }
 
 .bars {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
 .icons {
-    border-top: 3px solid white;
-    box-sizing: border-box;
-    padding-top: 10px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+  border-top: 3px solid white;
+  box-sizing: border-box;
+  padding-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
 .answerIcon {
-    max-width: 40px;
-    max-height: 40px;
-    margin: auto;
+  max-width: 40px;
+  max-height: 40px;
+  margin: auto;
 }
