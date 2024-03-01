@@ -54,6 +54,23 @@ export class GameService {
     return this.nextQuestion(host, gameState);
   }
 
+  async endGame(host: Socket, gameState: GameState): Promise<void> {
+    host.to(gameState.lobbyCode).emit('game:end');
+    await this.cacheModelService.del(`game:${gameState.lobbyCode}`);
+
+    const clients = await host.to(gameState.lobbyCode).fetchSockets();
+    clients.forEach((client) => {
+      delete client.data.userName;
+      delete client.data.role;
+      delete client.data.lobbyCode;
+      delete client.data.answerId;
+      delete client.data.submissionTime;
+    });
+
+    host.to(gameState.lobbyCode).socketsLeave(gameState.lobbyCode);
+    host.leave(gameState.lobbyCode);
+  }
+
   async nextQuestion(host: Socket, game: GameState): Promise<boolean> {
     if (game.current.index >= game.current.count - 1) {
       console.log('nextQuestion: no more questions');
@@ -203,6 +220,17 @@ export class GameService {
       playersWithCorrectAnswer.map((p) => p.client.data.userName),
     );
 
+    const answersCountsObj = players.reduce((acc, client) => {
+      const { answerId } = client.data;
+      if (!answerId) {
+        return acc;
+      }
+
+      acc[answerId] = acc[answerId] ?? 0;
+      acc[answerId] += 1;
+      return acc;
+    }, {});
+
     const gameOver = game.current.index >= game.current.count - 1;
     const scores = [...playersWithNoAnswer, ...playersWithCorrectAnswer]
       // sort by score to get ranking
@@ -238,7 +266,16 @@ export class GameService {
     host.emit('game:results', {
       scores: scores,
       gameOver,
+      answerCounts: game.current.question.answers.map((a) => ({
+        id: a.id,
+        correct: a.correct,
+        count: answersCountsObj[a.id] ?? 0,
+      })),
     });
     console.log('checkAnswers:scores', scores);
+
+    if (gameOver) {
+      await this.endGame(host, game);
+    }
   }
 }

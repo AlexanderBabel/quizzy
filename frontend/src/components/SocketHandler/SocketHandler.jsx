@@ -1,8 +1,8 @@
 import { useEffect, useReducer } from "react";
 import { useSocketEvent } from "socket.io-react-hook";
 import { decodeToken, isExpired } from "react-jwt";
-import useToken from "../useToken/useToken";
-import useAuthenticatedSocket from "../useAuthenticatedSocket/useAuthenticatedSocket";
+import useToken from "../../context/useToken";
+import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
 import useAxios from "axios-hooks";
 import { enqueueSnackbar } from "notistack";
 
@@ -161,7 +161,7 @@ export default function SocketHandler() {
 
   return (
     <div className="cardContainer">
-      <div className="cardStartpageWrapper" style={{ height: "500px" }}>
+      <div className="cardStartPageWrapper" style={{ height: "500px" }}>
         <p>Select User</p>
         <select
           onChange={(e) =>
@@ -198,7 +198,7 @@ export default function SocketHandler() {
           Websocket Status: {state.isConnected ? "Connected" : "Disconnected"}
         </p>
       </div>
-      <div className="cardStartpageWrapper" style={{ height: "500px" }}>
+      <div className="cardStartPageWrapper" style={{ height: "500px" }}>
         <p>Lobby</p>
         {question && <p>Game in progress</p>}
         <div>
@@ -260,7 +260,7 @@ export default function SocketHandler() {
         </div>
       </div>
       <div
-        className="cardStartpageWrapper"
+        className="cardStartPageWrapper"
         style={{ height: "500px", width: "500px" }}
       >
         <p>Game</p>

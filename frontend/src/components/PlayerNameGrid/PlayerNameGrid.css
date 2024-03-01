@@ -1,21 +1,16 @@
-.NameContainer {
-  flex-direction: row;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  width: 70vw;
-  justify-content: center;
-}
-
 #PlayerNameGrid {
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center;
+  flex-wrap: wrap;
+  max-width: 90%;
+  justify-content: center;
+  margin: auto;
+  width: fit-content;
+  height: fit-content;
 }
 
 .playerName {
-  color: aliceblue;
-  padding: 2rem;
+  color: white;
+  padding: 1.5rem;
   font-size: 2vw;
   font-weight: bolder;
 }
