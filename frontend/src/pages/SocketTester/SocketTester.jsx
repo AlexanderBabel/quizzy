@@ -22,8 +22,8 @@ export default function SocketTester() {
   }
 
   return (
-    <div className="startpage" style={svgStyle}>
-      <div className="startpageTop">
+    <div className="startPage" style={svgStyle}>
+      <div className="startPageTop">
         <h2 style={{ textAlign: "center", color: "white" }}>Socket Tester</h2>
       </div>
       <SocketHandler />

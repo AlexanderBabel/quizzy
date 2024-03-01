@@ -3,11 +3,11 @@ import "./PlayerNameGrid.css";
 export default function PlayerNameGrid({ players }) {
   return (
     <div id="PlayerNameGrid">
-      <div className="NameContainer">
-        {players.map((e) => (
-          <p className="playerName">{e}</p>
-        ))}
-      </div>
+      {players.map(({ id, name }) => (
+        <div key={id} className="playerName">
+          {name}
+        </div>
+      ))}
     </div>
   );
 }

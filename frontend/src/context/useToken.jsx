@@ -1,5 +1,5 @@
 import useAxios from "axios-hooks";
-import { getTokenFromLocalStorage, isGuestToken } from "../axios";
+import { getTokenFromLocalStorage, isGuestToken } from "./axios";
 import { useReducer, useContext, createContext, useEffect } from "react";
 
 const TokenContext = createContext({});

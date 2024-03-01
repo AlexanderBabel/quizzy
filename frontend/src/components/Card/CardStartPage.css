@@ -1,4 +1,4 @@
-.cardStartpageWrapper {
+.cardStartPageWrapper {
   background-color: #6a6dd2;
   padding: 20px;
   display: flex;
@@ -14,7 +14,7 @@
   position: relative;
 }
 
-.cardStartpageWrapper:hover {
+.cardStartPageWrapper:hover {
   background-color: #a86eff;
 }
 
@@ -44,7 +44,7 @@
   background: rgba(192, 191, 191, 0.77);
 }
 
-.cardStartpageWrapper p {
+.cardStartPageWrapper p {
   color: white;
   font-weight: bold;
   font-size: 1.4rem;

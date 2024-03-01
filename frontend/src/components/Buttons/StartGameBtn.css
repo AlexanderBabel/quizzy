@@ -1,5 +1,5 @@
 #startGameButton {
-  height: 3.5rem;
+  height: 3rem;
   width: 7rem;
   background-color: #6a6dd2;
   color: aliceblue;
@@ -13,12 +13,11 @@
   #startGameButton {
     height: 2.5rem;
     width: fit-content;
-    
   }
 }
 
 #wrapper {
-    display: flex;
-    justify-content: flex-end; /* Horizontally center the button */
-    align-items: flex-end; 
+  display: flex;
+  justify-content: flex-end; /* Horizontally center the button */
+  align-items: flex-end;
 }
