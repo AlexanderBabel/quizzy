@@ -10,8 +10,8 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function QuestionStats() {
-  const { state: lobbyState } = useLobby();
-  const { state: gameState } = useGame();
+  const { lobbyState } = useLobby();
+  const { gameState } = useGame();
   const navigate = useNavigate();
   const { socket } = useAuthenticatedSocket();
   const { sendMessage: nextQuestion } = useSocketEvent(

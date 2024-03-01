@@ -4,31 +4,11 @@ import StartGameBtn from "../../components/Buttons/StartGameBtn";
 import PlacementPodium from "../../components/PlacementPodium/PlacementPodium";
 import ResultList from "../../components/ResultList/ResultList";
 import ReportQuizBtn from "../../components/Buttons/ReportQuizBtn";
+import useGame from "../../context/useGame";
 
 function PostLobbyPage() {
-  var playerNames = [
-    "Jocke",
-    "Lucas",
-    "Natasha",
-    "Jocke",
-    "Lucas",
-    "Natasha",
-    "Jocke",
-    "Lucas",
-    "Natasha",
-  ];
-  var playerScores = [
-    "973",
-    "675",
-    "432",
-    "973",
-    "675",
-    "432",
-    "973",
-    "675",
-    "432",
-  ];
-
+  const { gameState } = useGame();
+  const scores = gameState?.results?.scores;
   const svgStyle = {
     backgroundImage: `url(${background})`,
     backgroundRepeat: "no-repeat",
@@ -40,23 +20,16 @@ function PostLobbyPage() {
     overflow: "hidden",
   };
 
+  // TODO: design mobile UI (only show the score and place of the current player)
   return (
     <div id="PostLobbyPage" style={svgStyle}>
       <div id="header">
-        <ReportQuizBtn></ReportQuizBtn>
+        <ReportQuizBtn />
         <h1 className="lobbyTitle">The Winner is...</h1>
-        <StartGameBtn text={"Quit"}></StartGameBtn>
+        <StartGameBtn text={"Quit"} />
       </div>
-      <PlacementPodium
-        id="podiums"
-        scores={playerScores}
-        players={playerNames}
-      ></PlacementPodium>
-      <ResultList
-        id="resultList"
-        players={playerNames}
-        playerScores={playerScores}
-      ></ResultList>
+      <PlacementPodium id="podiums" />
+      {scores.length > 3 && <ResultList id="resultList" />}
     </div>
   );
 }

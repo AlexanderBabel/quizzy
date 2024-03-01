@@ -7,8 +7,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import useGame from "../../context/useGame";
 
 export default function AnswerQuizPage() {
-  const { state: lobbyState } = useLobby();
-  const { state: gameState } = useGame();
+  const { lobbyState } = useLobby();
+  const { gameState } = useGame();
   const navigate = useNavigate();
   const { lobbyCode } = useParams();
 

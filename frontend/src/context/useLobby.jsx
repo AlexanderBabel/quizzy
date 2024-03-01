@@ -50,7 +50,7 @@ function reducer(state, action) {
 }
 
 export function LobbyProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [lobbyState, dispatch] = useReducer(reducer, initialState);
   const { socket } = useAuthenticatedSocket();
 
   // Save players in state when an update happens
@@ -65,7 +65,7 @@ export function LobbyProvider({ children }) {
   }, [players]);
 
   return (
-    <LobbyContext.Provider value={{ state, dispatch, getPlayers }}>
+    <LobbyContext.Provider value={{ lobbyState, dispatch, getPlayers }}>
       {children}
     </LobbyContext.Provider>
   );

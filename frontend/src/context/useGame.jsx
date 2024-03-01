@@ -42,7 +42,7 @@ function reducer(state, action) {
 }
 
 export function GameProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [gameState, dispatch] = useReducer(reducer, initialState);
   const { socket } = useAuthenticatedSocket();
 
   const { lastMessage: question } = useSocketEvent(socket, "game:question");
@@ -60,7 +60,7 @@ export function GameProvider({ children }) {
   }, [results]);
 
   return (
-    <GameContext.Provider value={{ state, dispatch }}>
+    <GameContext.Provider value={{ gameState }}>
       {children}
     </GameContext.Provider>
   );

@@ -20,7 +20,7 @@ import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
 
 export default function LobbyPage() {
   const navigate = useNavigate();
-  const { state, dispatch } = useLobby();
+  const { lobbyState, dispatch } = useLobby();
   const { socket } = useAuthenticatedSocket();
   const quizId = useLocation()?.state?.quizId;
   const { lobbyCode } = useParams();
@@ -44,9 +44,9 @@ export default function LobbyPage() {
   useEffect(() => {
     if (!socket.connected) return;
 
-    if (quizId && state.lobbyCode === null) {
+    if (quizId && lobbyState.lobbyCode === null) {
       createLobby(quizId);
-    } else if (lobbyCode && state.lobbyCode === null) {
+    } else if (lobbyCode && lobbyState.lobbyCode === null) {
       joinLobby({ lobbyCode });
     }
   }, [socket.connected]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -119,35 +119,35 @@ export default function LobbyPage() {
       <div className="lobbyPageTop">
         <h1 className="lobbyTitle">{quizName}</h1>
         <div className="lobbyBtns">
-          {state.role !== null && (
-            <PlayerCounter playerCount={state.players.length}></PlayerCounter>
+          {lobbyState.role !== null && (
+            <PlayerCounter playerCount={lobbyState.players.length}></PlayerCounter>
           )}
-          {state.role === GameRole.HOST && state.players?.length > 0 && (
+          {lobbyState.role === GameRole.HOST && lobbyState.players?.length > 0 && (
             <StartGameBtn text="Start Game" onClick={() => startQuiz()} />
           )}
         </div>
         <h1 className="lobbyCodeTitle">
-          Game Pin: {state.lobbyCode ?? lobbyCode}
+          Game Pin: {lobbyState.lobbyCode ?? lobbyCode}
         </h1>
       </div>
 
-      {state.role !== null ? (
+      {lobbyState.role !== null ? (
         <>
-          {state.role === GameRole.HOST &&
-            (state.players.length === 0 ? (
+          {lobbyState.role === GameRole.HOST &&
+            (lobbyState.players.length === 0 ? (
               <div className="lobbyPageBottom">
                 <h1>Waiting for players...</h1>
               </div>
             ) : (
               <div className="playerNameGridDiv">
-                <PlayerNameGrid players={state.players}></PlayerNameGrid>
+                <PlayerNameGrid players={lobbyState.players}></PlayerNameGrid>
               </div>
             ))}
-          {state.role === GameRole.PLAYER && (
+          {lobbyState.role === GameRole.PLAYER && (
             <>
               <div className="playerNameGridDiv">
-                {state.players.length > 0 && (
-                  <PlayerNameGrid players={state.players}></PlayerNameGrid>
+                {lobbyState.players.length > 0 && (
+                  <PlayerNameGrid players={lobbyState.players}></PlayerNameGrid>
                 )}
               </div>
               <div className="lobbyPageBottom">

@@ -39,8 +39,8 @@ function getCardStyle(index) {
 }
 
 export default function AnswerQuizQuestion() {
-  const { state: gameState } = useGame();
-  const { state: lobbyState } = useLobby();
+  const { gameState } = useGame();
+  const { lobbyState } = useLobby();
   const { socket } = useAuthenticatedSocket();
   const { sendMessage: answer } = useSocketEvent(socket, "game:answer");
   const [chosenAnswer, setChosenAnswer] = useState();

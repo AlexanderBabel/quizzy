@@ -1,14 +1,19 @@
+import useGame from "../../context/useGame";
 import ResultListTile from "../ResultListTile/ResultListTile";
 
-export default function ResultList({ players, playerScores }) {
+export default function ResultList() {
+  const { gameState } = useGame();
+  const scores = gameState?.results?.scores;
+
   return (
     <div id="ResultList">
-      {players.map((e) => (
+      {scores.slice(3).map(({ name, place, score }, index) => (
         <ResultListTile
+          key={index}
           className="playerName"
-          placement={players.indexOf(e) + 4}
-          name={e}
-          score={playerScores[players.indexOf(e)]}
+          name={name}
+          placement={place}
+          score={score}
         ></ResultListTile>
       ))}
     </div>
