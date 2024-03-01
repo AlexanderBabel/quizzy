@@ -32,7 +32,7 @@ FROM --platform=$BUILDPLATFORM node:20-alpine AS frontend
 WORKDIR /app
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY --chown=node:node package*.json ./
+COPY --chown=node:node frontend/package*.json ./
 
 # Install app dependencies
 RUN npm install
