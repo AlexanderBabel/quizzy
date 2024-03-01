@@ -54,7 +54,7 @@ export default function LobbyPage() {
   // handle create response
   useEffect(() => {
     if (createResponse?.lobbyCode) {
-      navigate(`/join/${createResponse}`, { replace: true, state: { quizId } });
+      navigate(`/join/${createResponse?.lobbyCode}`, { replace: true, state: { quizId } });
       enqueueSnackbar("Lobby created!", { variant: "success" });
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
