@@ -1,12 +1,12 @@
-import './WaitingPage.css';
+import "./WaitingPage.css";
 
-const WaitingPage = () => {
+export default function WaitingPage({
+  text = "Waiting for other players to answer...",
+}) {
   return (
     <div className="waiting-page">
       <div className="spinner"></div>
-      <p className="loading-text">Waiting for other players to answer...</p>
+      <p className="loading-text">{text}</p>
     </div>
   );
-};
-
-export default WaitingPage;
+}

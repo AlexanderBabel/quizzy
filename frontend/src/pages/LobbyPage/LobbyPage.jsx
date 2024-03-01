@@ -17,6 +17,7 @@ import PlayerNameGrid from "../../components/PlayerNameGrid/PlayerNameGrid";
 import UsernameTextField from "../../components/PlayerNameInput/PlayerNameInput";
 import { enqueueSnackbar } from "notistack";
 import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
+import WaitingPage from "../WaitingPage/WaitingPage";
 
 export default function LobbyPage() {
   const navigate = useNavigate();
@@ -54,7 +55,10 @@ export default function LobbyPage() {
   // handle create response
   useEffect(() => {
     if (createResponse?.lobbyCode) {
-      navigate(`/join/${createResponse?.lobbyCode}`, { replace: true, state: { quizId } });
+      navigate(`/join/${createResponse?.lobbyCode}`, {
+        replace: true,
+        state: { quizId },
+      });
       enqueueSnackbar("Lobby created!", { variant: "success" });
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
@@ -114,6 +118,11 @@ export default function LobbyPage() {
     padding: 0,
     overflow: "hidden",
   };
+
+  // Show loading screen if a quizId was passed
+  if (!createResponse && quizId && lobbyState.lobbyCode === null) {
+    return <WaitingPage text={"Creating lobby..."} />;
+  }
 
   return (
     <div className="lobbyPage" style={svgStyle}>
