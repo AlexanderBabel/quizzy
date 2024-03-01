@@ -7,7 +7,7 @@ import sheep from "../../images/Sheep.png";
 import { useSocketEvent } from "socket.io-react-hook";
 import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
 import useGame from "../../context/useGame";
-import useLobby from "../../context/useLobby";
+import useLobby, { GameRole } from "../../context/useLobby";
 
 function getCardStyle(index) {
   switch ((index + 1) % 4) {
@@ -67,7 +67,8 @@ export default function AnswerQuizQuestion() {
                 className="answerCard"
                 style={cardStyle}
                 onClick={() => {
-                  if (chosenAnswer || lobbyState.role !== "PLAYER") return;
+                  if (chosenAnswer || lobbyState.role !== GameRole.PLAYER)
+                    return;
                   answer(id);
                   setChosenAnswer(id);
                 }}
