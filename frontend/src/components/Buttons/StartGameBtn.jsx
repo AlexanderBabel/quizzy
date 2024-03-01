@@ -2,7 +2,7 @@ import "./StartGameBtn.css";
 
 export default function StartGameBtn({ text, onClick }) {
   return (
-    <div >
+    <div>
       <button id="startGameButton" onClick={onClick}>
         {text}
       </button>

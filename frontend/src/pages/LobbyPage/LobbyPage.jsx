@@ -26,9 +26,9 @@ export default function LobbyPage() {
   const { lobbyCode } = useParams();
 
   const { lastMessage: joinLobbyResponse, sendMessage: joinLobby } =
-    useSocketEvent(socket, 'lobby:join');
+    useSocketEvent(socket, "lobby:join");
   const { lastMessage: createResponse, sendMessage: createLobby } =
-    useSocketEvent(socket, 'lobby:create');
+    useSocketEvent(socket, "lobby:create");
   const { lastMessage: startGameResponse, sendMessage: startQuiz } =
     useSocketEvent(socket, "lobby:start");
   const { sendMessage: leaveLobby } = useSocketEvent(socket, "lobby:leave");
@@ -67,19 +67,19 @@ export default function LobbyPage() {
   // handle quiz start response
   useEffect(() => {
     if (startGameResponse) {
-      navigate('/game');
-      enqueueSnackbar('Game started!', { variant: 'success' });
+      navigate("/game");
+      enqueueSnackbar("Game started!", { variant: "success" });
       return;
     }
   }, [startGameResponse]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // handle join lobby response
   useEffect(() => {
-    if (joinLobbyResponse?.state === 'game') {
-      navigate('/game');
+    if (joinLobbyResponse?.state === "game") {
+      navigate("/game");
       enqueueSnackbar(
-        'Game is already running. Continuing with next question...',
-        { variant: 'info' }
+        "Game is already running. Continuing with next question...",
+        { variant: "info" }
       );
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
@@ -103,30 +103,30 @@ export default function LobbyPage() {
 
   const svgStyle = {
     backgroundImage: `url(${background})`,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    width: '100vw',
-    height: '100vh',
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    width: "100vw",
+    height: "100vh",
     margin: 0,
     padding: 0,
-    overflow: 'hidden',
+    overflow: "hidden",
   };
 
-  const quizName = 'This is the title of the quiz ';
+  const quizName = "This is the title of the quiz ";
 
   return (
-    <div className='lobbyPage' style={svgStyle}>
-      <div className='lobbyPageTop'>
-        <h1 className='lobbyTitle'>{quizName}</h1>
-        <div className='lobbyBtns'>
+    <div className="lobbyPage" style={svgStyle}>
+      <div className="lobbyPageTop">
+        <h1 className="lobbyTitle">{quizName}</h1>
+        <div className="lobbyBtns">
           {state.role !== null && (
             <PlayerCounter playerCount={state.players.length}></PlayerCounter>
           )}
           {state.role === GameRole.HOST && state.players?.length > 0 && (
-            <StartGameBtn text='Start Game' onClick={() => startQuiz()} />
+            <StartGameBtn text="Start Game" onClick={() => startQuiz()} />
           )}
         </div>
-        <h1 className='lobbyCodeTitle'>
+        <h1 className="lobbyCodeTitle">
           Game Pin: {state.lobbyCode ?? lobbyCode}
         </h1>
       </div>
@@ -135,31 +135,31 @@ export default function LobbyPage() {
         <>
           {state.role === GameRole.HOST &&
             (state.players.length === 0 ? (
-              <div className='lobbyPageBottom'>
+              <div className="lobbyPageBottom">
                 <h1>Waiting for players...</h1>
               </div>
             ) : (
-              <div className='playerNameGridDiv'>
+              <div className="playerNameGridDiv">
                 <PlayerNameGrid players={state.players}></PlayerNameGrid>
               </div>
             ))}
           {state.role === GameRole.PLAYER && (
             <>
-              <div className='playerNameGridDiv'>
+              <div className="playerNameGridDiv">
                 {state.players.length > 0 && (
                   <PlayerNameGrid players={state.players}></PlayerNameGrid>
                 )}
               </div>
-              <div className='lobbyPageBottom'>
+              <div className="lobbyPageBottom">
                 <h1>Waiting for game to start...</h1>
               </div>
             </>
           )}
         </>
       ) : (
-        <div className='lobbyPageBottom'>
+        <div className="lobbyPageBottom">
           <UsernameTextField
-            className='playerNameInput'
+            className="playerNameInput"
             onSubmitted={(userName) => joinLobby({ lobbyCode, userName })}
           ></UsernameTextField>
         </div>
