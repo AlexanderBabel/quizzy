@@ -12,6 +12,8 @@ async function bootstrap() {
       'http://localhost:3001',
       'https://*.quizzy-68c.pages.dev',
       'https://quizzy-68c.pages.dev',
+      'https://quizzy-api.babel.sh',
+      'https://quizzy.babel.sh',
     ],
   });
 

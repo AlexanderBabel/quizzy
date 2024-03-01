@@ -1,25 +1,40 @@
-# Lobby API
+# Lobby API (WS)
 
-## /v1/lobby/
+| Route         | Method | Roles        | Description  | Request             | Response                              |
+| ------------- | ------ | ------------ | ------------ | ------------------- | ------------------------------------- |
+| lobby:join    | MSG    | PLAYER       | Join lobby   | lobbyCode, userName | lobbyCode, quizName                   |
+| lobby:create  | MSG    | HOST         | Create lobby | quizId              | state, role, quizName                 |
+| lobby:start   | MSG    | HOST         | Start game   | -                   | -                                     |
+| lobby:kick    | MSG    | HOST         | Kick player  | playerId            | -                                     |
+| lobby:players | MSG    | PLAYER, HOST | Get players  | -                   | - players<ul><li>id</li><li>name</li> |
 
-| Route    | Method | Roles        | Description  | Request             | Response                              |
-| -------- | ------ | ------------ | ------------ | ------------------- | ------------------------------------- |
-| /join    | POST   | PLAYER       | Join lobby   | lobbyCode, userName | success                               |
-| /create  | POST   | HOST         | Create lobby | quizId              | success, lobbyCode                    |
-| /start   | GET    | HOST         | Start game   | -                   | success                               |
-| /kick    | POST   | HOST         | Kick player  | playerId            | -                                     |
-| /players | GET    | PLAYER, HOST | Get players  | -                   | - players<ul><li>id</li><li>name</li> |
+### lobby:join [PLAYER]
 
-### POST join [PLAYER]
+Request:
 
 - lobbyCode
 - userName
 
-### POST create [HOST]
+Response:
+
+- state ("game" | "lobby")
+- role ("host" | "player")
+- quizName
+
+### lobby:create [HOST]
+
+Request:
 
 - quizId
 
-### GET players [PLAYER, HOST]
+Response:
+
+- lobbyCode
+- quizName
+
+### lobby:players [PLAYER, HOST]
+
+This message is sent automatically as soon as a player joins or leaves the lobby. Manual request is also possible.
 
 Response:
 
@@ -27,37 +42,27 @@ Response:
   - id
   - name
 
-### GET start [HOST]
+### lobby:start [HOST]
 
-### POST kick [HOST]
+### lobby:kick [HOST]
 
 - playerId
 
-# Game API
+# Game API (WS, REST for report)
 
-## /v1/game/
+| Route             | Method | Roles        | Description                | Request  | Response                                                                                                                                                        |
+| ----------------- | ------ | ------------ | -------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| game:question     | MSG    | PLAYER, HOST | Get current question       | -        | - question (string)<br>- answers<ul><li>id</li><li>text</li></ul><br>- endTime (Date)                                                                           |
+| game:answer       | MSG    | PLAYER       | Answer question            | answerId | -                                                                                                                                                               |
+| game:results      | MSG    | PLAYER, HOST | Get score after a question | -        | - answers<ul><li>id</li><li>count (int)</li><li>correct (bool)</li></ul>- players<ul><li>id</li><li>name</li><li>score (int)</li><li>deltaScore (int)</li></ul> |
+| /v1/game/report           | POST   | PLAYER, HOST | Report a quiz              | reason   | -                                                                                                                                                               |
+| game:nextQuestion | MSG    | HOST         | Start next round           | -        | -                                                                                                                                                               |
 
-| Route      | Method | Roles        | Description                | Request  | Response                                                                                |
-| ---------- | ------ | ------------ | -------------------------- | -------- | --------------------------------------------------------------------------------------- |
-| /ready     | GET    | PLAYER, HOST | Get game state             | -        | state (string)                                                                          |
-| /question  | GET    | PLAYER, HOST | Get current question       | -        | - question (string)<br>- answers<ul><li>id</li><li>text</li></ul><br>- endTime (Date)   |
-| /answer    | POST   | PLAYER       | Answer question            | answerId | -                                                                                       |
-| /summary   | GET    | PLAYER, HOST | Get answer summary         | -        | - answers<ul><li>id</li><li>count (int)</li><li>correct (bool)</li></ul>                |
-| /score     | GET    | PLAYER, HOST | Get score after a question | -        | - players<ul><li>id</li><li>name</li><li>score (int)</li><li>deltaScore (int)</li></ul> |
-| /report    | POST   | PLAYER, HOST | Report a quiz              | reason   | -                                                                                       |
-| /nextround | GET    | HOST         | Start next round           | -        | -                                                                                       |
-
-### POST answer [PLAYER]
+### game:answer [PLAYER]
 
 - answerId
 
-### GET ready [PLAYER, HOST]
-
-Response:
-
-- game state
-
-### GET question [PLAYER, HOST]
+### game:question [PLAYER, HOST]
 
 Response:
 
@@ -67,7 +72,7 @@ Response:
   - text
 - endTime (Date)
 
-### GET answerSummary [PLAYER, HOST]
+### game:results [PLAYER, HOST]
 
 Response:
 
@@ -75,22 +80,17 @@ Response:
   - id
   - count (int)
   - correct (bool)
-
-### GET score [PLAYER, HOST]
-
-Response:
-
 - players (player: top 3 + yourself, host: top 5)
   - id
   - name
   - score (int)
   - deltaScore (int)
 
-### POST report [PLAYER, HOST]
+### POST /v1/game/report [PLAYER, HOST]
 
 - reason (string)
 
-### GET nextRound [HOST]
+### game:nextRound [HOST]
 
 # Auth API
 
@@ -99,12 +99,19 @@ Response:
 | Route  | Method | Roles  | Description           | Request | Response |
 | ------ | ------ | ------ | --------------------- | ------- | -------- |
 | /login | GET    | PUBLIC | Google OAuth callback | token   | token    |
+| /guest | GET    | PUBLIC | Guest login           | -       | token    |
 
 ## login [PUBLIC]
 
 Request:
 
 - token (from Google OAuth)
+
+Response:
+
+- token (access token to be used in the Authorization header for all other requests)
+
+## guest [PUBLIC]
 
 Response:
 
@@ -131,7 +138,7 @@ Response:
 
 # Creator API:
 
-## /v1/creator-quiz/
+## /v1/quiz/
 
 | Route           | Method | Roles   | Description     | Request | Response |
 | --------------- | ------ | ------- | --------------- | ------- | -------- |

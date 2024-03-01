@@ -6,6 +6,8 @@ import { AdminModule } from './admin/admin.module';
 import { QuizModule } from './quiz/quiz.module';
 import { LobbyModule } from './lobby/lobby.module';
 import { GameModule } from './game/game.module';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -15,6 +17,9 @@ import { GameModule } from './game/game.module';
     LobbyModule,
     GameModule,
     AdminModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../../frontend/build'),
+    }),
   ],
   controllers: [AppController],
   providers: [],
