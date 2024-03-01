@@ -4,7 +4,6 @@ import "./PlacementPodium.css";
 export default function PlacementPodium() {
   const { gameState } = useGame();
   const scores = gameState?.results?.scores;
-  console.log(gameState);
 
   return (
     <div id="PlacementPodiums">
