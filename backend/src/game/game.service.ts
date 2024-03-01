@@ -54,6 +54,23 @@ export class GameService {
     return this.nextQuestion(host, gameState);
   }
 
+  async endGame(host: Socket, gameState: GameState): Promise<void> {
+    host.to(gameState.lobbyCode).emit('game:end');
+    await this.cacheModelService.del(`game:${gameState.lobbyCode}`);
+
+    const clients = await host.to(gameState.lobbyCode).fetchSockets();
+    clients.forEach((client) => {
+      delete client.data.userName;
+      delete client.data.role;
+      delete client.data.lobbyCode;
+      delete client.data.answerId;
+      delete client.data.submissionTime;
+    });
+
+    host.to(gameState.lobbyCode).socketsLeave(gameState.lobbyCode);
+    host.leave(gameState.lobbyCode);
+  }
+
   async nextQuestion(host: Socket, game: GameState): Promise<boolean> {
     if (game.current.index >= game.current.count - 1) {
       console.log('nextQuestion: no more questions');
@@ -256,5 +273,9 @@ export class GameService {
       })),
     });
     console.log('checkAnswers:scores', scores);
+
+    if (gameOver) {
+      await this.endGame(host, game);
+    }
   }
 }
