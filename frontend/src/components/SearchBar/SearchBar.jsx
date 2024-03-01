@@ -1,8 +1,7 @@
 import React, { useState } from "react";
+import "./SearchBar.css";
 
-import "./Searchbar.css";
-
-export default function Searchbar({ setSearchTerm }) {
+export default function SearchBar({ setSearchTerm }) {
   const [searchInput, setSearchInput] = useState("");
 
   const handleSearch = (event) => {

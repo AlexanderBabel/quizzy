@@ -1,9 +1,9 @@
-.startpage {
+.startPage {
   display: flex;
   flex-direction: column;
 }
 
-.startpageTop {
+.startPageTop {
   display: flex;
   flex-direction: row;
   align-items: center;

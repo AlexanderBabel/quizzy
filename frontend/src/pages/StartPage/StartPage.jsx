@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import "./Startpage.css";
+import "./StartPage.css";
 import background from "../../images/blob-scene-haikei.svg";
-import CardStartpage from "../../components/Card/CardStartpage";
+import CardStartPage from "../../components/Card/CardStartPage";
 import LoginBtn from "../../components/Buttons/LoginBtn";
 import MyQuizzes from "../../components/MyQuizzes/MyQuizzes";
-import useToken from "../../components/useToken/useToken";
+import useToken from "../../context/useToken";
 
 export default function Startpage() {
   const { isCreator } = useToken();
@@ -22,27 +22,27 @@ export default function Startpage() {
   };
 
   return (
-    <div className="startpage" style={svgStyle}>
-      <div className="startpageTop">
+    <div className="startPage" style={svgStyle}>
+      <div className="startPageTop">
         <LoginBtn />
       </div>
       <div className="cardContainer">
         {process.env.NODE_ENV === "development" && (
-          <CardStartpage
+          <CardStartPage
             text={"Socket Tester"}
-            onclick={() => navigate("/SocketTester")}
+            onclick={() => navigate("/tester")}
           />
         )}
-        <CardStartpage text={"Join a quiz!"} inputBool={true} />
+        <CardStartPage text={"Join a quiz!"} inputBool={true} />
         {isCreator && (
-          <CardStartpage
-            onclick={() => navigate("/CreateQuiz")}
+          <CardStartPage
+            onclick={() => navigate("/create")}
             text={"Create quiz"}
           />
         )}
-        <CardStartpage
+        <CardStartPage
           text={"Discover quizzes"}
-          onclick={() => navigate("/SearchQuiz")}
+          onclick={() => navigate("/search")}
         />
       </div>
       {isCreator && (

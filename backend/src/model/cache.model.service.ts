@@ -6,8 +6,8 @@ import { Cache } from 'cache-manager';
 export class CacheModelService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  async set(key: string, data: any): Promise<void> {
-    return this.cacheManager.set(key, data, 0);
+  async set(key: string, data: any, ttl = 0): Promise<void> {
+    return this.cacheManager.set(key, data, ttl);
   }
 
   async get(key: string): Promise<any> {

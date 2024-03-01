@@ -1,16 +1,17 @@
-import "./CardStartpage.css";
+import "./CardStartPage.css";
 import { useEffect, useState } from "react";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import { CiPlay1 } from "react-icons/ci";
-import useToken from "../useToken/useToken";
+import useToken from "../../context/useToken";
 import useAxios from "axios-hooks";
 import { enqueueSnackbar } from "notistack";
+import { useNavigate } from "react-router-dom";
 
-export default function CardStartpage({
+export default function CardStartPage({
   text,
   inputBool,
-  quizcard,
+  quizCard,
   onclick,
   quiz,
   setUpdate,
@@ -24,7 +25,9 @@ export default function CardStartpage({
     { manual: true }
   );
   const [hoveredQuizCard, setHoveredQuizCard] = useState(false);
+  const [lobbyCode, setLobbyCode] = useState();
   const { isCreator } = useToken();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (data) {
@@ -45,12 +48,12 @@ export default function CardStartpage({
 
   return (
     <div
-      className={quizcard ? "cardStartpageWrapper" : "cardStartpageWrapper"}
+      className={quizCard ? "cardStartPageWrapper" : "cardStartPageWrapper"}
       onClick={onclick}
       onMouseEnter={() => setHoveredQuizCard(true)}
       onMouseLeave={() => setHoveredQuizCard(false)}
     >
-      {quizcard && hoveredQuizCard && (
+      {quizCard && hoveredQuizCard && (
         <div className="quizCardBtns">
           {isCreator && deleteAllowed && (
             <>
@@ -63,22 +66,29 @@ export default function CardStartpage({
             </>
           )}
 
-          <button className="iconBtn">
+          <button
+            className="iconBtn"
+            onClick={() =>
+              navigate("/join", { state: { quizId: quiz.quizId } })
+            }
+          >
             <CiPlay1 />
           </button>
         </div>
       )}
 
-      <p>{quizcard ? quiz.name : text}</p>
+      <p>{quizCard ? quiz.name : text}</p>
 
       {inputBool && (
-        <input
-          className="inputPin"
-          type="text"
-          placeholder="Game PIN"
-          // onChange={handleChange}
-          // value={searchInput}
-        />
+        <form onSubmit={() => navigate(`/join/${lobbyCode}`)}>
+          <input
+            className="inputPin"
+            type="text"
+            placeholder="Game PIN"
+            onChange={(e) => setLobbyCode(e.target.value)}
+            value={lobbyCode}
+          />
+        </form>
       )}
     </div>
   );

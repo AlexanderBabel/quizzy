@@ -1,35 +1,35 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { SnackbarProvider } from "notistack";
-import Startpage from "./pages/Startpage/Startpage";
-import CreateQuizPage from "./pages/CreateQuiz/CreateQuizPage";
-import AnswerQuizPage from "./pages/AnswerQuiz/AnswerQuizPage";
-import LobbyPage from "./pages/GameLobby/LobbyPage";
-import { TokenProvider } from "./components/useToken/useToken";
-import PostLobbyPage from "./pages/PostGameLobby/PostLobbyPage";
-import SearchQuiz from "./pages/SearchQuiz/SearchQuiz";
-import SocketTester from "./pages/SocketTester/SocketTester";
-import { SocketProvider } from "./components/useAuthenticatedSocket/useAuthenticatedSocket";
+import {
+  Routes,
+  Route,
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import StartPage from "./pages/StartPage/StartPage";
+import CreateQuizPage from "./pages/CreateQuizPage/CreateQuizPage";
+import AnswerQuizPage from "./pages/AnswerQuizPage/AnswerQuizPage";
+import LobbyPage from "./pages/LobbyPage/LobbyPage";
+import PostLobbyPage from "./pages/PostGameLobbyPage/PostLobbyPage";
+import SearchQuizPage from "./pages/SearchQuizPage/SearchQuizPage";
 import QuestionStats from "./pages/QuestionStats/QuestionStats";
+import SocketTester from "./pages/SocketTester/SocketTester";
+
+function Root() {
+  return (
+    <Routes>
+      <Route exact path="/" element={<StartPage />} />
+      <Route path="/search" element={<SearchQuizPage />} />
+      <Route path="/create" element={<CreateQuizPage />} />
+      <Route path="/join/:lobbyCode?" element={<LobbyPage />} />
+      <Route path="/game" element={<AnswerQuizPage />} />
+      <Route path="/game/stats" element={<QuestionStats />} />
+      <Route path="/game/results" element={<PostLobbyPage />} />
+      <Route path="/tester" element={<SocketTester />} />
+    </Routes>
+  );
+}
+
+const router = createBrowserRouter([{ path: "*", Component: Root }]);
 
 export default function App() {
-  return (
-    <SnackbarProvider maxSnack={3}>
-      <TokenProvider>
-        <SocketProvider>
-          <Router>
-            <Routes>
-              <Route exact path="/" element={<Startpage />} />
-              <Route path="/SearchQuiz" element={<SearchQuiz />} />
-              <Route path="/CreateQuiz" element={<CreateQuizPage />} />
-              <Route path="/AnswerQuiz" element={<AnswerQuizPage />} />
-              <Route path="/LobbyPage" element={<LobbyPage />} />
-              <Route path="/QuestionStats" element={<QuestionStats />} />
-              <Route path="/PostLobbyPage" element={<PostLobbyPage />} />
-              <Route path="/SocketTester" element={<SocketTester />} />
-            </Routes>
-          </Router>
-        </SocketProvider>
-      </TokenProvider>
-    </SnackbarProvider>
-  );
+  return <RouterProvider router={router} />;
 }
