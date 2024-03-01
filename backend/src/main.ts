@@ -12,6 +12,8 @@ async function bootstrap() {
       'http://localhost:3001',
       'https://*.quizzy-68c.pages.dev',
       'https://quizzy-68c.pages.dev',
+      'https://quizzy-api.babel.sh',
+      'https://quizzy.babel.sh',
     ],
   });
 
@@ -22,4 +24,3 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
-console.log(process.env.REDIS_URL)
