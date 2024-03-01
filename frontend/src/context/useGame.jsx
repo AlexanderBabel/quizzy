@@ -13,14 +13,6 @@ export const LobbyActionType = {
   UPDATE_RESULTS: "UPDATE_RESULTS",
 };
 
-// type Question = {
-//   question: string,
-//   answers: { id: Number, text: String }[],
-//   count: number,
-//   current: number,
-//   endTime: Date,
-// };
-
 export const GameState = {
   QUESTION: "QUESTION",
   WAITING: "WAITING",
