@@ -70,6 +70,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
 
     const lobbyCode = await this.lobbyService.createLobby({
       quizId: Number.parseInt(quizId),
+      quizName: quiz.name,
       hostId: client.data.id,
       hostType: client.data.authType,
     });
@@ -80,7 +81,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
     client.join(lobbyCode);
 
     console.log('lobby:create', client.data);
-    client.emit('lobby:create', lobbyCode);
+    client.emit('lobby:create', { lobbyCode, quizName: quiz.name });
     return lobbyCode;
   }
 
@@ -156,6 +157,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
     client.emit('lobby:join', {
       state: game ? 'game' : 'lobby',
       role: client.data.role,
+      quizName: lobby.quizName,
     });
     return 'Joined lobby';
   }

@@ -45,12 +45,14 @@ export class LobbyService {
 
   async createLobby(createLobby: {
     quizId: number;
+    quizName: string;
     hostId: string;
     hostType: JwtAuthType;
   }): Promise<string> {
     const newLobby: Lobby = {
       code: this.generateRandomCode(),
       quizId: createLobby.quizId,
+      quizName: createLobby.quizName,
     };
 
     await this.cacheModelService.set(`lobby:${newLobby.code}`, newLobby);

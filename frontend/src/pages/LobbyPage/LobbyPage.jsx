@@ -53,13 +53,14 @@ export default function LobbyPage() {
 
   // handle create response
   useEffect(() => {
-    if (createResponse) {
+    if (createResponse?.lobbyCode) {
       navigate(`/join/${createResponse}`, { replace: true, state: { quizId } });
       enqueueSnackbar("Lobby created!", { variant: "success" });
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
         role: GameRole.HOST,
-        lobbyCode: createResponse,
+        lobbyCode: createResponse.lobbyCode,
+        quizName: createResponse.quizName,
       });
     }
   }, [createResponse]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -84,6 +85,7 @@ export default function LobbyPage() {
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
         role: joinLobbyResponse.role ?? GameRole.PLAYER,
+        quizName: joinLobbyResponse.quizName,
         lobbyCode,
       });
     }
@@ -96,6 +98,7 @@ export default function LobbyPage() {
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
         role: joinLobbyResponse.role ?? GameRole.PLAYER,
+        quizName: joinLobbyResponse.quizName,
         lobbyCode,
       });
     }
@@ -112,19 +115,20 @@ export default function LobbyPage() {
     overflow: "hidden",
   };
 
-  const quizName = "This is the title of the quiz ";
-
   return (
     <div className="lobbyPage" style={svgStyle}>
       <div className="lobbyPageTop">
-        <h1 className="lobbyTitle">{quizName}</h1>
+        <h1 className="lobbyTitle">{lobbyState.quizName ?? "Quiz Lobby"}</h1>
         <div className="lobbyBtns">
           {lobbyState.role !== null && (
-            <PlayerCounter playerCount={lobbyState.players.length}></PlayerCounter>
+            <PlayerCounter
+              playerCount={lobbyState.players.length}
+            ></PlayerCounter>
           )}
-          {lobbyState.role === GameRole.HOST && lobbyState.players?.length > 0 && (
-            <StartGameBtn text="Start Game" onClick={() => startQuiz()} />
-          )}
+          {lobbyState.role === GameRole.HOST &&
+            lobbyState.players?.length > 0 && (
+              <StartGameBtn text="Start Game" onClick={() => startQuiz()} />
+            )}
         </div>
         <h1 className="lobbyCodeTitle">
           Game Pin: {lobbyState.lobbyCode ?? lobbyCode}
