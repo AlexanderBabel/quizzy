@@ -24,7 +24,9 @@ export default function AnswerQuizPage() {
   };
 
   useEffect(() => {
-    if (gameState.results) {
+    if (gameState.results?.gameOver) {
+      navigate("/game/results");
+    } else if (gameState.results) {
       navigate("/game/stats");
     }
   }, [gameState.results]); // eslint-disable-line react-hooks/exhaustive-deps

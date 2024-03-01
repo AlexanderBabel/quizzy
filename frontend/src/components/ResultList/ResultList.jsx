@@ -7,7 +7,7 @@ export default function ResultList() {
 
   return (
     <div id="ResultList">
-      {scores.slice(3).map(({ name, place, score }, index) => (
+      {scores?.slice(3)?.map(({ name, place, score }, index) => (
         <ResultListTile
           key={index}
           className="playerName"
