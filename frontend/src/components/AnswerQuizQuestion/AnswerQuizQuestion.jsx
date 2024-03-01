@@ -59,8 +59,6 @@ export default function AnswerQuizQuestion() {
   }
 
   // TODO: Add countdown and progress bar for the host
-  // TODO: show loading animation to the player after they answer
-  // TODO: make cards only clickable for the player
   return (
     <div className="AnswerQuestion">
       <h1>{gameState.question.question}</h1>
