@@ -80,13 +80,7 @@ export default function CardStartPage({
       <p>{quizCard ? quiz.name : text}</p>
 
       {inputBool && (
-        <form
-          onSubmit={() =>
-            navigate("/LobbyPlayer", {
-              state: { playerJoinLobbyId: lobbyCode },
-            })
-          }
-        >
+        <form onSubmit={() => navigate(`/join/${lobbyCode}`)}>
           <input
             className="inputPin"
             type="text"

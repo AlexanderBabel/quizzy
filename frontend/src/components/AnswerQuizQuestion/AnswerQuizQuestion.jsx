@@ -7,6 +7,7 @@ import sheep from "../../images/Sheep.png";
 import { useSocketEvent } from "socket.io-react-hook";
 import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
 import useGame from "../../context/useGame";
+import useLobby from "../../context/useLobby";
 
 function getCardStyle(index) {
   switch ((index + 1) % 4) {
@@ -37,23 +38,24 @@ function getCardStyle(index) {
   }
 }
 
-export default function AnswerQuizQuestion(props) {
-  const { state } = useGame();
+export default function AnswerQuizQuestion() {
+  const { state: gameState } = useGame();
+  const { state: lobbyState } = useLobby();
   const { socket } = useAuthenticatedSocket();
   const { sendMessage: answer } = useSocketEvent(socket, "game:answer");
   const [chosenAnswer, setChosenAnswer] = useState();
 
-  if (!state.question) return <div>Loading...</div>;
+  if (!gameState.question) return <div>Loading...</div>;
 
   // TODO: Add countdown and progress bar for the host
   // TODO: show loading animation to the player after they answer
   // TODO: make cards only clickable for the player
   return (
     <div className="AnswerQuestion">
-      <h1>{state.question.question}</h1>
+      <h1>{gameState.question.question}</h1>
       {/* <h2> 00:{counter < 10 ? `0${counter}` : counter} </h2> */}
       <div className="answers">
-        {state.question.answers.map(({ id, text }, index) => {
+        {gameState.question.answers.map(({ id, text }, index) => {
           const { background, icon } = getCardStyle(index);
           const cardStyle = {
             ...background,
@@ -65,7 +67,7 @@ export default function AnswerQuizQuestion(props) {
                 className="answerCard"
                 style={cardStyle}
                 onClick={() => {
-                  if (chosenAnswer) return;
+                  if (chosenAnswer || lobbyState.role !== "PLAYER") return;
                   answer(id);
                   setChosenAnswer(id);
                 }}
