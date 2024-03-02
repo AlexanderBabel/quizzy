@@ -2,48 +2,62 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 20px auto;
+  margin: 10px auto;
   gap: 10px;
-  padding: 10px 0;
 }
 
 .playerEntry {
-  background-color: #2c3e50;
-  border-radius: 10px;
-  padding: 8px;
+  background: linear-gradient(145deg, #6c7a89, #556270);
+  border-radius: 12px;
+  padding: 12px 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: background-color 0.5s ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   max-width: 250px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .playerEntry:hover {
-  background-color: #34495e;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(145deg, #556270, #766c89);
 }
 
 .playerName {
   color: #ecf0f1;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .kickButton {
   opacity: 0;
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 30%;
+  padding: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-left: 10px;
 }
 
 .playerEntry:hover .kickButton {
   opacity: 1;
+  transform: scale(1.1);
+  background-color: #e74c3c;
 }
 
 .playerIcon {
-  width: 25px;
-  height: 25px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background-color: #3498db;
+  background: linear-gradient(145deg, #6a6dd2, #2980b9);
   margin-right: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width: 768px) {
@@ -58,7 +72,7 @@
   }
 
   .playerIcon {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
   }
 }
