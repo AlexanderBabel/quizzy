@@ -12,9 +12,8 @@ function ReportQuizBtn() {
   };
   return (
     <div id="reportQuizWrapper">
-      {" "}
+      <MdReport size={iconSize()} id="reportIcon" />
       <h1 id="reportButtonText">Report Quiz</h1>
-      <MdReport size={iconSize} id="reportIcon" />
     </div>
   );
 }
