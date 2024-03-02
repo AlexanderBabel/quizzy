@@ -1,11 +1,14 @@
 #reportIcon {
   color: white;
+  cursor: pointer;
 }
 
 #reportButtonText {
   color: white;
   font-size: 1rem;
   width: fit-content;
+  cursor: pointer;
+  margin-left: 8px;
 }
 
 #reportQuizWrapper {
@@ -13,4 +16,38 @@
   flex-direction: row;
   align-items: center;
   width: fit-content;
+}
+
+form {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 20px;
+}
+
+textarea {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px; 
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+
+button {
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:disabled {
+  background-color: #aaa;
+}
+
+button:hover:enabled {
+  background-color: #6a6dd2;
 }
