@@ -5,7 +5,7 @@ function QrGenerator({ lobbyCode, size = 128 }) {
     <div className="QrCode">
       <QRCode
         title="Join the game"
-        value={`${process.env.REACT_APP_API_ENDPOINT}/v1/${lobbyCode}`} //TODO change the url
+        value={`${process.env.REACT_APP_API_ENDPOINT}/join/${lobbyCode}`}
         bgColor="#FFFFFF"
         fgColor="#000000"
         size={size}
