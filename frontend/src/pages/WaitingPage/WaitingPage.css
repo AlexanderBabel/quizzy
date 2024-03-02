@@ -1,7 +1,6 @@
 .waiting-page {
     width: 100vw;
     height: 100vh;
-    background-image: url('../../images/blob-waiting-page.svg'); /* Adjust the path as necessary */
     background-size: cover;
     display: flex;
     justify-content: center;
