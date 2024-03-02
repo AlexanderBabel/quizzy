@@ -14,3 +14,10 @@
   font-size: 2vw;
   font-weight: bolder;
 }
+
+
+@media (max-width: 500px) {
+  .playerName {
+    font-size: 5vw;
+  }
+}

@@ -1,5 +1,5 @@
 import "./PostLobbyPage.css";
-import background from "./../../images/blob-scene-haikei-4.svg";
+import background from "../../images/blob-scene-haikei-16.svg";
 import StartGameBtn from "../../components/Buttons/StartGameBtn";
 import PlacementPodium from "../../components/PlacementPodium/PlacementPodium";
 import ResultList from "../../components/ResultList/ResultList";
@@ -36,11 +36,14 @@ function PostLobbyPage() {
   // TODO: design mobile UI (only show the score and place of the current player)
   if (lobbyState?.role === GameRole.PLAYER) {
     return (
-      <div className="answerQuizPage" style={svgStyle}>
+      <div className="PostLobbyPagePlayer" style={svgStyle}>
         {/* Replace this */}
-        <h1>See the host screen for more details</h1>
-        <h2>Place: {gameState?.results?.place}</h2>
+        <h3>See the host screen for more details</h3>
+        <div className="postLobbyPagePlayerResult">
+          <h2>Place: {gameState?.results?.place}</h2>
         <h4>Score: {gameState?.results?.score}</h4>
+        </div>
+        
       </div>
     );
   }

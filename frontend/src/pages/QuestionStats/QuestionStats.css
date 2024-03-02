@@ -54,3 +54,41 @@
   gap: 5px;
   width: 50%;
 }
+
+@media (max-width: 500px) {
+
+
+
+#playerQuestionStatDiv{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: white;
+  width: 90vw;
+  height: 90vh;
+  justify-content: space-between;
+}
+
+#playerScore{
+  box-sizing: border-box;
+  padding: 15px;
+  width: 70%;
+  background: rgba(255, 255, 255, 0.262);
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+#gainedThisRound{
+  background: rgb(255, 149, 0);
+  box-sizing: border-box;
+  padding: 15px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+
+
+
+}
+

@@ -57,9 +57,9 @@ export default function CardStartPage({
         <div className="quizCardBtns">
           {isCreator && deleteAllowed && (
             <>
-              <button className="iconBtn">
+              {/* <button className="iconBtn">
                 <MdOutlineEdit />
-              </button>
+              </button> */}
               <button className="iconBtn" onClick={() => deleteQuiz()}>
                 <FaTrash />
               </button>

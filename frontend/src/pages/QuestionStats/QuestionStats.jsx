@@ -71,16 +71,23 @@ export default function QuestionStats() {
       )}
       {lobbyState?.role === GameRole.PLAYER && (
         // TODO: implement player view
-        <div style={{ textAlign: "center" }}>
+        <div id='playerQuestionStatDiv' >
+          <div id='playerScore'>Score: {gameState?.results?.score}</div>
+          <div>
           <h1>
             {gameState?.results?.correct
               ? "Correct Answer!"
               : "Incorrect Answer"}
           </h1>
           <h2>Place: {gameState?.results?.place}</h2>
-          <h4>Score: {gameState?.results?.score}</h4>
-          <p>Gained this round: {gameState?.results?.delta}</p>
+          <div id='gainedThisRound'>Gained this round: {gameState?.results?.delta}</div>
+          
+          </div>
+         
+          <p>
           Waiting for host to continue...
+          </p>
+          
         </div>
       )}
     </div>

@@ -5,8 +5,12 @@ import CardStartPage from "../../components/Card/CardStartPage";
 import LoginBtn from "../../components/Buttons/LoginBtn";
 import MyQuizzes from "../../components/MyQuizzes/MyQuizzes";
 import useToken from "../../context/useToken";
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default function Startpage() {
+
+  const phoneScreenSize = useMediaQuery('(max-width:500px)');
+
   const { isCreator } = useToken();
   const navigate = useNavigate();
 
@@ -22,17 +26,25 @@ export default function Startpage() {
   };
 
   return (
+   phoneScreenSize ? 
+   <div className="startPage" style={svgStyle}>
+      <div className="cardContainer">
+        <CardStartPage text={"Join a quiz!"} inputBool={true} />
+      </div>
+    </div>
+   :
     <div className="startPage" style={svgStyle}>
       <div className="startPageTop">
         <LoginBtn />
       </div>
       <div className="cardContainer">
-        {process.env.NODE_ENV === "development" && (
+        {/* {process.env.NODE_ENV === "development" && (
           <CardStartPage
             text={"Socket Tester"}
             onclick={() => navigate("/tester")}
           />
-        )}
+        )} */}
+
         <CardStartPage text={"Join a quiz!"} inputBool={true} />
         {isCreator && (
           <CardStartPage

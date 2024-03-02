@@ -11,7 +11,7 @@ import useLobby, { GameRole } from "../../context/useLobby";
 import WaitingPage from "../../pages/WaitingPage/WaitingPage";
 
 function getCardStyle(index) {
-  switch ((index + 1) % 4) {
+  switch ((index + 1) ) {
     case 1:
       return {
         background: { backgroundColor: "#8ABBFE" },
@@ -60,10 +60,9 @@ export default function AnswerQuizQuestion() {
 
   // TODO: Add countdown and progress bar for the host
   return (
-    <div className="AnswerQuestion">
+    <div className="AnswerQuestion" id='answerPage'>
       <h1>{gameState.question.question}</h1>
-      {/* <h2> 00:{counter < 10 ? `0${counter}` : counter} </h2> */}
-      <div className="answers">
+      <div className="answers" id='answerPageAnswers'>
         {gameState.question.answers.map(({ id, text }, index) => {
           const { background, icon } = getCardStyle(index);
           const cardStyle = {
@@ -71,8 +70,9 @@ export default function AnswerQuizQuestion() {
             outline: chosenAnswer === id && "4px solid red",
           };
           return (
-            <div key={index} className="overlayTest">
+          
               <div
+              id='answerPageAnswerCard'
                 className="answerCard"
                 style={cardStyle}
                 onClick={() => {
@@ -85,7 +85,7 @@ export default function AnswerQuizQuestion() {
                 <img src={icon} alt="icon" className="answerCardIcon" />
                 <h4>{text}</h4>
               </div>
-            </div>
+      
           );
         })}
       </div>

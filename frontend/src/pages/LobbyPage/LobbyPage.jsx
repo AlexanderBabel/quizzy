@@ -158,11 +158,6 @@ export default function LobbyPage() {
             ))}
           {lobbyState.role === GameRole.PLAYER && (
             <>
-              <div className="playerNameGridDiv">
-                {lobbyState.players.length > 0 && (
-                  <PlayerNameGrid players={lobbyState.players}></PlayerNameGrid>
-                )}
-              </div>
               <div className="lobbyPageBottom">
                 <h1>Waiting for game to start...</h1>
               </div>
