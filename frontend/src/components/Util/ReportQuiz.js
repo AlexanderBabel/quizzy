@@ -18,6 +18,7 @@ const ReportQuiz = ({ quizId }) => {
 
     const apiUrl = `${process.env.REACT_APP_API_ENDPOINT}/v1/quiz/${quizId}/report`;
     console.log("apiUrl", apiUrl)
+
     const reportData = { reason };
 
     try {
@@ -29,6 +30,12 @@ const ReportQuiz = ({ quizId }) => {
         },
         body: JSON.stringify(reportData),
       });
+
+      if (response.status === 400) {
+        const data = await response.json();
+        alert(`Error: ${data.message}`);
+        return;
+      }
 
       const data = await response.json();
       if (data.success) {
