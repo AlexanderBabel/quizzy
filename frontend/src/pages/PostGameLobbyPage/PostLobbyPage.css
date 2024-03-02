@@ -17,33 +17,31 @@
   width: 100%;
 }
 
-#postLobbyPageTitle{
+#postLobbyPageTitle {
   padding: 0;
   display: flex;
   align-items: center;
 }
 
+.PostLobbyPagePlayer {
+  box-sizing: border-box;
+  padding: 20px !important;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
 
-  .PostLobbyPagePlayer{
-    box-sizing: border-box;
-    padding: 20px !important;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
+.PostLobbyPagePlayer h1 {
+  font-size: 1rem;
+}
 
-  .PostLobbyPagePlayer h1{
-    font-size: 1rem;
-  }
-
-  .postLobbyPagePlayerResult{
-    margin: auto;
-    margin-top: 200px;
-    box-sizing: border-box;
-    padding: 30px;
-    border-radius: 15px;
-    background: rgb(230, 85, 216);
-  }
-
+.postLobbyPagePlayerResult {
+  margin: auto;
+  margin-top: 200px;
+  box-sizing: border-box;
+  padding: 30px;
+  border-radius: 15px;
+  background: rgb(230, 85, 216);
+}

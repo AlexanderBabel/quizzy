@@ -41,9 +41,8 @@ function PostLobbyPage() {
         <h3>See the host screen for more details</h3>
         <div className="postLobbyPagePlayerResult">
           <h2>Place: {gameState?.results?.place}</h2>
-        <h4>Score: {gameState?.results?.score}</h4>
+          <h4>Score: {gameState?.results?.score}</h4>
         </div>
-        
       </div>
     );
   }
@@ -52,7 +51,9 @@ function PostLobbyPage() {
     <div id="PostLobbyPage" style={svgStyle}>
       <div id="header">
         <ReportQuizBtn />
-        <h1 id='postLobbyPageTitle' className="lobbyTitle">The Winner is...</h1>
+        <h1 id="postLobbyPageTitle" className="lobbyTitle">
+          The Winner is...
+        </h1>
         <StartGameBtn
           text={"Quit"}
           onClick={() => {
