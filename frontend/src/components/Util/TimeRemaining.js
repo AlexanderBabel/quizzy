@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import "./TimeRemaining.css";
 
-
 const TimeRemaining = ({ endTime }) => {
-  const calculateTimeLeft = () => {
-    const now = Date.now(); // ?? Maybe another way
+  const calculateTimeLeft = useCallback(() => {
+    const now = Date.now();
     const end = new Date(endTime).getTime();
     const timeLeft = end - now;
     return timeLeft > 0 ? Math.round(timeLeft / 1000) : 0;
-  };
+  }, [endTime]);
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft);
 
   useEffect(() => {
     // Update the countdown every second
@@ -24,7 +23,7 @@ const TimeRemaining = ({ endTime }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [endTime]);
+  }, [calculateTimeLeft]);
 
   return (
     <div className="timeBox">
