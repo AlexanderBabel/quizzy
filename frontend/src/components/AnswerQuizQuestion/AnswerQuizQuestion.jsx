@@ -9,7 +9,7 @@ import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
 import useGame from "../../context/useGame";
 import useLobby, { GameRole } from "../../context/useLobby";
 import WaitingPage from "../../pages/WaitingPage/WaitingPage";
-import TimeRemaining from '../../components/Util/TimeRemaining'; 
+import TimeRemaining from '../../components/Util/TimeRemaining';
 
 function getCardStyle(index) {
   switch ((index + 1) % 4) {
@@ -90,7 +90,9 @@ export default function AnswerQuizQuestion() {
           );
         })}
       </div>
-      <TimeRemaining endTime={gameState.question.endTime} />
+      <div>
+        <TimeRemaining endTime={gameState.question.endTime} />
+      </div>
     </div>
   );
 }
