@@ -19,6 +19,55 @@ const Type = {
   EXAMPLE_QUESTIONS: "EXAMPLE_QUESTIONS",
 };
 
+const TEST_QUESTIONS = [
+  {
+    question: "What is the largest cathedral in Sweden?",
+    answers: [
+      { text: "Storkyrkan", correct: false },
+      { text: "Lund Cathedral", correct: false },
+      { text: "Uppsala Cathedral", correct: true },
+      { text: "Gothenburg Cathedral", correct: false },
+    ],
+  },
+  {
+    question: "Which two innovations is Sweden known for?",
+    answers: [
+      { text: "Bluetooth Technology", correct: true },
+      { text: "Electric Cars", correct: false },
+      { text: "Flat-pack Furniture", correct: true },
+      { text: "Digital Currency", correct: false },
+    ],
+  },
+  {
+    question: "Which river runs through Uppsala?",
+    answers: [
+      { text: "River Thames", correct: false },
+      { text: "River Seine", correct: false },
+      { text: "River Danube", correct: false },
+      { text: "River Fyris", correct: true },
+    ],
+  },
+  {
+    question:
+      "Which Swedish city was originally founded under the name 'Aros' near the end of the Viking Age?",
+    answers: [
+      { text: "Stockholm", correct: false },
+      { text: "Gothenburg", correct: false },
+      { text: "Visby", correct: false },
+      { text: "Uppsala", correct: true },
+    ],
+  },
+  {
+    question: "What are two major exports of Sweden?",
+    answers: [
+      { text: "Iron Ore", correct: true },
+      { text: "Wheat", correct: false },
+      { text: "Machinery and Automobiles", correct: true },
+      { text: "Cocoa Beans", correct: false },
+    ],
+  },
+];
+
 function reducer(state, action) {
   const newState = { ...state };
 
@@ -52,26 +101,9 @@ function reducer(state, action) {
       newState.questionIndex = newState.questions.length - 1;
       break;
     case Type.EXAMPLE_QUESTIONS:
-      newState.questions = [
-        {
-          question: "What is the capital of France?",
-          answers: [
-            { text: "Paris", correct: true },
-            { text: "London", correct: false },
-            { text: "Berlin", correct: false },
-            { text: "Madrid", correct: false },
-          ],
-        },
-        {
-          question: "What is the capital of Germany?",
-          answers: [
-            { text: "Paris", correct: false },
-            { text: "London", correct: false },
-            { text: "Berlin", correct: true },
-            { text: "Madrid", correct: false },
-          ],
-        },
-      ];
+      newState.title = "Trivia about Uppsala and Sweden";
+      newState.questions = TEST_QUESTIONS;
+
       newState.questionIndex = 0;
       break;
     default:

@@ -8,6 +8,7 @@ import { useSocketEvent } from "socket.io-react-hook";
 import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
 import useGame from "../../context/useGame";
 import useLobby, { GameRole } from "../../context/useLobby";
+import WaitingPage from "../../pages/WaitingPage/WaitingPage";
 
 function getCardStyle(index) {
   switch ((index + 1) % 4) {
@@ -45,11 +46,19 @@ export default function AnswerQuizQuestion() {
   const { sendMessage: answer } = useSocketEvent(socket, "game:answer");
   const [chosenAnswer, setChosenAnswer] = useState();
 
-  if (!gameState.question) return <div>Loading...</div>;
+  if (!gameState.question || chosenAnswer) {
+    return (
+      <WaitingPage
+        text={
+          chosenAnswer
+            ? "Waiting for other players to answer..."
+            : "Loading question..."
+        }
+      />
+    );
+  }
 
   // TODO: Add countdown and progress bar for the host
-  // TODO: show loading animation to the player after they answer
-  // TODO: make cards only clickable for the player
   return (
     <div className="AnswerQuestion">
       <h1>{gameState.question.question}</h1>

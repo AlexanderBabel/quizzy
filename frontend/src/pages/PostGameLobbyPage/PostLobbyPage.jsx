@@ -6,11 +6,11 @@ import ResultList from "../../components/ResultList/ResultList";
 import ReportQuizBtn from "../../components/Buttons/ReportQuizBtn";
 import useGame from "../../context/useGame";
 import { useNavigate } from "react-router-dom";
-import useLobby, { LobbyActionType } from "../../context/useLobby";
+import useLobby, { GameRole, LobbyActionType } from "../../context/useLobby";
 
 function PostLobbyPage() {
   const { gameState } = useGame();
-  const { dispatch } = useLobby();
+  const { lobbyState, dispatch } = useLobby();
   const navigate = useNavigate();
   const scores = gameState?.results?.scores;
   const svgStyle = {
@@ -34,6 +34,17 @@ function PostLobbyPage() {
   }
 
   // TODO: design mobile UI (only show the score and place of the current player)
+  if (lobbyState?.role === GameRole.PLAYER) {
+    return (
+      <div className="answerQuizPage" style={svgStyle}>
+        {/* Replace this */}
+        <h1>See the host screen for more details</h1>
+        <h2>Place: {gameState?.results?.place}</h2>
+        <h4>Score: {gameState?.results?.score}</h4>
+      </div>
+    );
+  }
+
   return (
     <div id="PostLobbyPage" style={svgStyle}>
       <div id="header">
