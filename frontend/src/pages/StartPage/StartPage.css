@@ -1,0 +1,24 @@
+.startPage {
+  display: flex;
+  flex-direction: column;
+}
+
+.startPageTop {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px;
+  justify-content: flex-end;
+}
+
+.cardContainer {
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.myQuizzes {
+  padding: 40px;
+  padding-top: 0;
+}

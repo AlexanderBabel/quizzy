@@ -1,0 +1,33 @@
+.playerNameField {
+  align-content: center;
+  border-radius: 1rem;
+  width: 25rem;
+  height: 4rem;
+  background-color: white;
+  display: flex;
+  margin-right: 1rem;
+  margin: 1rem;
+}
+
+.playerNameInput {
+  align-items: center;
+  background-color: transparent;
+  border-width: 0;
+  outline: none;
+  font-size: larger;
+  font-weight: bold;
+  flex: 2;
+  margin-left: 1rem;
+}
+
+.joinButton {
+  border-radius: 1rem;
+  width: 5rem;
+  height: 3rem;
+  border-color: #a86fff;
+  font-weight: bolder;
+  color: aliceblue;
+  align-self: center;
+  background-color: #a86fff;
+  margin: 1rem;
+}

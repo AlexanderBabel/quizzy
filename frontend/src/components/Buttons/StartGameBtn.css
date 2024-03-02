@@ -1,12 +1,23 @@
+#startGameButton {
+  height: 3rem;
+  width: 7rem;
+  background-color: #6a6dd2;
+  color: aliceblue;
+  border-radius: 1rem;
+  font-weight: bolder;
+  border-color: #6a6dd2;
+  align-self: center;
+}
 
-#startGameButton{
-    height: 3.5rem;
-    width: 7rem;
-    background-color: #6A6DD2;
-    color: aliceblue;
-    border-radius: 1rem;
-    font-weight: bolder;
-    position: absolute;
-    right: 40px;
-    border-color: #6A6DD2;
+@media screen and (max-width: 500px) {
+  #startGameButton {
+    height: 2.5rem;
+    width: fit-content;
+  }
+}
+
+#wrapper {
+  display: flex;
+  justify-content: flex-end; /* Horizontally center the button */
+  align-items: flex-end;
 }

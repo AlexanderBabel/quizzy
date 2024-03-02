@@ -1,18 +1,17 @@
 .PlayerCounter {
-    border-radius: 50%;
-    background-color: #6A6DD2;
-    height: 3.5rem;
-    width: 3.5rem;
-    font-weight: bolder;
-    position: absolute;
-    right: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  border-radius: 50%;
+  background-color: #6a6dd2;
+  height: 3.2rem;
+  width: 3.2rem;
+  font-weight: bolder;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
 }
 
 #playerCountText {
-    text-align: center;
-    font-size: 1.5rem;
-    color: aliceblue;
+  text-align: center;
+  font-size: 1.3rem;
+  color: white;
 }

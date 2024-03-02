@@ -1,0 +1,106 @@
+#SecondPodium {
+  height: 13rem;
+  color: silver;
+  background-color: #dd7bff;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+#FirstPodium {
+  height: 9rem;
+  background-color: #1b4992;
+  border-top-left-radius: 0.5rem;
+}
+
+#ThirdPodium {
+  height: 5rem;
+  background-color: #886aec;
+  border-top-right-radius: 0.5rem;
+}
+
+
+
+.podium {
+  width: 8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.placementText {
+  color: black;
+  font-size: 1.5rem;
+}
+
+.placementBackground {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3rem;
+  background-color: white;
+  height: 2rem;
+  width: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+#playerName {
+  color: aliceblue;
+  font-size: large;
+}
+
+#playerPoints {
+  color: aliceblue;
+  font-size: large;
+}
+
+
+@media screen and (max-width: 700px) {
+  /* Adjust the height for screens up to 768px wide */
+  #FirstPodium {
+    height: 6rem;
+  }
+  #SecondPodium {
+    height: 8rem;
+  }
+  #ThirdPodium {
+    height: 4rem;
+  }
+  .podium {
+    width: 5rem;
+  }
+
+  .placementText {
+    color: black;
+    font-size: 1rem;
+  }
+  
+  .placementBackground {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+
+  #playerName {
+    font-size: small;
+  }
+  
+  #playerPoints {
+    font-size: small;
+  }
+  
+}
+
+.PodiumWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+
+#PlacementPodiums {
+  display: flex;
+  flex-direction: horizontal;
+}
+
+

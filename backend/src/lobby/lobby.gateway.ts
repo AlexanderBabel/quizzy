@@ -1,5 +1,6 @@
 import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import {
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -17,14 +18,8 @@ import { QuizModelService } from 'src/model/quiz.model.service';
 import { QuizVisibility } from '@prisma/client';
 import { JwtAuthType } from 'src/auth/jwt/enums/jwt.enum';
 
-@WebSocketGateway({
-  cors: {
-    origin: 'http://localhost:3000',
-    allowedHeaders: ['Authorization'],
-    credentials: true,
-  },
-})
-export class LobbyGateway {
+@WebSocketGateway({ cors: true })
+export class LobbyGateway implements OnGatewayDisconnect {
   constructor(
     private readonly lobbyService: LobbyService,
     private readonly gameService: GameService,
@@ -40,6 +35,19 @@ export class LobbyGateway {
   async createLobby(client: Socket, quizId: string): Promise<string> {
     if (client.data.lobbyCode) {
       throw new WsException('Already in a lobby');
+    }
+
+    // rejoin the lobby if the client was disconnected
+    const playerData = await this.lobbyService.getPlayerData(client.data.id);
+    if (playerData) {
+      console.log('reconnected', client.data);
+      if (playerData.role === GameRole.Host) {
+        return this.joinLobby(client, {
+          lobbyCode: playerData.lobbyCode,
+          userName: null,
+        });
+      }
+      await this.lobbyService.deletePlayerData(client.data.id);
     }
 
     const quiz = await this.quizModelService.findQuiz({
@@ -62,6 +70,7 @@ export class LobbyGateway {
 
     const lobbyCode = await this.lobbyService.createLobby({
       quizId: Number.parseInt(quizId),
+      quizName: quiz.name,
       hostId: client.data.id,
       hostType: client.data.authType,
     });
@@ -72,7 +81,7 @@ export class LobbyGateway {
     client.join(lobbyCode);
 
     console.log('lobby:create', client.data);
-    client.emit('lobby:create', lobbyCode);
+    client.emit('lobby:create', { lobbyCode, quizName: quiz.name });
     return lobbyCode;
   }
 
@@ -80,13 +89,30 @@ export class LobbyGateway {
   @UsePipes(new WSValidationPipe())
   @SubscribeMessage('lobby:join')
   async joinLobby(client: Socket, payload: JoinLobbyDto): Promise<string> {
-    const { lobbyCode } = payload;
-    if (client.data.blockedLobbies?.includes(lobbyCode)) {
-      throw new WsException('Lobby not found');
-    }
-
     if (client.data.lobbyCode) {
       throw new WsException('Already in lobby');
+    }
+
+    const { lobbyCode, userName } = payload;
+
+    let playerData = await this.lobbyService.getPlayerData(client.data.id);
+    if (!client.data.blockedLobbies && playerData?.blockedLobbies) {
+      client.data.blockedLobbies = playerData.blockedLobbies;
+      console.log('reconnected', client.data);
+    }
+
+    // delete data from redis
+    if (playerData) {
+      await this.lobbyService.deletePlayerData(client.data.id);
+    }
+
+    // allow joining into a new lobby on reconnect
+    if (playerData?.lobbyCode !== lobbyCode) {
+      playerData = null;
+    }
+
+    if (client.data.blockedLobbies?.includes(lobbyCode)) {
+      throw new WsException('Lobby not found');
     }
 
     const lobby = await this.lobbyService.getLobby(lobbyCode);
@@ -96,9 +122,19 @@ export class LobbyGateway {
       throw new WsException('Lobby not found');
     }
 
+    // require userName for players
+    if (
+      !userName &&
+      !playerData?.userName &&
+      playerData?.role !== GameRole.Host
+    ) {
+      client.emit('lobby:join', { state: 'name' });
+      return;
+    }
+
     client.data.lobbyCode = lobbyCode;
-    client.data.userName = payload.userName;
-    client.data.role = GameRole.Player;
+    client.data.userName = playerData?.userName ?? userName;
+    client.data.role = playerData?.role ?? GameRole.Player;
 
     client.join(lobbyCode);
     client.to(lobbyCode).emit('lobby:playerJoined', client.data.userName);
@@ -115,7 +151,14 @@ export class LobbyGateway {
       this.gameService.sendQuestion(client, game);
     }
 
-    console.log('lobby:join', payload, client.data);
+    console.log('lobby:join', payload, client.data, {
+      state: game ? 'game' : 'lobby',
+    });
+    client.emit('lobby:join', {
+      state: game ? 'game' : 'lobby',
+      role: client.data.role,
+      quizName: lobby.quizName,
+    });
     return 'Joined lobby';
   }
 
@@ -135,6 +178,19 @@ export class LobbyGateway {
         .map((p) => ({ name: p.data.userName, id: p.data.id })),
     );
     return 'Players sent';
+  }
+
+  async handleDisconnect(client: Socket): Promise<void> {
+    if (client.data.lobbyCode || client.data.blockedLobbies) {
+      await this.lobbyService.savePlayerData({
+        id: client.data.id,
+        role: client.data.role,
+        lobbyCode: client.data.lobbyCode,
+        userName: client.data.userName,
+        blockedLobbies: client.data.blockedLobbies,
+      });
+      await this.leaveLobby(client);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -184,7 +240,7 @@ export class LobbyGateway {
     }
 
     console.log('start quiz', lobby.code);
-    this.server.to(lobby.code).emit('lobby:startQuiz');
+    this.server.to(lobby.code).emit('lobby:start', { success: true });
     this.lobbyService.deleteLobby(lobby.code);
     const res = await this.gameService.startGame(client, lobby);
     if (!res) {

@@ -40,8 +40,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         return null;
     }
 
-    // TODO: check for cached data (check if user is a host or a player in a game)
-
     return user;
   }
 }

@@ -1,9 +1,8 @@
-.loginBtn{
-    border: none;
-    background: none;
-    color: white;
-    font-weight: bold;
-    font-size: 1.1rem;
-    cursor: pointer;
+.loginBtn {
+  border: none;
+  background: none;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
 }
-

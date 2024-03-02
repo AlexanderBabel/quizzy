@@ -9,8 +9,11 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
+      'http://localhost:3001',
       'https://*.quizzy-68c.pages.dev',
       'https://quizzy-68c.pages.dev',
+      'https://quizzy-api.babel.sh',
+      'https://quizzy.babel.sh',
     ],
   });
 

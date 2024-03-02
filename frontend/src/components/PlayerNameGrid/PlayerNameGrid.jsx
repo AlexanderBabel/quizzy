@@ -1,11 +1,13 @@
-import "./PlayerNameGrid.css"
+import "./PlayerNameGrid.css";
 
-function PlayerNameGrid ({players}) {
-
-    return <div id="PlayerNameGrid"><div className="NameContainer">
-    {players.map((e) => (<p className="playerName">{e}</p>))}
-</div></div>
-
+export default function PlayerNameGrid({ players }) {
+  return (
+    <div id="PlayerNameGrid">
+      {players.map(({ id, name }) => (
+        <div key={id} className="playerName">
+          {name}
+        </div>
+      ))}
+    </div>
+  );
 }
-
-export default PlayerNameGrid

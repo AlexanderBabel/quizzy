@@ -1,27 +1,78 @@
-import { useEffect, useState } from "react";
-import useToken from "../useToken/useToken";
-import { useSocket, useSocketEvent } from "socket.io-react-hook";
+import { useEffect, useReducer } from "react";
+import { useSocketEvent } from "socket.io-react-hook";
 import { decodeToken, isExpired } from "react-jwt";
+import useToken from "../../context/useToken";
+import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
+import useAxios from "axios-hooks";
+import { enqueueSnackbar } from "notistack";
 
-const URL =
-  process.env.NODE_ENV === "production" ? undefined : "ws://127.0.0.1:3001";
-
-export const useAuthenticatedSocket = (token) => {
-  return useSocket(URL, {
-    enabled: !!token,
-    extraHeaders: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const Role = {
+  HOST: "host",
+  PLAYER: "player",
 };
 
+export const Type = {
+  ADD_TOKEN: "ADD_TOKEN",
+  CHANGE_TOKEN: "CHANGE_TOKEN",
+  UPDATE_CONNECTED: "UPDATE_CONNECTED",
+  UPDATE_ROLE: "UPDATE_ROLE",
+  UPDATE_LOBBY_CODE: "UPDATE_LOBBY_CODE",
+};
+
+export const initialState = {
+  tokens: [],
+  currentIndex: 0,
+  isConnected: false,
+  role: "lobby",
+  lobbyCode: "",
+};
+
+export function reducer(state, action) {
+  const newState = { ...state };
+  switch (action.type) {
+    case Type.ADD_TOKEN:
+      newState.tokens = [
+        ...newState.tokens.filter(
+          (token) => token.userName !== action.userName
+        ),
+        { userName: action.userName, token: action.token },
+      ];
+      newState.currentIndex = newState.tokens.length - 1;
+      break;
+    case Type.CHANGE_TOKEN:
+      newState.currentIndex = action.index;
+      break;
+    case Type.UPDATE_CONNECTED:
+      newState.isConnected = action.isConnected;
+      break;
+    case Type.UPDATE_ROLE:
+      newState.role = action.role;
+      break;
+    case Type.UPDATE_LOBBY_CODE:
+      newState.lobbyCode = action.lobbyCode;
+      break;
+    default:
+      break;
+  }
+
+  localStorage.setItem("socketTester", JSON.stringify(newState));
+  return newState;
+}
+
 export default function SocketHandler() {
-  const { token, setToken } = useToken();
-  const { socket } = useAuthenticatedSocket(token);
+  const { token, isCreator, setToken } = useToken();
+  const { socket } = useAuthenticatedSocket();
+  const [{ data, error }, login] = useAxios(
+    { url: "/auth/guest", method: "post" },
+    { manual: true }
+  );
+
   const { lastMessage: lobbyMessage, sendMessage: sendLobbyMessage } =
     useSocketEvent(socket, "lobby:create");
-  const { lastMessage: joinLobbyMessage, sendMessage: sendJoinLobbyMessage } = // eslint-disable-line
-    useSocketEvent(socket, "lobby:join");
+  const {
+    lastMessage: joinLobbyMessage, // eslint-disable-line
+    sendMessage: sendJoinLobbyMessage,
+  } = useSocketEvent(socket, "lobby:join");
   const { lastMessage: players } = useSocketEvent(socket, "lobby:players");
   const { sendMessage: startQuiz } = useSocketEvent(socket, "lobby:start");
   const { lastMessage: gameStart } = useSocketEvent(socket, "lobby:startQuiz"); // eslint-disable-line
@@ -33,31 +84,33 @@ export default function SocketHandler() {
     "game:nextQuestion"
   );
 
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [lobbyCode, setLobbyCode] = useState("");
-  const [userName, setUserName] = useState(
-    localStorage.getItem("userName") || ""
-  );
-  const [tokens, setTokens] = useState(
-    JSON.parse(localStorage.getItem("tokens") || "{}")
-  );
-  const [role, setRole] = useState("lobby");
+  const [state, dispatch] = useReducer(reducer, initialState, () => {
+    const localState = localStorage.getItem("socketTester");
+    const newState = localState ? JSON.parse(localState) : initialState;
+    if (newState.tokens) {
+      newState.tokens = newState.tokens.filter((t) => !isExpired(t.token));
+    }
+    newState.currentIndex = Math.min(
+      newState.currentIndex,
+      newState.tokens.length - 1
+    );
+
+    newState.isConnected = socket.connected;
+    return newState;
+  });
 
   useEffect(() => {
     function onConnect() {
       console.log("Connected");
-      // socket.emit("lobby:create", "1");
-      setIsConnected(true);
+      dispatch({ type: Type.UPDATE_CONNECTED, isConnected: true });
     }
 
     function onDisconnect() {
       console.log("Disconnected");
-      setIsConnected(false);
+      dispatch({ type: Type.UPDATE_CONNECTED, isConnected: false });
     }
 
     const currentSocket = socket;
-
-    console.log("currentSocket", currentSocket);
     currentSocket.on("connect", onConnect);
     currentSocket.on("disconnect", onDisconnect);
     currentSocket.on("exception", function (data) {
@@ -72,70 +125,80 @@ export default function SocketHandler() {
     };
   }, [socket]);
 
+  useEffect(() => {
+    if (isCreator && state.tokens.findIndex((t) => t.token === token) === -1) {
+      dispatch({
+        type: Type.ADD_TOKEN,
+        userName: "Creator",
+        token,
+      });
+    }
+  }, [isCreator, token]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (state.currentIndex >= 0 && state.currentIndex < state.tokens.length) {
+      setToken(state.tokens[state.currentIndex].token);
+    }
+  }, [state.currentIndex]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (data?.accessToken) {
+      dispatch({
+        type: Type.ADD_TOKEN,
+        userName: `Guest Player ${Object.keys(state.tokens).length + 1}`,
+        token: data.accessToken,
+      });
+      enqueueSnackbar("Guest token created", { variant: "success" });
+    } else if (error) {
+      enqueueSnackbar(`Failed to create guest token. Error: ${error.message}`, {
+        variant: "error",
+      });
+      console.log("error", error);
+    }
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const payload = decodeToken(token) || {};
 
   return (
     <div className="cardContainer">
-      <div className="cardStartpageWrapper" style={{ height: "500px" }}>
+      <div className="cardStartPageWrapper" style={{ height: "500px" }}>
         <p>Select User</p>
         <select
-          onChange={(e) => {
-            const id = e.target.value;
-            setUserName(id);
-            setToken(tokens[id]);
-            localStorage.setItem("userName", id);
-          }}
-          value={userName}
+          onChange={(e) =>
+            dispatch({
+              type: Type.CHANGE_TOKEN,
+              index: e.target.value,
+            })
+          }
+          value={state.currentIndex}
         >
-          {Object.keys(tokens).map((localName) => {
-            const token = tokens[localName];
+          {state.tokens.map(({ userName, token }, index) => {
             const payload = decodeToken(token);
             return (
-              <option key={localName} value={localName}>
-                {localName} ({isExpired(token) ? "Expired" : "Valid"}) (
+              <option key={index} value={index}>
+                {userName} ({isExpired(token) ? "Expired" : "Valid"}) (
                 {payload?.type})
               </option>
             );
           })}
         </select>
 
-        <button
-          onClick={() => {
-            fetch(`${process.env.REACT_APP_API_ENDPOINT}/v1/auth/guest`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                console.log("data", data);
-                const localName = `Guest Player ${Object.keys(tokens).length}`;
-                tokens[localName] = data.accessToken;
-                setTokens(Object.assign({}, tokens));
-                localStorage.setItem("tokens", JSON.stringify(tokens));
-                localStorage.setItem("userName", localName);
-                setUserName(localName);
-                setToken(data.accessToken);
-              });
-          }}
-        >
-          Generate Guest Token
-        </button>
-
+        <button onClick={() => login()}>Generate Guest Token</button>
         <p>
           Current User:
           <br />
-          Name: {userName}
+          Name: {state?.tokens[state.currentIndex]?.userName}
           <br />
           Type: {payload?.type}
           <br />
           ID: {payload?.id}
         </p>
 
-        <p>Websocket Status: {isConnected ? "Connected" : "Disconnected"}</p>
+        <p>
+          Websocket Status: {state.isConnected ? "Connected" : "Disconnected"}
+        </p>
       </div>
-      <div className="cardStartpageWrapper" style={{ height: "500px" }}>
+      <div className="cardStartPageWrapper" style={{ height: "500px" }}>
         <p>Lobby</p>
         {question && <p>Game in progress</p>}
         <div>
@@ -146,7 +209,7 @@ export default function SocketHandler() {
                 <div>
                   <button
                     onClick={() => {
-                      setRole("host");
+                      dispatch({ type: Type.UPDATE_ROLE, role: "host" });
                       sendLobbyMessage(1);
                     }}
                   >
@@ -156,13 +219,21 @@ export default function SocketHandler() {
                   <br />
                   <input
                     type="text"
-                    value={lobbyCode}
-                    onChange={(e) => setLobbyCode(e.target.value)}
+                    value={state.lobbyCode}
+                    onChange={(e) =>
+                      dispatch({
+                        type: Type.UPDATE_LOBBY_CODE,
+                        lobbyCode: e.target.value,
+                      })
+                    }
                   />
                   <button
                     onClick={() => {
-                      setRole("player");
-                      sendJoinLobbyMessage({ lobbyCode, userName });
+                      dispatch({ type: Type.UPDATE_ROLE, role: "player" });
+                      sendJoinLobbyMessage({
+                        lobbyCode: state.lobbyCode,
+                        userName: state.tokens[state.currentIndex].userName,
+                      });
                     }}
                   >
                     Join Lobby
@@ -174,8 +245,8 @@ export default function SocketHandler() {
           {players && (
             <div>
               <p>Players: {JSON.stringify(players)}</p>
-              <p>Role: {role}</p>
-              {role === "host" && !question && (
+              <p>Role: {state.role}</p>
+              {state.role === Role.HOST && !question && (
                 <button
                   onClick={() => {
                     startQuiz();
@@ -189,7 +260,7 @@ export default function SocketHandler() {
         </div>
       </div>
       <div
-        className="cardStartpageWrapper"
+        className="cardStartPageWrapper"
         style={{ height: "500px", width: "500px" }}
       >
         <p>Game</p>
@@ -200,7 +271,7 @@ export default function SocketHandler() {
               Question: {JSON.stringify(question)}
             </small>
             <h2 style={{ color: "white" }}>{question.question}</h2>
-            {role === "player" &&
+            {state.role === Role.PLAYER &&
               question.answers.map((answer) => (
                 <button onClick={() => sendAnswer(answer.id)}>
                   {answer.text}
@@ -213,7 +284,7 @@ export default function SocketHandler() {
             </small>
             <br />
             <br />
-            {role === "host" && (
+            {state.role === Role.HOST && (
               <button onClick={() => sendNextQuestion()}>Next Question</button>
             )}
           </div>
