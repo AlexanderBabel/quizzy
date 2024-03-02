@@ -49,7 +49,7 @@ function PostLobbyPage() {
     <div id="PostLobbyPage" style={svgStyle}>
       <div id="header">
         <ReportQuizBtn />
-        <h1 className="lobbyTitle">The Winner is...</h1>
+        <h1 id='postLobbyPageTitle' className="lobbyTitle">The Winner is...</h1>
         <StartGameBtn
           text={"Quit"}
           onClick={() => {

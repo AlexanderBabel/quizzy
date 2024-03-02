@@ -10,7 +10,7 @@ export default function PlacementPodium() {
       {scores && scores.length >= 2 && (
         <div className="PodiumWrapper">
           <h1 id="playerName">{scores[1]?.name}</h1>
-          <div id="FirstPodium">
+          <div id="FirstPodium" className="podium">
             <div className="placementBackground">
               {" "}
               <h1 className="placementText">2</h1>
@@ -23,7 +23,7 @@ export default function PlacementPodium() {
         <div className="PodiumWrapper">
           <h1 id="playerName">{scores[0]?.name}</h1>
 
-          <div id="SecondPodium">
+          <div id="SecondPodium" className="podium">
             <div className="placementBackground">
               {" "}
               <h1 className="placementText">1</h1>
@@ -35,7 +35,7 @@ export default function PlacementPodium() {
       {scores && scores.length >= 3 && (
         <div className="PodiumWrapper">
           <h1 id="playerName">{scores[2]?.name}</h1>
-          <div id="ThirdPodium">
+          <div id="ThirdPodium" className="podium">
             <div className="placementBackground">
               {" "}
               <h1 className="placementText">3</h1>
