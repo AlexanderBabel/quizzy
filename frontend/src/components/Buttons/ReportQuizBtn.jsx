@@ -1,77 +1,51 @@
 import React, { useState } from 'react';
 import { MdReport } from "react-icons/md";
-import useToken from "../../context/useToken";
 import "./ReportQuizBtn.css";
 import { enqueueSnackbar } from "notistack";
 import useLobby from "../../context/useLobby";
-
+import useAxios from "axios-hooks";
 
 function ReportQuizBtn({ quizId }) {
   const [showReportForm, setShowReportForm] = useState(false);
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const { token } = useToken();
   const { lobbyState } = useLobby();
 
+  const apiUrl = `${process.env.REACT_APP_API_ENDPOINT}/v1/quiz/${lobbyState.quizId}/report`;
+  const [{ data, loading, error }, executePost] = useAxios(
+    {
+      url: apiUrl,
+      method: "POST"
+    },
+    { manual: true }
+  );
 
-  const handleIconClick = () => {
-    setShowReportForm(!showReportForm);
-  };
+  const handleIconClick = () => setShowReportForm(!showReportForm);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
 
-    const apiUrl = `${process.env.REACT_APP_API_ENDPOINT}/v1/quiz/${lobbyState.quizId}/report`;
-    enqueueSnackbar(`Error: ${apiUrl}`, {
-      variant: "error",
-    });
-
     try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ reason }),
+      const response = await executePost({
+        data: { reason }
       });
 
-      if (response.status === 400) {
-        const data = await response.json();
-        enqueueSnackbar(`Error: ${data.message}`, {
-          variant: "error",
-        });
-        return;
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        enqueueSnackbar('Report submitted successfully.', {
-          variant: "success",
-        });
+      if (response.data.success) {
+        enqueueSnackbar('Report submitted successfully.', { variant: "success" });
         setShowReportForm(false);
         setReason('');
       } else {
-        alert('Failed to submit report.');
-        enqueueSnackbar(`Failed to submit report`, {
-          variant: "error",
-        });
+        enqueueSnackbar('Failed to submit report.', { variant: "error" });
       }
-    } catch (error) {
-      enqueueSnackbar(`Error submitting report. Error: ${error}`, {
-        variant: "error",
-      });
+    } catch (err) {
+      enqueueSnackbar(`Error submitting report: ${err.message}`, { variant: "error" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const iconSize = () => {
-    const screenWidth = window.innerWidth;
-    return screenWidth <= 500 ? 13 : 30;
-  };
+  const iconSize = () => window.innerWidth <= 500 ? 13 : 30;
 
   return (
     <div id="reportQuizWrapper">
@@ -86,7 +60,7 @@ function ReportQuizBtn({ quizId }) {
             onChange={(e) => setReason(e.target.value)}
             required
           />
-          <button type="submit" disabled={isSubmitting}>Submit Report</button>
+          <button type="submit" disabled={isSubmitting || loading}>Submit Report</button>
         </form>
       )}
     </div>
@@ -94,4 +68,3 @@ function ReportQuizBtn({ quizId }) {
 }
 
 export default ReportQuizBtn;
-
