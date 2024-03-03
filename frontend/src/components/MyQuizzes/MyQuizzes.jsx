@@ -12,6 +12,7 @@ export default function MyQuizzes() {
     <div className="myQuizzesWrapper">
       <div>
         <h3>My created quizzes</h3>
+        <hr/>
         <div className="quizzes">
           {loading &&
             [0, 0, 0, 0].map((_, i) => (
@@ -25,8 +26,8 @@ export default function MyQuizzes() {
             ))}
           {!loading &&
             (data && data.length > 0 ? (
-              data.map((quiz) => {
-                return (
+              data.map((quiz) => 
+                 (
                   <CardStartPage
                     key={quiz?.quizId}
                     quizCard={true}
@@ -34,8 +35,8 @@ export default function MyQuizzes() {
                     setUpdate={() => refetch()}
                     deleteAllowed={true}
                   />
-                );
-              })
+                )
+              )
             ) : (
               <p>No created quizzes</p>
             ))}

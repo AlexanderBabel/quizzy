@@ -1,5 +1,4 @@
 import background from "../../images/blob-scene-haikei.svg";
-import "./SocketTester.css";
 import SocketHandler from "../../components/SocketHandler/SocketHandler";
 import { useNavigate } from "react-router-dom";
 

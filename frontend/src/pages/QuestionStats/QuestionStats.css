@@ -54,3 +54,36 @@
   gap: 5px;
   width: 50%;
 }
+
+#playerQuestionStatDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: white;
+  width: 90vw;
+  height: 90vh;
+  justify-content: space-between;
+}
+
+#playerScore , #gainedThisRound{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: fit-content;
+  box-sizing: border-box;
+  width: 90vw;
+  max-width: 300px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+#playerScore {
+  background: rgba(255, 255, 255, 0.262);
+}
+
+#gainedThisRound {
+  background: rgb(255, 149, 0);
+  gap: 5px;
+}

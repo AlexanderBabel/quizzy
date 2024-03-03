@@ -76,3 +76,10 @@
     height: 25px;
   }
 }
+
+
+@media (max-width: 500px) {
+  .playerName {
+    font-size: 5vw;
+  }
+}

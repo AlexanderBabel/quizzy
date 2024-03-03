@@ -6,7 +6,7 @@ export default function ChosenAnswer({ count, backgroundColor }) {
       className="countBar"
       style={{ height: `${count * 2}rem`, background: backgroundColor }}
     >
-      {count}
+      {count > 0 && count}
     </div>
   );
 }

@@ -16,6 +16,9 @@
   flex-direction: row;
   align-items: center;
   width: fit-content;
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 
 form {
