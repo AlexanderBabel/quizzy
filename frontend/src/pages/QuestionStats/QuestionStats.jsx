@@ -74,7 +74,7 @@ export default function QuestionStats() {
         <div id="playerQuestionStatDiv">
           <div id="playerScore">Score: {gameState?.results?.score}</div>
           <div>
-            <h1>
+            <h1 style={gameState?.results?.correct ? {color:'green'} : {color:'red'}}>
               {gameState?.results?.correct
                 ? "Correct Answer!"
                 : "Incorrect Answer"}

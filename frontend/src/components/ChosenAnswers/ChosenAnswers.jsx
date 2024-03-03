@@ -11,7 +11,6 @@ export default function ChosenAnswers() {
   const icons = [frog, sheep, mouse, swine];
   const barColors = ["#8ABBFE", "#FFFF71", "#FB9D4A", "#56E75B"];
 
-  // TODO: Mark correct answer
   return (
     <div className="chosenAnswers">
       <div>
@@ -26,7 +25,9 @@ export default function ChosenAnswers() {
         </div>
         <div className="icons">
           {icons.map((icon, i) => (
-            <img key={i} src={icon} alt="icon" className="answerIcon" />
+            <div className="answerIconWrapper" style={gameState?.results?.answerCounts[i].correct ? {background:'#3BB143'} : {background:'red'}}>
+            <img key={i}  src={icon} alt="icon" className="answerIcon" />
+          </div>
           ))}
         </div>
       </div>

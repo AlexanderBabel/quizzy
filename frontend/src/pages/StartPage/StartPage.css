@@ -13,11 +13,12 @@
 
 .cardContainer {
   display: flex;
+  margin: auto;
   flex-direction: row;
   gap: 20px;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap;
   justify-content: center;
-  padding: 65px;
+  padding: 65px; */
 }
 
 .myQuizzes {

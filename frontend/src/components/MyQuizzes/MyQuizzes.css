@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   gap: 20px;
-  flex-wrap: wrap;
+  text-align: center;
 }
 
 .myQuizzesWrapper h3 {
@@ -19,7 +19,7 @@
   gap: 20px;
   flex-wrap: wrap;
   justify-content: center;
-  border-top: 2px solid white;
-  padding: 20px 5px;
-  min-width: calc(100vw - 120px);
+  padding: 5px;
+  overflow: scroll;
+  height: 47vh;
 }
