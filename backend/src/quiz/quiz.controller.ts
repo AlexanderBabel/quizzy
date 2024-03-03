@@ -38,7 +38,7 @@ export class QuizController {
       orderBy: {
         createdAt: 'desc',
       },
-      where: { visibility: QuizVisibility.PUBLIC }
+      where: { visibility: QuizVisibility.PUBLIC },
     });
   }
 
