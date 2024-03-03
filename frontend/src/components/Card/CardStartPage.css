@@ -1,5 +1,6 @@
 .cardStartPageWrapper {
   background-color: #6a6dd2;
+  box-shadow: inset;
   padding: 20px;
   display: flex;
   align-items: center;
@@ -16,6 +17,7 @@
 
 .cardStartPageWrapper:hover {
   background-color: #a86eff;
+  outline: 3px solid rgba(255, 255, 255, 0.508);
 }
 
 .quizCardBtns {

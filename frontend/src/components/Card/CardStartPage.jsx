@@ -1,6 +1,6 @@
 import "./CardStartPage.css";
 import { useEffect, useState } from "react";
-import { MdOutlineEdit } from "react-icons/md";
+// import { MdOutlineEdit } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import { CiPlay1 } from "react-icons/ci";
 import useToken from "../../context/useToken";
@@ -57,9 +57,9 @@ export default function CardStartPage({
         <div className="quizCardBtns">
           {isCreator && deleteAllowed && (
             <>
-              <button className="iconBtn">
+              {/* <button className="iconBtn">
                 <MdOutlineEdit />
-              </button>
+              </button> */}
               <button className="iconBtn" onClick={() => deleteQuiz()}>
                 <FaTrash />
               </button>

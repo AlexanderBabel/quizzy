@@ -24,8 +24,18 @@
   grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
+.answerIconWrapper{
+  width: 40px;
+  height: 40px;
+  margin: auto;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50px;
+}
+
 .answerIcon {
   max-width: 40px;
   max-height: 40px;
-  margin: auto;
 }

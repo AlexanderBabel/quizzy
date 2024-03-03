@@ -16,3 +16,36 @@
   max-width: 40px;
   max-height: 40px;
 }
+
+
+@media (max-width: 500px) {
+  #answerPage {
+    max-width: 100vw;
+    min-width: 90vw;
+    margin: 0 auto;
+    gap: 0;
+    padding: 0;
+    height: 90vh;
+  }
+  
+  #answerPageAnswers{
+    min-width: 90vw;
+    width: fit-content;
+    gap: 5px;
+    margin: auto;
+    padding: 0;
+  }
+  
+  #answerPageAnswerCard{
+    box-sizing: border-box;
+    padding: 5px;
+    border-radius: 15px;
+    width: 100%;
+    height: 120px;
+    margin: auto;
+  }
+  
+}
+
+
+
