@@ -66,20 +66,24 @@
   justify-content: space-between;
 }
 
-#playerScore {
+#playerScore , #gainedThisRound{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: fit-content;
   box-sizing: border-box;
-  padding: 15px;
-  width: 70%;
+  width: 90vw;
   max-width: 300px;
-  background: rgba(255, 255, 255, 0.262);
   border-radius: 10px;
   font-weight: bold;
 }
 
+#playerScore {
+  background: rgba(255, 255, 255, 0.262);
+}
+
 #gainedThisRound {
   background: rgb(255, 149, 0);
-  box-sizing: border-box;
-  padding: 15px;
-  border-radius: 10px;
-  font-weight: bold;
+  gap: 5px;
 }
