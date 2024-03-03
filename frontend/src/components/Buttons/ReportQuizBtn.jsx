@@ -12,7 +12,7 @@ function ReportQuizBtn({ quizId }) {
   const { lobbyState } = useLobby();
 
   const apiUrl = `${process.env.REACT_APP_API_ENDPOINT}/v1/quiz/${lobbyState.quizId}/report`;
-  const [{ data, loading, error }, executePost] = useAxios(
+  const [{ loading }, executePost] = useAxios(
     {
       url: apiUrl,
       method: "POST"
