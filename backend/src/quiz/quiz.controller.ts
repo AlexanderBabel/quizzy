@@ -32,14 +32,16 @@ export class QuizController {
 
   @IsPublic()
   @Get('/')
-  async last20Quizzes(): Promise<Quiz[]> {
-    return this.quizModelService.findQuizzes({
+  async last20Quizzes(): Promise<ResponseQuiz[]> {
+    const quizzes = await this.quizModelService.findQuizzes({
       take: 20,
       orderBy: {
         createdAt: 'desc',
       },
       where: { visibility: QuizVisibility.PUBLIC },
     });
+
+    return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
   }
 
   @IsPublic()
