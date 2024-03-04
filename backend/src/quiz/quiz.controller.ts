@@ -34,7 +34,7 @@ export class QuizController {
   @Get('/search')
   async searchQuizzes(@Query('query') query: string): Promise<ResponseQuiz[]> {
     const quizzes = await this.quizModelService.findQuizzes({
-      where: { name: { contains: query }, visibility: QuizVisibility.PUBLIC },
+      where: { name: { contains: query, mode: 'insensitive' }, visibility: QuizVisibility.PUBLIC },
     });
 
     return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
