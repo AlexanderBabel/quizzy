@@ -21,6 +21,7 @@ export const GameRole = {
 
 export const initialState = {
   lobbyCode: null,
+  quizId: null,
   quizName: null,
   players: [],
   role: null,
@@ -32,11 +33,13 @@ function reducer(state, action) {
     case LobbyActionType.JOIN_LOBBY:
       newState.role = action.role;
       newState.lobbyCode = action.lobbyCode;
+      newState.quizId = action.quizId;
       newState.quizName = action.quizName;
       break;
     case LobbyActionType.LEAVE_LOBBY:
       newState.role = null;
       newState.lobbyCode = null;
+      newState.quizId = null;
       newState.quizName = null;
       newState.players = [];
       break;
