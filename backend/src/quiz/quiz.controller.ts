@@ -15,7 +15,7 @@ import { CreateQuizDto } from './dtos/create.quiz.dto';
 import { QuizModelService } from 'src/model/quiz.model.service';
 import { ResponseQuiz } from './types/quiz.type';
 import { EditQuizDto } from './dtos/edit.quiz.dto';
-import { Quiz, QuizVisibility } from '@prisma/client';
+import { QuizVisibility } from '@prisma/client';
 import { GameRole, Role } from 'src/auth/jwt/enums/roles.enum';
 import { Roles } from 'src/auth/jwt/decorators/roles.decorator';
 import { JwtAuthType } from 'src/auth/jwt/enums/jwt.enum';
@@ -46,10 +46,15 @@ export class QuizController {
 
   @IsPublic()
   @Get('/search')
-  async searchQuizzes(@Query('query') query: string): Promise<Quiz[]> {
-    return this.quizModelService.findQuizzes({
-      where: { name: { contains: query }, visibility: QuizVisibility.PUBLIC },
+  async searchQuizzes(@Query('query') query: string): Promise<ResponseQuiz[]> {
+    const quizzes = await this.quizModelService.findQuizzes({
+      where: {
+        name: { contains: query, mode: 'insensitive' },
+        visibility: QuizVisibility.PUBLIC,
+      },
     });
+
+    return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
   }
 
   @Roles(Role.Creator)
