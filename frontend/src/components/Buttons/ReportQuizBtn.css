@@ -1,3 +1,4 @@
+/* Keeping IDs for unique elements */
 #reportIcon {
   color: white;
   cursor: pointer;
@@ -21,7 +22,8 @@
   left: 10px;
 }
 
-form {
+/* Refactoring form, textarea, and button to use classes */
+.form-style {
   color: white;
   display: flex;
   flex-direction: column;
@@ -29,7 +31,7 @@ form {
   margin-top: 20px;
 }
 
-textarea {
+.textarea-style {
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 5px; 
@@ -37,7 +39,7 @@ textarea {
   resize: vertical;
 }
 
-button {
+.button-style {
   padding: 10px 15px;
   border-radius: 5px;
   border: none;
@@ -47,10 +49,10 @@ button {
   transition: background-color 0.3s ease;
 }
 
-button:disabled {
+.button-style:disabled {
   background-color: #aaa;
 }
 
-button:hover:enabled {
+.button-style:hover:enabled {
   background-color: #6a6dd2;
 }

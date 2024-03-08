@@ -52,15 +52,16 @@ function ReportQuizBtn({ quizId }) {
       <MdReport size={iconSize()} id="reportIcon" onClick={handleIconClick} />
       <h1 id="reportButtonText" onClick={handleIconClick}>Report Quiz</h1>
       {showReportForm && (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="form-style">
           <label htmlFor="reason">Reason for Reporting:</label>
           <textarea
             id="reason"
+            className="textarea-style"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             required
           />
-          <button type="submit" disabled={isSubmitting || loading}>Submit Report</button>
+          <button className="button-style" type="submit" disabled={isSubmitting || loading}>Submit Report</button>
         </form>
       )}
     </div>
