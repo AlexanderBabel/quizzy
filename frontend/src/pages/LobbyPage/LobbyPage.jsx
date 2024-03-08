@@ -66,6 +66,7 @@ export default function LobbyPage() {
         type: LobbyActionType.JOIN_LOBBY,
         role: GameRole.HOST,
         lobbyCode: createResponse.lobbyCode,
+        quizId,
         quizName: createResponse.quizName,
       });
     }
@@ -91,6 +92,7 @@ export default function LobbyPage() {
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
         role: joinLobbyResponse.role ?? GameRole.PLAYER,
+        quizId: joinLobbyResponse.quizId,
         quizName: joinLobbyResponse.quizName,
         lobbyCode,
       });
@@ -104,6 +106,7 @@ export default function LobbyPage() {
       dispatch({
         type: LobbyActionType.JOIN_LOBBY,
         role: joinLobbyResponse.role ?? GameRole.PLAYER,
+        quizId: joinLobbyResponse.quizId,
         quizName: joinLobbyResponse.quizName,
         lobbyCode,
       });
