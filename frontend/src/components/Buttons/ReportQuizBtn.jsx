@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { MdReport } from "react-icons/md";
 import "./ReportQuizBtn.css";
 import { enqueueSnackbar } from "notistack";
@@ -7,15 +7,14 @@ import useAxios from "axios-hooks";
 
 function ReportQuizBtn({ quizId }) {
   const [showReportForm, setShowReportForm] = useState(false);
-  const [reason, setReason] = useState('');
+  const [reason, setReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { lobbyState } = useLobby();
 
-  const apiUrl = `${process.env.REACT_APP_API_ENDPOINT}/v1/quiz/${lobbyState.quizId}/report`;
   const [{ loading }, executePost] = useAxios(
     {
-      url: apiUrl,
-      method: "POST"
+      url: `quiz/${lobbyState.quizId}/report`,
+      method: "post",
     },
     { manual: true }
   );
@@ -28,29 +27,35 @@ function ReportQuizBtn({ quizId }) {
 
     try {
       const response = await executePost({
-        data: { reason }
+        data: { reason },
       });
 
       if (response.data.success) {
-        enqueueSnackbar('Report submitted successfully.', { variant: "success" });
+        enqueueSnackbar("Report submitted successfully.", {
+          variant: "success",
+        });
         setShowReportForm(false);
-        setReason('');
+        setReason("");
       } else {
-        enqueueSnackbar('Failed to submit report.', { variant: "error" });
+        enqueueSnackbar("Failed to submit report.", { variant: "error" });
       }
     } catch (err) {
-      enqueueSnackbar(`Error submitting report: ${err.message}`, { variant: "error" });
+      enqueueSnackbar(`Error submitting report: ${err.message}`, {
+        variant: "error",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const iconSize = () => window.innerWidth <= 500 ? 13 : 30;
+  const iconSize = () => (window.innerWidth <= 500 ? 13 : 30);
 
   return (
     <div id="reportQuizWrapper">
       <MdReport size={iconSize()} id="reportIcon" onClick={handleIconClick} />
-      <h1 id="reportButtonText" onClick={handleIconClick}>Report Quiz</h1>
+      <h1 id="reportButtonText" onClick={handleIconClick}>
+        Report Quiz
+      </h1>
       {showReportForm && (
         <form onSubmit={handleSubmit} className="form-style">
           <label htmlFor="reason">Reason for Reporting:</label>
@@ -61,7 +66,13 @@ function ReportQuizBtn({ quizId }) {
             onChange={(e) => setReason(e.target.value)}
             required
           />
-          <button className="button-style" type="submit" disabled={isSubmitting || loading}>Submit Report</button>
+          <button
+            className="button-style"
+            type="submit"
+            disabled={isSubmitting || loading}
+          >
+            Submit Report
+          </button>
         </form>
       )}
     </div>
