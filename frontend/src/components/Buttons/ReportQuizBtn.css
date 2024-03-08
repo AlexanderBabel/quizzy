@@ -1,11 +1,15 @@
+/* Keeping IDs for unique elements */
 #reportIcon {
   color: white;
+  cursor: pointer;
 }
 
 #reportButtonText {
   color: white;
   font-size: 1rem;
   width: fit-content;
+  cursor: pointer;
+  margin-left: 8px;
 }
 
 #reportQuizWrapper {
@@ -16,4 +20,39 @@
   position: absolute;
   top: 10px;
   left: 10px;
+}
+
+/* Refactoring form, textarea, and button to use classes */
+.form-style {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.textarea-style {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px; 
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+
+.button-style {
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-style:disabled {
+  background-color: #aaa;
+}
+
+.button-style:hover:enabled {
+  background-color: #6a6dd2;
 }

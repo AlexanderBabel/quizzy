@@ -1,18 +1,80 @@
 #PlayerNameGrid {
   display: flex;
   flex-wrap: wrap;
-  max-width: 90%;
   justify-content: center;
-  margin: auto;
-  width: fit-content;
-  height: fit-content;
+  margin: 10px auto;
+  gap: 10px;
+}
+
+.playerEntry {
+  background: linear-gradient(145deg, #6c7a89, #556270);
+  border-radius: 12px;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 250px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.playerEntry:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(145deg, #556270, #766c89);
 }
 
 .playerName {
+  color: #ecf0f1;
+  font-size: 1rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.kickButton {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease;
+  background-color: #e74c3c;
   color: white;
-  padding: 1.5rem;
-  font-size: 2vw;
-  font-weight: bolder;
+  border: none;
+  border-radius: 30%;
+  padding: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-left: 10px;
+}
+
+.playerEntry:hover .kickButton {
+  opacity: 1;
+  transform: scale(1.1);
+  background-color: #e74c3c;
+}
+
+.playerIcon {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #6a6dd2, #2980b9);
+  margin-right: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .playerEntry {
+    justify-content: center;
+    max-width: none;
+    width: auto;
+  }
+
+  .playerName, .kickButton {
+    font-size: 0.9rem;
+  }
+
+  .playerIcon {
+    width: 25px;
+    height: 25px;
+  }
 }
 
 

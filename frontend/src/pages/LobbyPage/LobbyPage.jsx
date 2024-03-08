@@ -18,6 +18,8 @@ import UsernameTextField from "../../components/PlayerNameInput/PlayerNameInput"
 import { enqueueSnackbar } from "notistack";
 import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
 import WaitingPage from "../WaitingPage/WaitingPage";
+import QrGenerator from '../../components/Util/QrGenerator';
+
 
 export default function LobbyPage() {
   const navigate = useNavigate();
@@ -145,6 +147,9 @@ export default function LobbyPage() {
         <h1 className="lobbyCodeTitle">
           Game Pin: {lobbyState.lobbyCode ?? lobbyCode}
         </h1>
+        <div>
+        <QrGenerator lobbyCode={lobbyState.lobbyCode} size={250} />
+        </div>
       </div>
 
       {lobbyState.role !== null ? (
