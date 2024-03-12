@@ -18,8 +18,13 @@ import UsernameTextField from "../../components/PlayerNameInput/PlayerNameInput"
 import { enqueueSnackbar } from "notistack";
 import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
 import WaitingPage from "../WaitingPage/WaitingPage";
-import QrGenerator from '../../components/Util/QrGenerator';
+import QrGenerator from "../../components/QrGenerator/QrGenerator";
 
+const baseUrl = window.location.origin;
+
+function getUrl(lobbyCode) {
+  return `${baseUrl}/join/${lobbyCode}`;
+}
 
 export default function LobbyPage() {
   const navigate = useNavigate();
@@ -35,12 +40,14 @@ export default function LobbyPage() {
   const { lastMessage: startGameResponse, sendMessage: startQuiz } =
     useSocketEvent(socket, "lobby:start");
   const { sendMessage: leaveLobby } = useSocketEvent(socket, "lobby:leave");
+  const { lastMessage: kickResponse } = useSocketEvent(socket, "lobby:kick");
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       currentLocation.pathname !== nextLocation.pathname &&
       nextLocation.pathname !== "/game" &&
-      !nextLocation.pathname.startsWith("/join")
+      !nextLocation.pathname.startsWith("/join") &&
+      !kickResponse?.kicked
   );
 
   // create lobby is quizId is provided
@@ -113,6 +120,15 @@ export default function LobbyPage() {
     }
   }, [joinLobbyResponse]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // handle kick response and navigate to home
+  useEffect(() => {
+    if (kickResponse?.kicked === true) {
+      navigate("/");
+      enqueueSnackbar("Kicked from lobby!", { variant: "error" });
+      dispatch({ type: LobbyActionType.LEAVE_LOBBY });
+    }
+  }, [kickResponse]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const svgStyle = {
     backgroundImage: `url(${background})`,
     backgroundRepeat: "no-repeat",
@@ -144,12 +160,18 @@ export default function LobbyPage() {
               <StartGameBtn text="Start Game" onClick={() => startQuiz()} />
             )}
         </div>
-        <h1 className="lobbyCodeTitle">
-          Game Pin: {lobbyState.lobbyCode ?? lobbyCode}
-        </h1>
-        <div>
-        <QrGenerator lobbyCode={lobbyState.lobbyCode} size={250} />
-        </div>
+        {lobbyState.role === GameRole.HOST && (
+          <div className="joinInfoContainer">
+            <div className="lobbyCodeTitle">
+              Scan the QR code or go to <br />
+              {baseUrl} and enter{" "}
+              <span className="lobbyCodeTitleCode">
+                {lobbyState.lobbyCode ?? lobbyCode}.
+              </span>
+            </div>
+            <QrGenerator url={getUrl(lobbyState.lobbyCode)} size={250} />
+          </div>
+        )}
       </div>
 
       {lobbyState.role !== null ? (

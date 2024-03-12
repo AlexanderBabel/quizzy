@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import "./TimeRemaining.css";
 
-const TimeRemaining = ({ endTime }) => {
+export default function TimeRemaining({ endTime }) {
   const calculateTimeLeft = useCallback(() => {
     const now = Date.now();
     const end = new Date(endTime).getTime();
@@ -25,11 +25,5 @@ const TimeRemaining = ({ endTime }) => {
     return () => clearInterval(interval);
   }, [calculateTimeLeft]);
 
-  return (
-    <div className="timeBox">
-      Time Remaining: {timeLeft} seconds
-    </div>
-  );
-};
-
-export default TimeRemaining;
+  return <div className="timeBox">Time Remaining: {timeLeft} seconds</div>;
+}

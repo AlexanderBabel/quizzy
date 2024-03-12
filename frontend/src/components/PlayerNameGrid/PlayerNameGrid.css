@@ -16,10 +16,11 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   max-width: 250px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  cursor: default;
 }
 
 .playerEntry:hover {
-  transform: translateY(-2px);
+  transform: translateY(+2px);
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
   background: linear-gradient(145deg, #556270, #766c89);
 }
@@ -32,32 +33,12 @@
 }
 
 .kickButton {
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease;
   background-color: #e74c3c;
   color: white;
   border: none;
-  border-radius: 30%;
   padding: 8px;
   font-size: 0.8rem;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  margin-left: 10px;
-}
-
-.playerEntry:hover .kickButton {
-  opacity: 1;
-  transform: scale(1.1);
-  background-color: #e74c3c;
-}
-
-.playerIcon {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #6a6dd2, #2980b9);
-  margin-right: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width: 768px) {
@@ -65,21 +46,5 @@
     justify-content: center;
     max-width: none;
     width: auto;
-  }
-
-  .playerName, .kickButton {
-    font-size: 0.9rem;
-  }
-
-  .playerIcon {
-    width: 25px;
-    height: 25px;
-  }
-}
-
-
-@media (max-width: 500px) {
-  .playerName {
-    font-size: 5vw;
   }
 }
