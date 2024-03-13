@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 import useAuthenticatedSocket from "./useAuthenticatedSocket";
 import { useSocketEvent } from "socket.io-react-hook";
+import { useWakeLock } from "react-screen-wake-lock";
 
 const LobbyContext = createContext({});
 
@@ -59,6 +60,12 @@ export function LobbyProvider({ children }) {
   const [lobbyState, dispatch] = useReducer(reducer, initialState);
   const { socket } = useAuthenticatedSocket();
 
+  const { isSupported, request, release } = useWakeLock({
+    onRequest: () => alert("Screen Wake Lock: requested!"),
+    onError: () => alert("An error happened 💥"),
+    onRelease: () => alert("Screen Wake Lock: released!"),
+  });
+
   // Save players in state when an update happens
   const { lastMessage: players, sendMessage: getPlayers } = useSocketEvent(
     socket,
@@ -69,6 +76,18 @@ export function LobbyProvider({ children }) {
       dispatch({ type: LobbyActionType.UPDATE_PLAYERS, players });
     }
   }, [players]);
+
+  useEffect(() => {
+    if (!isSupported) {
+      return;
+    }
+
+    if (lobbyState.lobbyCode !== null) {
+      request();
+    } else {
+      release();
+    }
+  }, [lobbyState.lobbyCode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <LobbyContext.Provider value={{ lobbyState, dispatch, getPlayers }}>
