@@ -62,7 +62,7 @@ export default function AnswerQuizQuestion() {
   // TODO: Add countdown and progress bar for the host
   return (
     <div className="AnswerQuestion" id='answerPage'>
-      <h1>{gameState.question.question}</h1>
+      <h1 style={{color:'white'}}>{gameState.question.question}</h1>
       <div>
         <TimeRemaining endTime={gameState.question.endTime} />
       </div>
