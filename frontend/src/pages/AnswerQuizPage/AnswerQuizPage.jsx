@@ -2,12 +2,16 @@ import "./AnswerQuizPage.css";
 import background from "../../images/blob-scene-haikei-8.svg";
 import React, { useEffect } from "react";
 import AnswerQuizQuestion from "../../components/AnswerQuizQuestion/AnswerQuizQuestion";
-import useLobby from "../../context/useLobby";
-import { useNavigate, useParams } from "react-router-dom";
-import useGame from "../../context/useGame";
+import useLobby, { LobbyActionType } from "../../context/useLobby";
+import { useBlocker, useNavigate, useParams } from "react-router-dom";
+import useGame, { GameState } from "../../context/useGame";
+import { useSocketEvent } from "socket.io-react-hook";
+import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
+import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
+import { enqueueSnackbar } from "notistack";
 
 export default function AnswerQuizPage() {
-  const { lobbyState } = useLobby();
+  const { lobbyState, dispatch } = useLobby();
   const { gameState } = useGame();
   const navigate = useNavigate();
   const { lobbyCode } = useParams();
@@ -23,13 +27,24 @@ export default function AnswerQuizPage() {
     padding: 0,
   };
 
+  const { socket } = useAuthenticatedSocket();
+  const { sendMessage: leaveLobby } = useSocketEvent(socket, "lobby:leave");
+  const blocker = useBlocker(
+    ({ nextLocation }) =>
+      nextLocation.pathname !== "/game/stats" &&
+      !(
+        lobbyCode &&
+        !lobbyState.lobbyCode &&
+        nextLocation.pathname.startsWith("/join")
+      ) &&
+      !(!lobbyCode && !lobbyState.lobbyCode && nextLocation.pathname === "/")
+  );
+
   useEffect(() => {
-    if (gameState.results?.gameOver) {
-      navigate("/game/results");
-    } else if (gameState.results) {
+    if (gameState.state === GameState.RESULTS) {
       navigate("/game/stats");
     }
-  }, [gameState.results]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [gameState.state]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (lobbyCode && !lobbyState.lobbyCode) {
     navigate(`/join/${lobbyCode}`);
@@ -52,6 +67,30 @@ export default function AnswerQuizPage() {
   return (
     <div className="answerQuizPage" style={svgStyle}>
       <AnswerQuizQuestion />
+      <Dialog
+        open={blocker.state === "blocked"}
+        onClose={() => blocker.reset()}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Do you want to leave the current Game?"}
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={() => blocker.reset()}>Stay</Button>
+          <Button
+            onClick={() => {
+              leaveLobby();
+              dispatch({ type: LobbyActionType.LEAVE_LOBBY });
+              enqueueSnackbar("Game left!", { variant: "info" });
+              blocker.proceed();
+            }}
+            autoFocus
+          >
+            Leave
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

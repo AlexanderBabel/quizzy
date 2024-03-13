@@ -30,7 +30,7 @@ export class GameGateway {
 
     const nextQuestionFound = await this.gameService.nextQuestion(client, game);
     if (!nextQuestionFound) {
-      throw new WsException('No more questions');
+      await this.gameService.endGame(client, game);
     }
   }
 
