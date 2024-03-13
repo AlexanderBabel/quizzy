@@ -192,16 +192,22 @@ export class GameService {
       .sort((a, b) => a.data.submissionTime - b.data.submissionTime)
 
       // calculate scores
-      .map((client, index) => {
+      .map((client, index, array) => {
         // maximum score: 1000 points
         // the score gets smaller by every player that answered correctly before
         // and the time it took to answer (uses the percentage of the time that has passed to calculate the score)
-        const score = 1000 - index * 100;
+        const placePercentage = 1 - index / array.length;
         const timePercentage =
+          1 -
           (client.data.submissionTime - game.current.startTime) /
-          (game.current.endTime - game.current.startTime);
+            (game.current.endTime - game.current.startTime);
 
-        const delta = Math.floor(score * (1 - timePercentage));
+        const delta = Math.max(
+          // place percentage counts 70% and time percentage 30%
+          Math.floor(700 * placePercentage + 300 * timePercentage),
+          // min score for a correct answer is 100 points
+          100,
+        );
         game.scores[client.data.id] += delta;
 
         return {
