@@ -41,6 +41,7 @@ export class GameService {
     const gameState: GameState = {
       lobbyCode,
       quizId,
+      quizName: lobby.quizName,
       current: {
         index: questionIndex,
         question: null,
@@ -55,7 +56,7 @@ export class GameService {
   }
 
   async endGame(host: Socket, gameState: GameState): Promise<void> {
-    host.to(gameState.lobbyCode).emit('game:end');
+    host.to(gameState.lobbyCode).emit('game:end', { ended: true });
     await this.cacheModelService.del(`game:${gameState.lobbyCode}`);
 
     const clients = await host.to(gameState.lobbyCode).fetchSockets();
@@ -273,9 +274,5 @@ export class GameService {
       })),
     });
     console.log('checkAnswers:scores', scores);
-
-    if (gameOver) {
-      await this.endGame(host, game);
-    }
   }
 }

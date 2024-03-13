@@ -9,16 +9,18 @@ export default function useGame() {
   return useContext(GameContext);
 }
 
-export const LobbyActionType = {
+export const GameActionType = {
   UPDATE_QUESTION: "UPDATE_QUESTION",
   UPDATE_RESULTS: "UPDATE_RESULTS",
   DELETE_DATA: "DELETE_DATA",
+  END_GAME: "END_GAME",
 };
 
 export const GameState = {
   QUESTION: "QUESTION",
   WAITING: "WAITING",
   RESULTS: "RESULTS",
+  END_GAME: "END_GAME",
 };
 
 export const initialState = {
@@ -30,16 +32,22 @@ export const initialState = {
 function reducer(state, action) {
   const newState = { ...state };
   switch (action.type) {
-    case LobbyActionType.UPDATE_QUESTION:
+    case GameActionType.UPDATE_QUESTION:
       newState.question = action.question;
       newState.results = null;
+      newState.state = GameState.QUESTION;
       break;
-    case LobbyActionType.UPDATE_RESULTS:
+    case GameActionType.UPDATE_RESULTS:
       newState.results = action.results;
+      newState.state = GameState.RESULTS;
       break;
-    case LobbyActionType.DELETE_DATA:
+    case GameActionType.DELETE_DATA:
       newState.question = null;
       newState.results = null;
+      newState.state = GameState.WAITING;
+      break;
+    case GameActionType.END_GAME:
+      newState.state = GameState.END_GAME;
       break;
     default:
       break;
@@ -55,22 +63,29 @@ export function GameProvider({ children }) {
   const { lastMessage: question } = useSocketEvent(socket, "game:question");
   useEffect(() => {
     if (question) {
-      dispatch({ type: LobbyActionType.UPDATE_QUESTION, question });
+      dispatch({ type: GameActionType.UPDATE_QUESTION, question });
     }
   }, [question]);
 
   const { lastMessage: results } = useSocketEvent(socket, "game:results");
   useEffect(() => {
     if (results) {
-      dispatch({ type: LobbyActionType.UPDATE_RESULTS, results });
+      dispatch({ type: GameActionType.UPDATE_RESULTS, results });
     }
   }, [results]);
 
   useEffect(() => {
     if (lobbyState.lobbyCode === null) {
-      dispatch({ type: LobbyActionType.DELETE_DATA });
+      dispatch({ type: GameActionType.DELETE_DATA });
     }
   }, [lobbyState.lobbyCode]);
+
+  const { lastMessage: endGame } = useSocketEvent(socket, "game:end");
+  useEffect(() => {
+    if (endGame?.ended) {
+      dispatch({ type: GameActionType.END_GAME });
+    }
+  }, [endGame]);
 
   return (
     <GameContext.Provider value={{ gameState }}>

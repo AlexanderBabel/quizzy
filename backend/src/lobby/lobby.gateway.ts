@@ -154,14 +154,14 @@ export class LobbyGateway implements OnGatewayDisconnect {
     console.log('lobby:join', payload, client.data, {
       state: game ? 'game' : 'lobby',
       role: client.data.role,
-      quizId: lobby.quizId,
-      quizName: lobby.quizName,
+      quizId: game?.quizId ?? lobby?.quizId,
+      quizName: game?.quizName ?? lobby?.quizName,
     });
     client.emit('lobby:join', {
       state: game ? 'game' : 'lobby',
       role: client.data.role,
-      quizId: lobby.quizId,
-      quizName: lobby.quizName,
+      quizId: game?.quizId ?? lobby?.quizId,
+      quizName: game?.quizName ?? lobby?.quizName,
     });
     return 'Joined lobby';
   }

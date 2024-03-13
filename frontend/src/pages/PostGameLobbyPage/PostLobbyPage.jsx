@@ -10,7 +10,7 @@ import useLobby, { GameRole, LobbyActionType } from "../../context/useLobby";
 import { useSocketEvent } from "socket.io-react-hook";
 import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
 
-function PostLobbyPage() {
+export default function PostLobbyPage() {
   const { gameState } = useGame();
   const { lobbyState, dispatch } = useLobby();
   const navigate = useNavigate();
@@ -37,12 +37,18 @@ function PostLobbyPage() {
     );
   }
 
-  // TODO: design mobile UI (only show the score and place of the current player)
   if (lobbyState?.role === GameRole.PLAYER) {
     return (
       <div className="PostLobbyPagePlayer" style={svgStyle}>
-        {/* Replace this */}
         <h3>See the host screen for more details</h3>
+        <StartGameBtn
+          text={"Quit"}
+          onClick={() => {
+            navigate("/");
+            leaveLobby();
+            dispatch({ type: LobbyActionType.LEAVE_LOBBY });
+          }}
+        />
         <div className="postLobbyPagePlayerResult">
           <h2>Place: {gameState?.results?.place}</h2>
           <h4>Score: {gameState?.results?.score}</h4>
@@ -72,5 +78,3 @@ function PostLobbyPage() {
     </div>
   );
 }
-
-export default PostLobbyPage;
