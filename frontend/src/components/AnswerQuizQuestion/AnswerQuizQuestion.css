@@ -6,6 +6,7 @@
   flex-direction: column;
   gap: 20px;
   padding: 40px;
+  color: white;
 }
 
 .answerCardIcon {
@@ -15,6 +16,7 @@
   margin: 10px 0 0 10px;
   max-width: 40px;
   max-height: 40px;
+  filter: invert(1);
 }
 
 

@@ -35,6 +35,9 @@
   font-weight: bold;
   font-size: 1rem;
   cursor: pointer;
+  background-color: #C62467;
+  color: white;
+  
 }
 
 .questionStatsFigures {
