@@ -7,12 +7,16 @@ import ReportQuizBtn from "../../components/Buttons/ReportQuizBtn";
 import useGame from "../../context/useGame";
 import { useNavigate } from "react-router-dom";
 import useLobby, { GameRole, LobbyActionType } from "../../context/useLobby";
+import { useSocketEvent } from "socket.io-react-hook";
+import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
 
 function PostLobbyPage() {
   const { gameState } = useGame();
   const { lobbyState, dispatch } = useLobby();
   const navigate = useNavigate();
   const scores = gameState?.results?.scores;
+  const { socket } = useAuthenticatedSocket();
+  const { sendMessage: leaveLobby } = useSocketEvent(socket, "lobby:leave");
   const svgStyle = {
     backgroundImage: `url(${background})`,
     backgroundRepeat: "no-repeat",
@@ -58,6 +62,7 @@ function PostLobbyPage() {
           text={"Quit"}
           onClick={() => {
             navigate("/");
+            leaveLobby();
             dispatch({ type: LobbyActionType.LEAVE_LOBBY });
           }}
         />
