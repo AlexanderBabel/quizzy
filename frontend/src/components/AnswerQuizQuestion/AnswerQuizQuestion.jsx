@@ -9,10 +9,10 @@ import useAuthenticatedSocket from "../../context/useAuthenticatedSocket";
 import useGame from "../../context/useGame";
 import useLobby, { GameRole } from "../../context/useLobby";
 import WaitingPage from "../../pages/WaitingPage/WaitingPage";
-import TimeRemaining from '../../components/TimeRemaining/TimeRemaining';
+import TimeRemaining from "../../components/TimeRemaining/TimeRemaining";
 
 function getCardStyle(index) {
-  switch ((index + 1) ) {
+  switch (index + 1) {
     case 1:
       return {
         background: { backgroundColor: "#8ABBFE" },
@@ -61,12 +61,12 @@ export default function AnswerQuizQuestion() {
 
   // TODO: Add countdown and progress bar for the host
   return (
-    <div className="AnswerQuestion" id='answerPage'>
-      <h1 style={{color:'white'}}>{gameState.question.question}</h1>
+    <div className="AnswerQuestion" id="answerPage">
+      <h1 style={{ color: "white" }}>{gameState.question.question}</h1>
       <div>
         <TimeRemaining endTime={gameState.question.endTime} />
       </div>
-      <div className="answers" id='answerPageAnswers'>
+      <div className="answers" id="answerPageAnswers">
         {gameState.question.answers.map(({ id, text }, index) => {
           const { background, icon } = getCardStyle(index);
           const cardStyle = {
@@ -74,26 +74,22 @@ export default function AnswerQuizQuestion() {
             outline: chosenAnswer === id && "4px solid red",
           };
           return (
-          
-              <div
-              id='answerPageAnswerCard'
-                className="answerCard"
-                style={cardStyle}
-                onClick={() => {
-                  if (chosenAnswer || lobbyState.role !== GameRole.PLAYER)
-                    return;
-                  answer(id);
-                  setChosenAnswer(id);
-                }}
-              >
-                <img src={icon} alt="icon" className="answerCardIcon" />
-                <h4>{text}</h4>
-              </div>
-      
+            <div
+              id="answerPageAnswerCard"
+              className="answerCard"
+              style={cardStyle}
+              onClick={() => {
+                if (chosenAnswer || lobbyState.role !== GameRole.PLAYER) return;
+                answer(id);
+                setChosenAnswer(id);
+              }}
+            >
+              <img src={icon} alt="icon" className="answerCardIcon" />
+              <h4>{text}</h4>
+            </div>
           );
         })}
       </div>
-      
     </div>
   );
 }
