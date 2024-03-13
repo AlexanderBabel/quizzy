@@ -4,7 +4,7 @@
   text-align: center;
   margin: 0 auto;
   box-sizing: border-box;
-  padding: 0 200px;
+  padding: 0 10vw;
   font-size: 2.5rem;
   word-break: break-word;
 }
@@ -67,6 +67,10 @@
 }
 
 @media (max-width: 500px) {
+  .lobbyTitle {
+    padding: 0 10px;
+  }
+
   .lobbyBtns {
     top: 20px;
   }
