@@ -63,6 +63,9 @@ export default function AnswerQuizQuestion() {
   return (
     <div className="AnswerQuestion" id='answerPage'>
       <h1>{gameState.question.question}</h1>
+      <div>
+        <TimeRemaining endTime={gameState.question.endTime} />
+      </div>
       <div className="answers" id='answerPageAnswers'>
         {gameState.question.answers.map(({ id, text }, index) => {
           const { background, icon } = getCardStyle(index);
@@ -90,9 +93,7 @@ export default function AnswerQuizQuestion() {
           );
         })}
       </div>
-      <div>
-        <TimeRemaining endTime={gameState.question.endTime} />
-      </div>
+      
     </div>
   );
 }

@@ -39,8 +39,8 @@ export default function QuestionStats() {
     backgroundImage: `url(${background})`,
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
-    width: "100%",
-    height: "100%",
+    width: "100vw",
+    height: "100vh",
     minHeight: "100vh",
     margin: 0,
     padding: 0,
@@ -110,7 +110,7 @@ export default function QuestionStats() {
 
           <div>
             {gameState?.results?.correct ? (
-              <PiSmiley size={"150px"} style={{ color: "green" }} />
+              <PiSmiley size={"150px"} style={{ color: "#1ac728" }} />
             ) : (
               <PiSmileySad size={"150px"} style={{ color: "red" }} />
             )}
@@ -118,7 +118,7 @@ export default function QuestionStats() {
             <h1
               style={
                 gameState?.results?.correct
-                  ? { color: "green" }
+                  ? { color: "#1ac728" }
                   : { color: "red" }
               }
             >
@@ -126,7 +126,6 @@ export default function QuestionStats() {
                 ? "Correct Answer!"
                 : "Incorrect Answer"}
             </h1>
-            {/* <h2>Place: {gameState?.results?.place}</h2> */}
           </div>
 
           <p>Waiting for host to continue...</p>

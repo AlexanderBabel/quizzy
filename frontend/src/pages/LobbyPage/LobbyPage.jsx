@@ -134,9 +134,9 @@ export default function LobbyPage() {
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
     width: "100vw",
+    minWidth: "100vw",
     height: "100vh",
-    margin: 0,
-    padding: 0,
+    margin: "0",
     overflow: "hidden",
   };
 
