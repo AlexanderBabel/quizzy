@@ -20,7 +20,7 @@ function getCardStyle(index) {
       };
     case 2:
       return {
-        background: { backgroundColor: "#FFFF71" },
+        background: { backgroundColor: "purple" },
         icon: sheep,
       };
     case 3:

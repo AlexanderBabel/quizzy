@@ -9,7 +9,7 @@ import useGame from "../../context/useGame";
 export default function ChosenAnswers() {
   const { gameState } = useGame();
   const icons = [frog, sheep, mouse, swine];
-  const barColors = ["#8ABBFE", "#FFFF71", "#FB9D4A", "#56E75B"];
+  const barColors = ["#8ABBFE", "purple", "#FB9D4A", "#56E75B"];
 
   return (
     <div className="chosenAnswers">
