@@ -4,7 +4,9 @@
   display: flex;
   justify-content: center;
   align-self: flex-end;
-  border-radius: 40px;
+  border-radius: 30px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
   box-sizing: border-box;
   padding-top: 10px;
   color: black;
