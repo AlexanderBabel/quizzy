@@ -106,6 +106,7 @@ export default function QuestionStats() {
               <IoIosFlash size={"20px"} />
               <p>Gained this round: {gameState?.results?.delta}</p>
             </div>
+            <h2>#{gameState?.results?.place}</h2>
           </div>
 
           <div>
