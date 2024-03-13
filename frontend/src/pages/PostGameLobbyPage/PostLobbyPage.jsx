@@ -61,20 +61,20 @@ export default function PostLobbyPage() {
     <div id="PostLobbyPage" style={svgStyle}>
       <div id="header">
         <div>
-        <ReportQuizBtn />
+          <ReportQuizBtn />
         </div>
         <h1 id="postLobbyPageTitle" className="lobbyTitle">
           The Winner is...
         </h1>
         <div>
-        <StartGameBtn
-          text={"Quit"}
-          onClick={() => {
-            navigate("/");
-            leaveLobby();
-            dispatch({ type: LobbyActionType.LEAVE_LOBBY });
-          }}
-        />
+          <StartGameBtn
+            text={"Quit"}
+            onClick={() => {
+              navigate("/");
+              leaveLobby();
+              dispatch({ type: LobbyActionType.LEAVE_LOBBY });
+            }}
+          />
         </div>
       </div>
       <PlacementPodium id="podiums" />

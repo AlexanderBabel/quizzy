@@ -18,13 +18,13 @@ export default function AnswerQuizPage() {
 
   const svgStyle = {
     backgroundImage: `url(${background})`,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    width: '100vw',
-    minWidth: '100vw',
-    height: '100vh',
-    margin: '0',
-    overflow: 'hidden',
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    width: "100vw",
+    minWidth: "100vw",
+    height: "100vh",
+    margin: "0",
+    overflow: "hidden",
   };
 
   const { socket } = useAuthenticatedSocket();
