@@ -67,10 +67,12 @@
 }
 
 @media (max-width: 500px) {
-  .lobbyPage{
+  .lobbyPage {
     box-sizing: border-box;
     padding: 20px;
+    position: fixed;
   }
+
   .lobbyTitle {
     padding: 0 10px;
   }
