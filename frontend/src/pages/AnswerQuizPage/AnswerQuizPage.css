@@ -12,3 +12,8 @@
   border: none;
   cursor: pointer;
 }
+
+.answerQuizPage{
+  overflow: hidden;
+  position: fixed;
+}
