@@ -268,24 +268,26 @@ export class LobbyGateway implements OnGatewayDisconnect {
     }
 
     const players = await client.to(lobbyCode).fetchSockets();
-    for (const player of players) {
-      // string to int comparison is intentional
-      if (player.data.id == payload.playerId) {
-        delete client.data.lobbyCode;
-        delete client.data.userName;
-        delete client.data.role;
-        player.leave(lobbyCode);
 
-        if (payload.block) {
-          client.data.blockedLobbies = client.data.blockedLobbies ?? [];
-          client.data.blockedLobbies.push(payload.block);
-        }
-
-        this.server.to(lobbyCode).emit('lobby:playerLeft', payload.playerId);
-        console.log('kick player', payload, client['user']);
-        return 'Kicked player';
-      }
+    // string to int comparison is intentional
+    const kickedPlayer = players.find((p) => p.data.id == payload.playerId);
+    if (!kickedPlayer) {
+      throw new WsException('Player not found');
     }
+
+    delete kickedPlayer.data.lobbyCode;
+    delete kickedPlayer.data.userName;
+    delete kickedPlayer.data.role;
+    kickedPlayer.leave(lobbyCode);
+    kickedPlayer.emit('lobby:kick', { kicked: true });
+
+    if (payload.block) {
+      kickedPlayer.data.blockedLobbies = kickedPlayer.data.blockedLobbies ?? [];
+      kickedPlayer.data.blockedLobbies.push(payload.block);
+    }
+
+    this.server.to(lobbyCode).emit('lobby:playerLeft', payload.playerId);
+    console.log('kick player', payload, kickedPlayer['user']);
 
     this.server.to(lobbyCode).emit(
       'lobby:players',
@@ -294,6 +296,6 @@ export class LobbyGateway implements OnGatewayDisconnect {
         .map((p) => ({ name: p.data.userName, id: p.data.id })),
     );
 
-    throw new WsException('Player not found');
+    return 'Kicked player';
   }
 }

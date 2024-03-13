@@ -8,7 +8,7 @@ import { GameRole } from 'src/auth/jwt/enums/roles.enum';
 import { GameState } from './types/game.state.type';
 
 const CHECK_INTERVAL = 1000;
-const QUESTION_TIME = 10000;
+const QUESTION_TIME = 30000;
 
 @Injectable()
 export class GameService {

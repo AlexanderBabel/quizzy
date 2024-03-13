@@ -11,6 +11,14 @@ export default function PlayerNameInput({ onSubmitted }) {
         placeholder="Enter Name..."
         value={playerName} // Controlled input value
         onChange={(event) => setPlayerName(event.target.value)}
+        onKeyUp={(event) => {
+          if (event.key !== "Enter" || playerName === "") {
+            return;
+          }
+
+          onSubmitted(playerName);
+          setPlayerName("");
+        }}
       />
       <button
         type="submit"
