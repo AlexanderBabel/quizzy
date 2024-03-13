@@ -36,6 +36,8 @@
     gap: 5px;
     margin: auto;
     padding: 0;
+    box-sizing: border-box;
+    padding: 5px;
   }
   
   #answerPageAnswerCard{
@@ -45,6 +47,11 @@
     width: 100%;
     height: 120px;
     margin: auto;
+  }
+
+  .answerCardIcon{
+    max-width: 25px;
+    max-height: 25px;
   }
   
 }
