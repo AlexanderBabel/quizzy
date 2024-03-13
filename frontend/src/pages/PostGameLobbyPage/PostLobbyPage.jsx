@@ -60,10 +60,13 @@ export default function PostLobbyPage() {
   return (
     <div id="PostLobbyPage" style={svgStyle}>
       <div id="header">
+        <div>
         <ReportQuizBtn />
+        </div>
         <h1 id="postLobbyPageTitle" className="lobbyTitle">
           The Winner is...
         </h1>
+        <div>
         <StartGameBtn
           text={"Quit"}
           onClick={() => {
@@ -72,6 +75,7 @@ export default function PostLobbyPage() {
             dispatch({ type: LobbyActionType.LEAVE_LOBBY });
           }}
         />
+        </div>
       </div>
       <PlacementPodium id="podiums" />
       {scores?.length > 3 && <ResultList id="resultList" />}

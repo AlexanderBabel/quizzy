@@ -25,10 +25,8 @@
 .nextBtn {
   position: absolute;
   right: 0;
-  height: 40px;
-  width: 50px;
   box-sizing: border-box;
-  padding: 10px 50px;
+  padding: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
