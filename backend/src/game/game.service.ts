@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Lobby } from 'src/lobby/types/lobby.type';
 import { CacheModelService } from 'src/model/cache.model.service';
@@ -16,6 +16,8 @@ export class GameService {
     private readonly cacheModelService: CacheModelService,
     private readonly quizModelService: QuizModelService,
   ) {}
+
+  private readonly logger = new Logger(GameService.name);
 
   now() {
     return new Date().getTime();
@@ -74,21 +76,21 @@ export class GameService {
 
   async nextQuestion(host: Socket, game: GameState): Promise<boolean> {
     if (game.current.index >= game.current.count - 1) {
-      console.log('nextQuestion: no more questions');
+      this.logger.debug('nextQuestion: no more questions');
       return false;
     }
 
     game.current.index++;
-    console.log('nextQuestion:gameState', game);
+    this.logger.debug('nextQuestion:gameState', game);
 
     const questions = await this.quizModelService.findQuestions({
       where: { order: game.current.index, quizId: game.quizId },
       include: { answers: true },
     });
 
-    console.log('nextQuestion', questions);
+    this.logger.debug('nextQuestion', questions);
     if (questions.length !== 1) {
-      console.log('nextQuestion: no question found');
+      this.logger.debug('nextQuestion: no question found');
       return false;
     }
 
@@ -148,7 +150,7 @@ export class GameService {
     );
 
     const game = await this.getGameState(host.data.lobbyCode);
-    console.log(
+    this.logger.debug(
       'checkAnswers',
       missingAnswers,
       players.length,
@@ -218,11 +220,11 @@ export class GameService {
         };
       });
 
-    console.log(
+    this.logger.debug(
       'checkAnswers:playersWithNoAnswer',
       playersWithNoAnswer.map((p) => p.client.data.userName),
     );
-    console.log(
+    this.logger.debug(
       'checkAnswers:playersWithCorrectAnswer',
       playersWithCorrectAnswer.map((p) => p.client.data.userName),
     );
@@ -271,7 +273,7 @@ export class GameService {
 
     // send scores to host
     host.emit('game:results', {
-      scores: scores,
+      scores,
       gameOver,
       answerCounts: game.current.question.answers.map((a) => ({
         id: a.id,
@@ -279,6 +281,6 @@ export class GameService {
         count: answersCountsObj[a.id] ?? 0,
       })),
     });
-    console.log('checkAnswers:scores', scores);
+    this.logger.debug('checkAnswers:scores', scores);
   }
 }

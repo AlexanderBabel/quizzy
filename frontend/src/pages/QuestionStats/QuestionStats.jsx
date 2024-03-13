@@ -85,7 +85,7 @@ export default function QuestionStats() {
       {lobbyState?.role === GameRole.HOST && (
         <div className="questionStatsFigures">
           <div className="playerStatsSection">
-            {gameState?.results?.scores?.map(({ name, score }) => (
+            {gameState?.results?.scores?.slice(0, 5).map(({ name, score }) => (
               <PlayerScore playerName={name} playerScore={score} />
             ))}
           </div>

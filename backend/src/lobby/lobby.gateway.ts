@@ -1,4 +1,4 @@
-import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Logger, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   OnGatewayDisconnect,
   SubscribeMessage,
@@ -28,6 +28,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
 
   @WebSocketServer()
   private server: Server;
+  private readonly logger = new Logger(LobbyGateway.name);
 
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
@@ -40,7 +41,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
     // rejoin the lobby if the client was disconnected
     const playerData = await this.lobbyService.getPlayerData(client.data.id);
     if (playerData) {
-      console.log('reconnected', client.data);
+      this.logger.debug('reconnected', client.data);
       if (playerData.role === GameRole.Host) {
         return this.joinLobby(client, {
           lobbyCode: playerData.lobbyCode,
@@ -80,7 +81,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
 
     client.join(lobbyCode);
 
-    console.log('lobby:create', client.data);
+    this.logger.debug('lobby:create', client.data);
     client.emit('lobby:create', { lobbyCode, quizName: quiz.name });
     return lobbyCode;
   }
@@ -98,7 +99,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
     let playerData = await this.lobbyService.getPlayerData(client.data.id);
     if (!client.data.blockedLobbies && playerData?.blockedLobbies) {
       client.data.blockedLobbies = playerData.blockedLobbies;
-      console.log('reconnected', client.data);
+      this.logger.debug('reconnected', client.data);
     }
 
     // delete data from redis
@@ -117,7 +118,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
 
     const lobby = await this.lobbyService.getLobby(lobbyCode);
     const game = await this.gameService.getGameState(lobbyCode);
-    console.log('lobby:join', lobbyCode, lobby, game);
+    this.logger.debug('lobby:join', lobbyCode, lobby, game);
     if (!lobby && !game) {
       throw new WsException('Lobby not found');
     }
@@ -151,7 +152,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
       this.gameService.sendQuestion(client, game);
     }
 
-    console.log('lobby:join', payload, client.data, {
+    this.logger.debug('lobby:join', payload, client.data, {
       state: game ? 'game' : 'lobby',
       role: client.data.role,
       quizId: game?.quizId ?? lobby?.quizId,
@@ -205,7 +206,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
       throw new WsException('Not in a lobby');
     }
 
-    console.log('leave room', lobbyCode);
+    this.logger.debug('leave room', lobbyCode);
     client.to(lobbyCode).emit('lobby:playerLeft', { id: client.data.id });
 
     delete client.data.lobbyCode;
@@ -243,7 +244,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
       throw new WsException('Not enough players');
     }
 
-    console.log('start quiz', lobby.code);
+    this.logger.debug('start quiz', lobby.code);
     this.server.to(lobby.code).emit('lobby:start', { success: true });
     this.lobbyService.deleteLobby(lobby.code);
     const res = await this.gameService.startGame(client, lobby);
@@ -287,7 +288,7 @@ export class LobbyGateway implements OnGatewayDisconnect {
     }
 
     this.server.to(lobbyCode).emit('lobby:playerLeft', payload.playerId);
-    console.log('kick player', payload, kickedPlayer['user']);
+    this.logger.debug('kick player', payload, kickedPlayer['user']);
 
     this.server.to(lobbyCode).emit(
       'lobby:players',
