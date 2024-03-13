@@ -40,7 +40,8 @@ function ReportQuizBtn({ quizId }) {
         enqueueSnackbar("Failed to submit report.", { variant: "error" });
       }
     } catch (err) {
-      enqueueSnackbar(`Error submitting report: ${err.message}`, {
+      const errorMsg = err.response.data.message || err.message;
+      enqueueSnackbar(`Error submitting report: ${errorMsg}`, {
         variant: "error",
       });
     } finally {
