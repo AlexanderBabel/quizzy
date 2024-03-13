@@ -271,7 +271,7 @@ export class GameService {
 
     // send scores to host
     host.emit('game:results', {
-      scores: scores.slice(0, 5),
+      scores,
       gameOver,
       answerCounts: game.current.question.answers.map((a) => ({
         id: a.id,
