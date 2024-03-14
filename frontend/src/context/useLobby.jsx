@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useReducer } from "react";
 import useAuthenticatedSocket from "./useAuthenticatedSocket";
 import { useSocketEvent } from "socket.io-react-hook";
 import { useWakeLock } from "react-screen-wake-lock";
+import { enqueueSnackbar } from "notistack";
+import useWindowFocus from "use-window-focus";
 
 const LobbyContext = createContext({});
 
@@ -59,11 +61,12 @@ function reducer(state, action) {
 export function LobbyProvider({ children }) {
   const [lobbyState, dispatch] = useReducer(reducer, initialState);
   const { socket } = useAuthenticatedSocket();
+  const windowFocused = useWindowFocus();
 
   const { isSupported, request, release } = useWakeLock({
-    onRequest: () => alert("Screen Wake Lock: requested!"),
-    onError: () => alert("An error happened 💥"),
-    onRelease: () => alert("Screen Wake Lock: released!"),
+    onRequest: () => enqueueSnackbar("Screen Wake Lock: requested!"),
+    onError: () => enqueueSnackbar("An error happened 💥"),
+    onRelease: () => enqueueSnackbar("Screen Wake Lock: released!"),
   });
 
   // Save players in state when an update happens
@@ -87,7 +90,7 @@ export function LobbyProvider({ children }) {
     } else {
       release();
     }
-  }, [lobbyState.lobbyCode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lobbyState.lobbyCode, windowFocused]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <LobbyContext.Provider value={{ lobbyState, dispatch, getPlayers }}>
