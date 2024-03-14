@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Skeleton } from "@mui/material";
 import useAxios from "axios-hooks";
 import "./SearchQuizPage.css";
