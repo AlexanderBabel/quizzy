@@ -61,13 +61,6 @@ function reducer(state, action) {
 export function LobbyProvider({ children }) {
   const [lobbyState, dispatch] = useReducer(reducer, initialState);
   const { socket } = useAuthenticatedSocket();
-  const windowFocused = useWindowFocus();
-
-  const { isSupported, request, release } = useWakeLock({
-    onRequest: () => enqueueSnackbar("Screen Wake Lock: requested!"),
-    onError: () => enqueueSnackbar("An error happened 💥"),
-    onRelease: () => enqueueSnackbar("Screen Wake Lock: released!"),
-  });
 
   // Save players in state when an update happens
   const { lastMessage: players, sendMessage: getPlayers } = useSocketEvent(
@@ -80,6 +73,8 @@ export function LobbyProvider({ children }) {
     }
   }, [players]);
 
+  const windowFocused = useWindowFocus();
+  const { isSupported, request, release } = useWakeLock();
   useEffect(() => {
     if (!isSupported) {
       return;
