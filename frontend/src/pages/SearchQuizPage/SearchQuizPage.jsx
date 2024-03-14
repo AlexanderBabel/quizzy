@@ -9,18 +9,10 @@ import LoginBtn from "../../components/Buttons/LoginBtn";
 import { enqueueSnackbar } from "notistack";
 
 export default function SearchQuizPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [{ data, error, loading }, fetchResults] = useAxios(
-    { url: "quiz/search", method: "get" },
-    { manual: true }
-  );
-
-  useEffect(() => {
-    if (searchTerm !== "") {
-      fetchResults({ params: { query: searchTerm } });
-    }
-    // eslint-disable-next-line
-  }, [searchTerm]);
+  const [{ data, error, loading }, fetchResults] = useAxios({
+    url: "quiz/search",
+    method: "get",
+  });
 
   useEffect(() => {
     if (error) {
@@ -44,7 +36,7 @@ export default function SearchQuizPage() {
   return (
     <div className="startPage" style={svgStyle}>
       <div className="startPageTop">
-        <SearchBar setSearchTerm={(term) => setSearchTerm(term)} />
+        <SearchBar submit={(query) => fetchResults({ params: { query } })} />
         <LoginBtn />
       </div>
 

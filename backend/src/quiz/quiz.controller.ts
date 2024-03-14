@@ -46,12 +46,18 @@ export class QuizController {
 
   @IsPublic()
   @Get('/search')
-  async searchQuizzes(@Query('query') query: string): Promise<ResponseQuiz[]> {
+  async searchQuizzes(@Query('query') query?: string): Promise<ResponseQuiz[]> {
     const quizzes = await this.quizModelService.findQuizzes({
-      where: {
-        name: { contains: query, mode: 'insensitive' },
-        visibility: QuizVisibility.PUBLIC,
+      take: 20,
+      orderBy: {
+        createdAt: 'desc',
       },
+      where: query
+        ? {
+            name: { contains: query, mode: 'insensitive' },
+            visibility: QuizVisibility.PUBLIC,
+          }
+        : { visibility: QuizVisibility.PUBLIC },
     });
 
     return quizzes.map((quiz) => this.quizService.formatQuiz(quiz));
