@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useReducer } from "react";
 import useAuthenticatedSocket from "./useAuthenticatedSocket";
 import { useSocketEvent } from "socket.io-react-hook";
 import { useWakeLock } from "react-screen-wake-lock";
-import { enqueueSnackbar } from "notistack";
 import useWindowFocus from "use-window-focus";
 
 const LobbyContext = createContext({});
